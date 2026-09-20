@@ -36,4 +36,15 @@ public class AuthController : ControllerBase
 
         return Conflict(result);
     }
+
+    [HttpPut("update-status")]
+    public async Task<IActionResult> UpdateStatus([FromBody] UpdateUserStatusDto request)
+    {
+        var result = await _authService.UpdateUserStatusAsync(request);
+
+        if (result.Success)
+            return Ok(result);
+
+        return NotFound(result);
+    }
 }

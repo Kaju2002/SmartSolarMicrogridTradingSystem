@@ -43,7 +43,14 @@ public class AuthService : IAuthService
             };
         }
 
-        // Optional later: block if Status != "Active"
+        if (user.Status != "Active")
+        {
+            return new LoginResponseDto
+            {
+                Success = false,
+                Message = $"Account is {user.Status}. Please contact Backoffice."
+            };
+        }
 
         return new LoginResponseDto
         {
@@ -78,6 +85,10 @@ public class AuthService : IAuthService
             }
         }
 
+        var status = string.Equals(request.UserType, "Prosumer", StringComparison.OrdinalIgnoreCase)
+            ? "PendingApproval"
+            : "Active";
+
         var newUser = new User
         {
             UserType = request.UserType,
@@ -87,7 +98,7 @@ public class AuthService : IAuthService
             FullName = request.FullName,
             Email = request.Email,
             PhoneNumber = request.PhoneNumber,
-            Status = "Active",
+            Status = status,
             CreatedAt = DateTime.UtcNow
         };
 
@@ -100,6 +111,36 @@ public class AuthService : IAuthService
             UserId = newUser.Id,
             UserType = newUser.UserType,
             FullName = newUser.FullName
+        };
+    }
+
+    public async Task<LoginResponseDto> UpdateUserStatusAsync(UpdateUserStatusDto request)
+    {
+        var filter = Builders<User>.Filter.Eq(u => u.Id, request.UserId);
+        var user = await _users.Find(filter).FirstOrDefaultAsync();
+
+        if (user is null)
+        {
+            return new LoginResponseDto
+            {
+                Success = false,
+                Message = "User not found"
+            };
+        }
+
+        var update = Builders<User>.Update
+            .Set(u => u.Status, request.NewStatus)
+            .Set(u => u.UpdatedAt, DateTime.UtcNow);
+
+        await _users.UpdateOneAsync(filter, update);
+
+        return new LoginResponseDto
+        {
+            Success = true,
+            Message = $"Status updated to {request.NewStatus}",
+            UserId = user.Id,
+            UserType = user.UserType,
+            FullName = user.FullName
         };
     }
 }
