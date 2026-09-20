@@ -143,4 +143,48 @@ public class AuthService : IAuthService
             FullName = user.FullName
         };
     }
+
+    public async Task<List<User>> GetPendingUsersAsync()
+    {
+        var filter = Builders<User>.Filter.Eq(u => u.Status, "PendingApproval");
+        return await _users.Find(filter).ToListAsync();
+    }
+
+    public async Task<User?> GetProfileAsync(string userId)
+    {
+        var filter = Builders<User>.Filter.Eq(u => u.Id, userId);
+        return await _users.Find(filter).FirstOrDefaultAsync();
+    }
+
+    public async Task<LoginResponseDto> UpdateProfileAsync(string userId, UpdateProfileDto request)
+    {
+        var filter = Builders<User>.Filter.Eq(u => u.Id, userId);
+        var user = await _users.Find(filter).FirstOrDefaultAsync();
+
+        if (user is null)
+        {
+            return new LoginResponseDto
+            {
+                Success = false,
+                Message = "User not found"
+            };
+        }
+
+        var update = Builders<User>.Update
+            .Set(u => u.FullName, request.FullName)
+            .Set(u => u.Email, request.Email)
+            .Set(u => u.PhoneNumber, request.PhoneNumber)
+            .Set(u => u.UpdatedAt, DateTime.UtcNow);
+
+        await _users.UpdateOneAsync(filter, update);
+
+        return new LoginResponseDto
+        {
+            Success = true,
+            Message = "Profile updated",
+            UserId = user.Id,
+            UserType = user.UserType,
+            FullName = request.FullName
+        };
+    }
 }
