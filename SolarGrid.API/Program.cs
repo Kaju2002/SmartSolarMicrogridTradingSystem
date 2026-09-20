@@ -1,13 +1,19 @@
 using MongoDB.Bson;
-using SolarGrid.API.Data;
 using MongoDB.Driver;
+using SolarGrid.API.Data;
+using SolarGrid.API.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// MongoDB DI register
+// MongoDB DI
 builder.Services.AddSingleton<MongoDbContext>();
+
+// Auth service DI
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 var app = builder.Build();
 
@@ -19,10 +25,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.MapControllers();
+
 // Temporary: MongoDB ping test
 app.MapGet("/ping-db", async (MongoDbContext db) =>
 {
-    await db.Database.RunCommandAsync((Command<BsonDocument>)"{ping:1}");
+    var result = await db.Database.RunCommandAsync<BsonDocument>(new BsonDocument("ping", 1));
     return Results.Ok(new { status = "MongoDB connected" });
 });
 
