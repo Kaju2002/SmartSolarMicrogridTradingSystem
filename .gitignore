@@ -1,0 +1,47 @@
+## .NET build outputs
+**/bin/
+**/obj/
+**/out/
+*.user
+*.userosscache
+*.suo
+*.cache
+*.dll
+*.exe
+*.pdb
+*.log
+
+## VS / VS Code
+.vs/
+.vscode/*
+!.vscode/extensions.json
+*.rsuser
+*.sln.docstates
+
+## User secrets / local config (never commit secrets)
+**/secrets.json
+appsettings.*.local.json
+
+## OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+## Node (later SolarGrid.Web)
+node_modules/
+dist/
+build/
+.env
+.env.*
+!.env.example
+
+## Flutter / mobile (later SolarGrid.Mobile)
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+**/ios/Pods/
+**/android/.gradle/
+**/android/local.properties
