@@ -47,4 +47,49 @@ public class AuthController : ControllerBase
 
         return NotFound(result);
     }
+
+    [HttpGet("pending-users")]
+    public async Task<IActionResult> GetPendingUsers()
+    {
+        var users = await _authService.GetPendingUsersAsync();
+        return Ok(users);
+    }
+
+    [HttpGet("profile/{userId}")]
+    public async Task<IActionResult> GetProfile(string userId)
+    {
+        var user = await _authService.GetProfileAsync(userId);
+        if (user is null)
+            return NotFound();
+
+        return Ok(user);
+    }
+
+    [HttpPut("profile/{userId}")]
+    public async Task<IActionResult> UpdateProfile(string userId, [FromBody] UpdateProfileDto request)
+    {
+        var result = await _authService.UpdateProfileAsync(userId, request);
+
+        if (!result.Success)
+            return NotFound(result);
+
+        return Ok(result);
+    }
+
+    [HttpPut("request-deactivation/{userId}")]
+    public async Task<IActionResult> RequestDeactivation(string userId)
+    {
+        var request = new UpdateUserStatusDto
+        {
+            UserId = userId,
+            NewStatus = "Deactivated"
+        };
+
+        var result = await _authService.UpdateUserStatusAsync(request);
+
+        if (!result.Success)
+            return NotFound(result);
+
+        return Ok(result);
+    }
 }
