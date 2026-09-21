@@ -15,6 +15,9 @@ builder.Services.AddSingleton<MongoDbContext>();
 // Auth service DI
 builder.Services.AddScoped<IAuthService, AuthService>();
 
+// Reservation service DI
+builder.Services.AddScoped<IReservationService, ReservationService>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
