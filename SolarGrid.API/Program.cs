@@ -18,6 +18,9 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 // Reservation service DI
 builder.Services.AddScoped<IReservationService, ReservationService>();
 
+// Station service DI
+builder.Services.AddScoped<IStationService, StationService>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
