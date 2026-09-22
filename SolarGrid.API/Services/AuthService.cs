@@ -7,6 +7,7 @@
 using MongoDB.Driver;
 using SolarGrid.API.Data;
 using SolarGrid.API.DTOs;
+using SolarGrid.API.Helpers;
 using SolarGrid.API.Models;
 
 namespace SolarGrid.API.Services;
@@ -14,11 +15,13 @@ namespace SolarGrid.API.Services;
 public class AuthService : IAuthService
 {
     private readonly IMongoCollection<User> _users;
+    private readonly JwtTokenHelper _jwtTokenHelper;
 
-    // Setup Users collection
-    public AuthService(MongoDbContext dbContext)
+    // Setup Users collection and JWT helper
+    public AuthService(MongoDbContext dbContext, JwtTokenHelper jwtTokenHelper)
     {
         _users = dbContext.Database.GetCollection<User>("Users");
+        _jwtTokenHelper = jwtTokenHelper;
     }
 
     // Login with NIC or username and check password
@@ -60,13 +63,16 @@ public class AuthService : IAuthService
             };
         }
 
+        var token = _jwtTokenHelper.GenerateToken(user);
+
         return new LoginResponseDto
         {
             Success = true,
             Message = "Login successful",
             UserType = user.UserType,
             UserId = user.Id,
-            FullName = user.FullName
+            FullName = user.FullName,
+            Token = token
         };
     }
 
