@@ -1,3 +1,9 @@
+/*
+ * File: AuthController.cs
+ * Description: Auth API endpoints
+ * Author: Vithusha (Identity and Access)
+ * Date: 20/09/2026
+ */
 using Microsoft.AspNetCore.Mvc;
 using SolarGrid.API.DTOs;
 using SolarGrid.API.Services;
@@ -10,11 +16,13 @@ public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
 
+    // Inject auth service
     public AuthController(IAuthService authService)
     {
         _authService = authService;
     }
 
+    // POST login
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
     {
@@ -26,6 +34,7 @@ public class AuthController : ControllerBase
         return Unauthorized(result);
     }
 
+    // POST register
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)
     {
@@ -37,6 +46,7 @@ public class AuthController : ControllerBase
         return Conflict(result);
     }
 
+    // PUT update user status
     [HttpPut("update-status")]
     public async Task<IActionResult> UpdateStatus([FromBody] UpdateUserStatusDto request)
     {
@@ -48,6 +58,7 @@ public class AuthController : ControllerBase
         return NotFound(result);
     }
 
+    // GET pending approval users
     [HttpGet("pending-users")]
     public async Task<IActionResult> GetPendingUsers()
     {
@@ -55,6 +66,7 @@ public class AuthController : ControllerBase
         return Ok(users);
     }
 
+    // GET profile by user id
     [HttpGet("profile/{userId}")]
     public async Task<IActionResult> GetProfile(string userId)
     {
@@ -65,6 +77,7 @@ public class AuthController : ControllerBase
         return Ok(user);
     }
 
+    // PUT update profile fields
     [HttpPut("profile/{userId}")]
     public async Task<IActionResult> UpdateProfile(string userId, [FromBody] UpdateProfileDto request)
     {
@@ -76,6 +89,7 @@ public class AuthController : ControllerBase
         return Ok(result);
     }
 
+    // PUT request account deactivation
     [HttpPut("request-deactivation/{userId}")]
     public async Task<IActionResult> RequestDeactivation(string userId)
     {

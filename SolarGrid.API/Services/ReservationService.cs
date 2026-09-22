@@ -1,3 +1,9 @@
+/*
+ * File: ReservationService.cs
+ * Description: Booking create, update, cancel and approve
+ * Author: Kajanthan (Energy Reservation / Booking)
+ * Date: 21/09/2026
+ */
 using MongoDB.Driver;
 using SolarGrid.API.Data;
 using SolarGrid.API.DTOs;
@@ -9,11 +15,13 @@ public class ReservationService : IReservationService
 {
     private readonly IMongoCollection<EnergyReservation> _reservations;
 
+    // Setup Reservations collection
     public ReservationService(MongoDbContext dbContext)
     {
         _reservations = dbContext.Database.GetCollection<EnergyReservation>("Reservations");
     }
 
+    // Create booking if date is within 7 days
     public async Task<ReservationResponseDto> CreateReservationAsync(CreateReservationDto request)
     {
         var daysDifference = (request.ReservationDateTime - DateTime.UtcNow).TotalDays;
@@ -47,6 +55,7 @@ public class ReservationService : IReservationService
         };
     }
 
+    // Change slot time if more than 12 hours left
     public async Task<ReservationResponseDto> UpdateReservationAsync(string reservationId, UpdateReservationDto request)
     {
         var filter = Builders<EnergyReservation>.Filter.Eq(r => r.Id, reservationId);
@@ -87,6 +96,7 @@ public class ReservationService : IReservationService
         };
     }
 
+    // Cancel booking if more than 12 hours left
     public async Task<ReservationResponseDto> CancelReservationAsync(string reservationId)
     {
         var filter = Builders<EnergyReservation>.Filter.Eq(r => r.Id, reservationId);
@@ -126,17 +136,20 @@ public class ReservationService : IReservationService
         };
     }
 
+    // Get all reservations
     public async Task<List<EnergyReservation>> GetAllReservationsAsync()
     {
         return await _reservations.Find(_ => true).ToListAsync();
     }
 
+    // Get reservations for one prosumer by NIC
     public async Task<List<EnergyReservation>> GetReservationsByProsumerAsync(string nic)
     {
         var filter = Builders<EnergyReservation>.Filter.Eq(r => r.ProsumerNic, nic);
         return await _reservations.Find(filter).ToListAsync();
     }
 
+    // Approve booking and create QR code string
     public async Task<ReservationResponseDto> ApproveReservationAsync(string reservationId, string approvedByUserId)
     {
         var filter = Builders<EnergyReservation>.Filter.Eq(r => r.Id, reservationId);

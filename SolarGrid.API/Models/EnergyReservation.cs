@@ -1,3 +1,9 @@
+/*
+ * File: EnergyReservation.cs
+ * Description: Energy booking / reservation model
+ * Author: Kajanthan (Energy Reservation / Booking)
+ * Date: 21/09/2026
+ */
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 

@@ -1,3 +1,9 @@
+/*
+ * File: AuthService.cs
+ * Description: Login, register, profile and user status
+ * Author: Vithusha (Identity and Access)
+ * Date: 20/09/2026
+ */
 using MongoDB.Driver;
 using SolarGrid.API.Data;
 using SolarGrid.API.DTOs;
@@ -9,11 +15,13 @@ public class AuthService : IAuthService
 {
     private readonly IMongoCollection<User> _users;
 
+    // Setup Users collection
     public AuthService(MongoDbContext dbContext)
     {
         _users = dbContext.Database.GetCollection<User>("Users");
     }
 
+    // Login with NIC or username and check password
     public async Task<LoginResponseDto> LoginAsync(LoginRequestDto request)
     {
         var filter = Builders<User>.Filter.Or(
@@ -62,6 +70,7 @@ public class AuthService : IAuthService
         };
     }
 
+    // Create new user with hashed password
     public async Task<LoginResponseDto> RegisterAsync(RegisterRequestDto request)
     {
         var filters = new List<FilterDefinition<User>>();
@@ -114,6 +123,7 @@ public class AuthService : IAuthService
         };
     }
 
+    // Change account status (approve / deactivate / reactivate)
     public async Task<LoginResponseDto> UpdateUserStatusAsync(UpdateUserStatusDto request)
     {
         var filter = Builders<User>.Filter.Eq(u => u.Id, request.UserId);
@@ -144,18 +154,21 @@ public class AuthService : IAuthService
         };
     }
 
+    // List users waiting for Backoffice approval
     public async Task<List<User>> GetPendingUsersAsync()
     {
         var filter = Builders<User>.Filter.Eq(u => u.Status, "PendingApproval");
         return await _users.Find(filter).ToListAsync();
     }
 
+    // Get one user profile by id
     public async Task<User?> GetProfileAsync(string userId)
     {
         var filter = Builders<User>.Filter.Eq(u => u.Id, userId);
         return await _users.Find(filter).FirstOrDefaultAsync();
     }
 
+    // Update name, email and phone only
     public async Task<LoginResponseDto> UpdateProfileAsync(string userId, UpdateProfileDto request)
     {
         var filter = Builders<User>.Filter.Eq(u => u.Id, userId);

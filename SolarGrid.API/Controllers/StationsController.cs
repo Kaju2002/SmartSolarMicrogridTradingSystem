@@ -1,3 +1,9 @@
+/*
+ * File: StationsController.cs
+ * Description: Station API endpoints
+ * Author: Gabilan (Station Management)
+ * Date: 21/09/2026
+ */
 using Microsoft.AspNetCore.Mvc;
 using SolarGrid.API.DTOs;
 using SolarGrid.API.Services;
@@ -10,11 +16,13 @@ public class StationsController : ControllerBase
 {
     private readonly IStationService _stationService;
 
+    // Inject station service
     public StationsController(IStationService stationService)
     {
         _stationService = stationService;
     }
 
+    // POST create station
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateStationDto request)
     {
@@ -22,6 +30,7 @@ public class StationsController : ControllerBase
         return Ok(result);
     }
 
+    // GET all stations
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -29,6 +38,7 @@ public class StationsController : ControllerBase
         return Ok(stations);
     }
 
+    // PUT update station
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(string id, [FromBody] UpdateStationDto request)
     {
@@ -37,6 +47,7 @@ public class StationsController : ControllerBase
         return NotFound(result);
     }
 
+    // PUT deactivate station
     [HttpPut("{id}/deactivate")]
     public async Task<IActionResult> Deactivate(string id)
     {
@@ -45,6 +56,7 @@ public class StationsController : ControllerBase
         return BadRequest(result);
     }
 
+    // GET nearby stations by lat/lng
     [HttpGet("nearby")]
     public async Task<IActionResult> GetNearby([FromQuery] double lat, [FromQuery] double lng, [FromQuery] double radiusKm = 10)
     {

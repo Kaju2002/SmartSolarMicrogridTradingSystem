@@ -1,3 +1,9 @@
+/*
+ * File: VerificationService.cs
+ * Description: QR finalize, dashboard counts, history and search
+ * Author: Aaron (Verification and Dashboard)
+ * Date: 22/09/2026
+ */
 using MongoDB.Driver;
 using SolarGrid.API.Data;
 using SolarGrid.API.DTOs;
@@ -9,11 +15,13 @@ public class VerificationService : IVerificationService
 {
     private readonly IMongoCollection<EnergyReservation> _reservations;
 
+    // Setup Reservations collection
     public VerificationService(MongoDbContext dbContext)
     {
         _reservations = dbContext.Database.GetCollection<EnergyReservation>("Reservations");
     }
 
+    // Scan QR and mark transfer as completed
     public async Task<ReservationResponseDto> VerifyAndFinalizeAsync(VerifyQrDto request)
     {
         var filter = Builders<EnergyReservation>.Filter.Eq(r => r.QrCode, request.QrCode);
@@ -53,6 +61,7 @@ public class VerificationService : IVerificationService
         };
     }
 
+    // Count pending, approved and completed for one NIC
     public async Task<DashboardSummaryDto> GetDashboardSummaryAsync(string prosumerNic)
     {
         var pendingFilter = Builders<EnergyReservation>.Filter.And(
@@ -82,6 +91,7 @@ public class VerificationService : IVerificationService
         };
     }
 
+    // Past completed bookings for prosumer
     public async Task<List<EnergyReservation>> GetBookingHistoryAsync(string prosumerNic)
     {
         var filter = Builders<EnergyReservation>.Filter.And(
@@ -95,6 +105,7 @@ public class VerificationService : IVerificationService
             .ToListAsync();
     }
 
+    // Search bookings by status text for one NIC
     public async Task<List<EnergyReservation>> SearchBookingsAsync(string prosumerNic, string? query)
     {
         var filters = new List<FilterDefinition<EnergyReservation>>

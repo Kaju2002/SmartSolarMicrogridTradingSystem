@@ -1,3 +1,9 @@
+/*
+ * File: ReservationResponseDto.cs
+ * Description: Booking action response
+ * Author: Kajanthan (Energy Reservation / Booking)
+ * Date: 21/09/2026
+ */
 namespace SolarGrid.API.DTOs;
 
 public class ReservationResponseDto
