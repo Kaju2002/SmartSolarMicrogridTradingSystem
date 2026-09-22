@@ -1,10 +1,67 @@
-import { useState } from 'react'
+import { useState, type FormEvent } from 'react'
+import { Navigate, useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import { login as loginApi } from '../api/auth'
+import { useAuth } from '../context/AuthContext'
 
 export default function Login() {
+  const navigate = useNavigate()
+  const { isAuthenticated, login } = useAuth()
   const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [keepLoggedIn, setKeepLoggedIn] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  if (isAuthenticated) {
+    return <Navigate to="/" replace />
+  }
+
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault()
+    setError('')
+
+    if (!identifier.trim() || !password) {
+      setError('Identifier and password are required.')
+      return
+    }
+
+    setLoading(true)
+    try {
+      const result = await loginApi({
+        identifier: identifier.trim(),
+        password,
+      })
+
+      if (!result.success || !result.token) {
+        setError(result.message || 'Login failed.')
+        return
+      }
+
+      login(
+        result.token,
+        {
+          userId: result.userId,
+          fullName: result.fullName,
+          userType: result.userType,
+        },
+        keepLoggedIn,
+      )
+      navigate('/', { replace: true })
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        const msg =
+          (err.response?.data as { message?: string } | undefined)?.message ||
+          err.message
+        setError(msg || 'Login failed.')
+      } else {
+        setError('Login failed. Please try again.')
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="relative flex h-screen w-full flex-col lg:flex-row">
@@ -85,13 +142,13 @@ export default function Login() {
             </div>
           </div>
 
-          <form
-            className="space-y-5"
-            onSubmit={(e) => {
-              e.preventDefault()
-              // API wiring later
-            }}
-          >
+          <form className="space-y-5" onSubmit={handleSubmit}>
+            {error ? (
+              <div className="rounded-lg border border-error-500/30 bg-error-500/10 px-4 py-3 text-sm text-error-500">
+                {error}
+              </div>
+            ) : null}
+
             <div>
               <label className="mb-1.5 block text-sm font-medium text-ink">
                 Identifier<span className="text-error-500">*</span>
@@ -101,7 +158,8 @@ export default function Login() {
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
                 placeholder="Username or NIC"
-                className="h-11 w-full rounded-lg border border-line bg-transparent px-4 text-sm text-ink outline-none placeholder:text-muted focus:border-brand-500 focus:ring-3 focus:ring-brand-500/15"
+                disabled={loading}
+                className="h-11 w-full rounded-lg border border-line bg-transparent px-4 text-sm text-ink outline-none placeholder:text-muted focus:border-brand-500 focus:ring-3 focus:ring-brand-500/15 disabled:opacity-60"
               />
             </div>
 
@@ -115,7 +173,8 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
-                  className="h-11 w-full rounded-lg border border-line bg-transparent py-2.5 ps-4 pe-11 text-sm text-ink outline-none placeholder:text-muted focus:border-brand-500 focus:ring-3 focus:ring-brand-500/15"
+                  disabled={loading}
+                  className="h-11 w-full rounded-lg border border-line bg-transparent py-2.5 ps-4 pe-11 text-sm text-ink outline-none placeholder:text-muted focus:border-brand-500 focus:ring-3 focus:ring-brand-500/15 disabled:opacity-60"
                 />
                 <button
                   type="button"
@@ -163,9 +222,10 @@ export default function Login() {
 
             <button
               type="submit"
-              className="flex w-full items-center justify-center rounded-lg bg-brand-500 px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-600"
+              disabled={loading}
+              className="flex w-full items-center justify-center rounded-lg bg-brand-500 px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-70"
             >
-              Sign In
+              {loading ? 'Signing in…' : 'Sign In'}
             </button>
           </form>
 
