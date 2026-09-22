@@ -3,10 +3,11 @@ import { Navigate, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { login as loginApi } from '../api/auth'
 import { useAuth } from '../context/AuthContext'
+import { homePathForRole } from '../utils/roles'
 
 export default function Login() {
   const navigate = useNavigate()
-  const { isAuthenticated, login } = useAuth()
+  const { isAuthenticated, login, user } = useAuth()
   const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -15,7 +16,7 @@ export default function Login() {
   const [error, setError] = useState('')
 
   if (isAuthenticated) {
-    return <Navigate to="/" replace />
+    return <Navigate to={homePathForRole(user?.userType)} replace />
   }
 
   async function handleSubmit(e: FormEvent) {
@@ -48,7 +49,7 @@ export default function Login() {
         },
         keepLoggedIn,
       )
-      navigate('/', { replace: true })
+      navigate(homePathForRole(result.userType), { replace: true })
     } catch (err) {
       if (axios.isAxiosError(err)) {
         const msg =
