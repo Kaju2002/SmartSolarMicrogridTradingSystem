@@ -4,6 +4,7 @@
  * Author: Aaron (Verification and Dashboard)
  * Date: 22/09/2026
  */
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SolarGrid.API.DTOs;
 using SolarGrid.API.Services;
@@ -12,6 +13,7 @@ namespace SolarGrid.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class VerificationController : ControllerBase
 {
     private readonly IVerificationService _verificationService;
