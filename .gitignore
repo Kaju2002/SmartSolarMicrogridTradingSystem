@@ -27,10 +27,19 @@ appsettings.*.local.json
 Thumbs.db
 Desktop.ini
 
-## Node (later SolarGrid.Web)
-node_modules/
-dist/
-build/
+## Node / Vite (SolarGrid.Web)
+**/node_modules/
+**/dist/
+**/dist-ssr/
+**/build/
+**/.vite/
+**/coverage/
+*.tsbuildinfo
+*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 .env
 .env.*
 !.env.example

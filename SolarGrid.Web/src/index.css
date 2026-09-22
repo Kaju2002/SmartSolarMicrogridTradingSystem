@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+@theme {
+  --font-outfit: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --color-brand-500: #f59e0b;
+  --color-brand-600: #d97706;
+  --color-brand-950: #0f172a;
+  --color-error-500: #f04438;
+  --color-muted: #667085;
+  --color-ink: #1d2939;
+  --color-line: #d0d5dd;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font-outfit);
+  background: #ffffff;
+  color: var(--color-ink);
+}
