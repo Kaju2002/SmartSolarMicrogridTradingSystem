@@ -1,3 +1,9 @@
+/*
+ * File: Program.cs
+ * Description: App startup, DI and middleware
+ * Author: Team 
+ * Date: 20/09/2026
+ */
 using MongoDB.Bson;
 using MongoDB.Driver;
 using SolarGrid.API.Data;

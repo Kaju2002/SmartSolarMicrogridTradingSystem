@@ -1,3 +1,9 @@
+/*
+ * File: StationService.cs
+ * Description: Station create, update, deactivate and nearby search
+ * Author: Gabilan (Station Management)
+ * Date: 21/09/2026
+ */
 using MongoDB.Driver;
 using SolarGrid.API.Data;
 using SolarGrid.API.DTOs;
@@ -10,12 +16,14 @@ public class StationService : IStationService
     private readonly IMongoCollection<SolarStationInfo> _stations;
     private readonly IMongoCollection<EnergyReservation> _reservations;
 
+    // Setup Stations and Reservations collections
     public StationService(MongoDbContext dbContext)
     {
         _stations = dbContext.Database.GetCollection<SolarStationInfo>("Stations");
         _reservations = dbContext.Database.GetCollection<EnergyReservation>("Reservations");
     }
 
+    // Add new solar station
     public async Task<StationResponseDto> CreateStationAsync(CreateStationDto request)
     {
         var station = new SolarStationInfo
@@ -44,11 +52,13 @@ public class StationService : IStationService
         };
     }
 
+    // Return all stations
     public async Task<List<SolarStationInfo>> GetAllStationsAsync()
     {
         return await _stations.Find(_ => true).ToListAsync();
     }
 
+    // Partial update for capacity, slots or open/close time
     public async Task<StationResponseDto> UpdateStationAsync(string stationId, UpdateStationDto request)
     {
         var filter = Builders<SolarStationInfo>.Filter.Eq(s => s.Id, stationId);
@@ -87,11 +97,12 @@ public class StationService : IStationService
             Message = "Station updated",
             StationId = station.Id,
             StationName = station.StationName,
-            Latitude = station.Latitude,      // ← சேருங்க
-            Longitude = station.Longitude     // ← சேருங்க
+            Latitude = station.Latitude,
+            Longitude = station.Longitude
         };
     }
 
+    // Deactivate only if no pending/approved bookings
     public async Task<StationResponseDto> DeactivateStationAsync(string stationId)
     {
         var filter = Builders<SolarStationInfo>.Filter.Eq(s => s.Id, stationId);
@@ -136,6 +147,7 @@ public class StationService : IStationService
         };
     }
 
+    // Find active stations inside radius using Haversine
     public async Task<List<StationResponseDto>> GetNearbyStationsAsync(double latitude, double longitude, double radiusKm)
     {
         var activeStations = await _stations
@@ -164,7 +176,7 @@ public class StationService : IStationService
         return nearby;
     }
 
-    // Haversine — distance between two lat/lon points in km
+    // Haversine distance in km
     private double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
     {
         var R = 6371; // Earth radius in km

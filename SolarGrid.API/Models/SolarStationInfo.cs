@@ -1,3 +1,9 @@
+/*
+ * File: SolarStationInfo.cs
+ * Description: Solar station / hub model
+ * Author: Gabilan (Station Management)
+ * Date: 21/09/2026
+ */
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 

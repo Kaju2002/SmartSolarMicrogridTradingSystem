@@ -1,3 +1,9 @@
+/*
+ * File: User.cs
+ * Description: User model for all roles
+ * Author: Vithusha (Identity and Access)
+ * Date: 20/09/2026
+ */
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 

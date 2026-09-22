@@ -1,3 +1,9 @@
+/*
+ * File: StationResponseDto.cs
+ * Description: Station action / nearby response
+ * Author: Gabilan (Station Management)
+ * Date: 21/09/2026
+ */
 namespace SolarGrid.API.DTOs;
 
 public class StationResponseDto

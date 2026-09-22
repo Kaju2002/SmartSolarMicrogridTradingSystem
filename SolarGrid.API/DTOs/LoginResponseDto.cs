@@ -1,3 +1,9 @@
+/*
+ * File: LoginResponseDto.cs
+ * Description: Login / auth action response
+ * Author: Vithusha (Identity and Access)
+ * Date: 20/09/2026
+ */
 namespace SolarGrid.API.DTOs;
 
 public class LoginResponseDto
