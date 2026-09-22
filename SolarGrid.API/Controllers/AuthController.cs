@@ -4,6 +4,7 @@
  * Author: Vithusha (Identity and Access)
  * Date: 20/09/2026
  */
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SolarGrid.API.DTOs;
 using SolarGrid.API.Services;
@@ -12,6 +13,7 @@ namespace SolarGrid.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
@@ -23,6 +25,7 @@ public class AuthController : ControllerBase
     }
 
     // POST login
+    [AllowAnonymous]
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
     {
@@ -35,6 +38,7 @@ public class AuthController : ControllerBase
     }
 
     // POST register
+    [AllowAnonymous]
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)
     {

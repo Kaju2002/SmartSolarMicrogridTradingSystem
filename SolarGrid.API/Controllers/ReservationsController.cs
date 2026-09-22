@@ -4,6 +4,7 @@
  * Author: Kajanthan (Energy Reservation / Booking)
  * Date: 21/09/2026
  */
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SolarGrid.API.DTOs;
 using SolarGrid.API.Services;
@@ -12,6 +13,7 @@ namespace SolarGrid.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class ReservationsController : ControllerBase
 {
     private readonly IReservationService _reservationService;
