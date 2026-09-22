@@ -21,6 +21,9 @@ public class EnergyReservation
     public string StationId { get; set; } = string.Empty;
     // SolarStationInfo id
 
+    public string? BookingSlotId { get; set; }
+    // EnergyBookingSlot id
+
     public DateTime ReservationDateTime { get; set; }
     // slot time, within 7 days
 
