@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
-export default function Home() {
+export default function OperatorHome() {
   const navigate = useNavigate()
   const { user, logout } = useAuth()
 
@@ -12,13 +12,12 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-brand-950 px-6 text-white">
-      <h1 className="mb-2 text-3xl font-semibold">Welcome</h1>
-      <p className="mb-1 text-sm text-gray-300">
-        {user?.fullName || 'User'}
-        {user?.userType ? ` · ${user.userType}` : ''}
+      <p className="mb-2 text-xs uppercase tracking-widest text-brand-500">
+        Grid Operator
       </p>
-      <p className="mb-8 text-xs text-gray-500">
-        Protected home — role dashboards come next.
+      <h1 className="mb-2 text-3xl font-semibold">Welcome</h1>
+      <p className="mb-8 text-sm text-gray-300">
+        {user?.fullName || 'User'}
       </p>
       <button
         type="button"

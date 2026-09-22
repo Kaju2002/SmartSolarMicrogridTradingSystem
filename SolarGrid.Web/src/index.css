@@ -1,14 +1,23 @@
 @import "tailwindcss";
 
 @theme {
-  --font-outfit: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-outfit: "Outfit", "Poppins", ui-sans-serif, system-ui, sans-serif;
+  --color-brand-400: #fbbf24;
   --color-brand-500: #f59e0b;
   --color-brand-600: #d97706;
-  --color-brand-950: #0f172a;
-  --color-error-500: #f04438;
-  --color-muted: #667085;
-  --color-ink: #1d2939;
-  --color-line: #d0d5dd;
+  --color-brand-950: #0e0e23;
+  --color-primary: #4d7cff;
+  --color-primary-light: #eef3ff;
+  --color-success-500: #51ce8a;
+  --color-success-50: #edfaf3;
+  --color-warning-500: #ff9920;
+  --color-error-500: #fc696a;
+  --color-muted: #8a92a6;
+  --color-ink: #0e0e23;
+  --color-line: #e4e7ec;
+  --color-surface: #eaedf7;
+  --color-panel: #ffffff;
+  --color-sidebar: #ffffff;
 }
 
 html,
@@ -20,6 +29,7 @@ body,
 
 body {
   font-family: var(--font-outfit);
-  background: #ffffff;
+  background: var(--color-surface);
   color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
 }
