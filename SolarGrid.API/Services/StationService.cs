@@ -86,7 +86,9 @@ public class StationService : IStationService
             Success = true,
             Message = "Station updated",
             StationId = station.Id,
-            StationName = station.StationName
+            StationName = station.StationName,
+            Latitude = station.Latitude,      // ← சேருங்க
+            Longitude = station.Longitude     // ← சேருங்க
         };
     }
 

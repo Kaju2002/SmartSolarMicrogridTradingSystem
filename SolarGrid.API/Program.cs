@@ -21,6 +21,9 @@ builder.Services.AddScoped<IReservationService, ReservationService>();
 // Station service DI
 builder.Services.AddScoped<IStationService, StationService>();
 
+// Verification service DI
+builder.Services.AddScoped<IVerificationService, VerificationService>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
