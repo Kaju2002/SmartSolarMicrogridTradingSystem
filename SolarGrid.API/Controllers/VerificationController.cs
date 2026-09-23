@@ -13,7 +13,7 @@ namespace SolarGrid.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+[Authorize(Roles = "GridOperator,Backoffice")]
 public class VerificationController : ControllerBase
 {
     private readonly IVerificationService _verificationService;

@@ -76,16 +76,71 @@ public class AuthService : IAuthService
         };
     }
 
-    // Create new user with hashed password
+    // Public self-register — Prosumer only (PendingApproval)
     public async Task<LoginResponseDto> RegisterAsync(RegisterRequestDto request)
+    {
+        if (!string.IsNullOrWhiteSpace(request.UserType)
+            && !string.Equals(request.UserType, "Prosumer", StringComparison.OrdinalIgnoreCase))
+        {
+            return new LoginResponseDto
+            {
+                Success = false,
+                Message = "Public registration is limited to Prosumer accounts"
+            };
+        }
+
+        return await CreateUserAsync(
+            userType: "Prosumer",
+            status: "PendingApproval",
+            nic: request.Nic,
+            username: request.Username,
+            password: request.Password,
+            fullName: request.FullName,
+            email: request.Email,
+            phoneNumber: request.PhoneNumber);
+    }
+
+    // Backoffice creates an Active Grid Operator
+    public async Task<LoginResponseDto> CreateGridOperatorAsync(RegisterRequestDto request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Username))
+        {
+            return new LoginResponseDto
+            {
+                Success = false,
+                Message = "Username is required for Grid Operator"
+            };
+        }
+
+        return await CreateUserAsync(
+            userType: "GridOperator",
+            status: "Active",
+            nic: null,
+            username: request.Username,
+            password: request.Password,
+            fullName: request.FullName,
+            email: request.Email,
+            phoneNumber: request.PhoneNumber);
+    }
+
+    // Shared insert with uniqueness checks
+    private async Task<LoginResponseDto> CreateUserAsync(
+        string userType,
+        string status,
+        string? nic,
+        string? username,
+        string password,
+        string fullName,
+        string email,
+        string phoneNumber)
     {
         var filters = new List<FilterDefinition<User>>();
 
-        if (!string.IsNullOrWhiteSpace(request.Username))
-            filters.Add(Builders<User>.Filter.Eq(u => u.Username, request.Username));
+        if (!string.IsNullOrWhiteSpace(username))
+            filters.Add(Builders<User>.Filter.Eq(u => u.Username, username));
 
-        if (!string.IsNullOrWhiteSpace(request.Nic))
-            filters.Add(Builders<User>.Filter.Eq(u => u.Nic, request.Nic));
+        if (!string.IsNullOrWhiteSpace(nic))
+            filters.Add(Builders<User>.Filter.Eq(u => u.Nic, nic));
 
         if (filters.Count > 0)
         {
@@ -100,19 +155,15 @@ public class AuthService : IAuthService
             }
         }
 
-        var status = string.Equals(request.UserType, "Prosumer", StringComparison.OrdinalIgnoreCase)
-            ? "PendingApproval"
-            : "Active";
-
         var newUser = new User
         {
-            UserType = request.UserType,
-            Nic = request.Nic,
-            Username = request.Username,
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
-            FullName = request.FullName,
-            Email = request.Email,
-            PhoneNumber = request.PhoneNumber,
+            UserType = userType,
+            Nic = nic,
+            Username = username,
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(password),
+            FullName = fullName,
+            Email = email,
+            PhoneNumber = phoneNumber,
             Status = status,
             CreatedAt = DateTime.UtcNow
         };
@@ -193,11 +244,14 @@ public class AuthService : IAuthService
         return users;
     }
 
-    // Get one user profile by id
+    // Get one user profile by id (never return password hash)
     public async Task<User?> GetProfileAsync(string userId)
     {
         var filter = Builders<User>.Filter.Eq(u => u.Id, userId);
-        return await _users.Find(filter).FirstOrDefaultAsync();
+        var user = await _users.Find(filter).FirstOrDefaultAsync();
+        if (user is not null)
+            user.PasswordHash = string.Empty;
+        return user;
     }
 
     // Update name, email and phone only

@@ -1,7 +1,7 @@
 import { useState, type FormEvent, type ReactNode } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import { register } from '../../api/auth'
+import { createGridOperator } from '../../api/auth'
 
 function errorMessage(err: unknown, fallback: string) {
   if (!axios.isAxiosError(err)) return fallback
@@ -106,8 +106,7 @@ export default function CreateOperatorPage() {
 
     setSaving(true)
     try {
-      const result = await register({
-        userType: 'GridOperator',
+      const result = await createGridOperator({
         username,
         password: form.password,
         fullName,

@@ -33,3 +33,14 @@ export async function register(data: RegisterRequest): Promise<LoginResponse> {
   const response = await api.post<LoginResponse>('/api/auth/register', data)
   return response.data
 }
+
+/** Backoffice-only: create an Active Grid Operator */
+export async function createGridOperator(
+  data: Omit<RegisterRequest, 'userType' | 'nic'>,
+): Promise<LoginResponse> {
+  const response = await api.post<LoginResponse>('/api/auth/operators', {
+    ...data,
+    userType: 'GridOperator',
+  })
+  return response.data
+}
