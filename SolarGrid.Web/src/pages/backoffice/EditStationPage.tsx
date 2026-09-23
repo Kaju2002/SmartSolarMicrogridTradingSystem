@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
 import { AppTimePicker } from '../../components/AppTimePicker'
 import { getStations, updateStation, type Station } from '../../api/stations'
+import { getUsers, type AppUser } from '../../api/users'
 
 function errorMessage(err: unknown, fallback: string) {
   if (!axios.isAxiosError(err)) return fallback
@@ -71,7 +72,9 @@ export default function EditStationPage() {
     batterySlots: '',
     openTime: '06:00',
     closeTime: '18:00',
+    assignedOperatorId: '',
   })
+  const [operators, setOperators] = useState<AppUser[]>([])
 
   useEffect(() => {
     let cancelled = false
@@ -86,9 +89,14 @@ export default function EditStationPage() {
       setLoading(true)
       setError('')
       try {
-        const list = await getStations()
+        const [list, ops] = await Promise.all([
+          getStations(),
+          getUsers('GridOperator'),
+        ])
         const found = list.find((s) => s.id === id) ?? null
         if (cancelled) return
+
+        setOperators(ops)
 
         if (!found) {
           setStation(null)
@@ -102,6 +110,7 @@ export default function EditStationPage() {
           batterySlots: String(found.batterySlots),
           openTime: found.openTime || '06:00',
           closeTime: found.closeTime || '18:00',
+          assignedOperatorId: found.assignedOperatorId || '',
         })
       } catch (err) {
         if (!cancelled) {
@@ -143,6 +152,8 @@ export default function EditStationPage() {
         batterySlots,
         openTime: form.openTime,
         closeTime: form.closeTime,
+        assignedOperatorId: form.assignedOperatorId || null,
+        updateAssignedOperator: true,
       })
 
       if (!result.success) {
@@ -195,7 +206,8 @@ export default function EditStationPage() {
             Edit Station
           </h1>
           <p className="mt-1 text-sm text-muted">
-            Update capacity and operating hours. Name and location stay fixed.
+            Update capacity, hours, and assigned Grid Operator. Name and
+            location stay fixed.
           </p>
         </div>
         <Link
@@ -299,6 +311,32 @@ export default function EditStationPage() {
                 onChange={(closeTime) => setForm((f) => ({ ...f, closeTime }))}
               />
             </div>
+
+            <Field label="Assigned Grid Operator">
+              <select
+                className={inputClass}
+                value={form.assignedOperatorId}
+                onChange={(e) =>
+                  setForm((f) => ({
+                    ...f,
+                    assignedOperatorId: e.target.value,
+                  }))
+                }
+              >
+                <option value="">Unassigned</option>
+                {operators.map((op) => (
+                  <option
+                    key={op.id}
+                    value={op.id}
+                    disabled={op.status !== 'Active'}
+                  >
+                    {op.fullName}
+                    {op.username ? ` (${op.username})` : ''}
+                    {op.status !== 'Active' ? ` — ${op.status}` : ''}
+                  </option>
+                ))}
+              </select>
+            </Field>
           </FormCard>
         </div>
 

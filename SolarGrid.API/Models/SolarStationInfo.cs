@@ -41,6 +41,9 @@ public class SolarStationInfo
     public string? CreatedBy { get; set; }
     // Backoffice user id
 
+    public string? AssignedOperatorId { get; set; }
+    // GridOperator user id
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public DateTime? UpdatedAt { get; set; }

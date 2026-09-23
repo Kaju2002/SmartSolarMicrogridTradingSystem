@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 import PageHeader from '../../components/PageHeader'
@@ -7,6 +7,7 @@ import {
   getStations,
   type Station,
 } from '../../api/stations'
+import { getUsers, type AppUser } from '../../api/users'
 
 function errorMessage(err: unknown, fallback: string) {
   if (!axios.isAxiosError(err)) return fallback
@@ -22,17 +23,30 @@ function errorMessage(err: unknown, fallback: string) {
 
 export default function StationsPage() {
   const [stations, setStations] = useState<Station[]>([])
+  const [operators, setOperators] = useState<AppUser[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [toast, setToast] = useState('')
   const [actionId, setActionId] = useState<string | null>(null)
 
+  const operatorNameById = useMemo(() => {
+    const map = new Map<string, string>()
+    for (const op of operators) {
+      map.set(op.id, op.fullName)
+    }
+    return map
+  }, [operators])
+
   async function loadStations() {
     setLoading(true)
     setError('')
     try {
-      const data = await getStations()
+      const [data, ops] = await Promise.all([
+        getStations(),
+        getUsers('GridOperator'),
+      ])
       setStations(data)
+      setOperators(ops)
     } catch (err) {
       setError(errorMessage(err, 'Could not load stations.'))
       setStations([])
@@ -139,6 +153,7 @@ export default function StationsPage() {
               <thead className="border-b border-line bg-surface/70 text-xs tracking-wide text-muted uppercase">
                 <tr>
                   <th className="px-5 py-3.5 font-medium">Station</th>
+                  <th className="px-5 py-3.5 font-medium">Operator</th>
                   <th className="px-5 py-3.5 font-medium">Location</th>
                   <th className="px-5 py-3.5 font-medium">Capacity / slots</th>
                   <th className="px-5 py-3.5 font-medium">Hours</th>
@@ -150,6 +165,10 @@ export default function StationsPage() {
                 {stations.map((station) => {
                   const busy = actionId === station.id
                   const active = station.status === 'Active'
+                  const operatorLabel = station.assignedOperatorId
+                    ? operatorNameById.get(station.assignedOperatorId) ||
+                      'Unknown operator'
+                    : 'Unassigned'
 
                   return (
                     <tr
@@ -164,6 +183,7 @@ export default function StationsPage() {
                           {station.availableSlots}/{station.batterySlots} free
                         </p>
                       </td>
+                      <td className="px-5 py-4 text-ink">{operatorLabel}</td>
                       <td className="px-5 py-4 text-muted">
                         {station.latitude.toFixed(4)},{' '}
                         {station.longitude.toFixed(4)}

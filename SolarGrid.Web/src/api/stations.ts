@@ -12,6 +12,7 @@ export type Station = {
   closeTime: string
   status: string
   createdBy?: string | null
+  assignedOperatorId?: string | null
   createdAt: string
   updatedAt?: string | null
 }
@@ -25,6 +26,7 @@ export type CreateStationRequest = {
   openTime: string
   closeTime: string
   createdBy: string
+  assignedOperatorId?: string | null
 }
 
 export type UpdateStationRequest = {
@@ -32,6 +34,8 @@ export type UpdateStationRequest = {
   batterySlots?: number
   openTime?: string
   closeTime?: string
+  assignedOperatorId?: string | null
+  updateAssignedOperator?: boolean
 }
 
 export type StationResponse = {
