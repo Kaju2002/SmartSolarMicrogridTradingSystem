@@ -39,3 +39,38 @@ export async function updateUserStatus(
   const response = await api.put<LoginResponse>('/api/auth/update-status', data)
   return response.data
 }
+
+export type UserProfile = AppUser & {
+  updatedAt?: string | null
+}
+
+export type UpdateProfileRequest = {
+  fullName: string
+  email: string
+  phoneNumber: string
+}
+
+export async function getProfile(userId: string): Promise<UserProfile> {
+  const response = await api.get<UserProfile>(`/api/auth/profile/${userId}`)
+  return response.data
+}
+
+export async function updateProfile(
+  userId: string,
+  data: UpdateProfileRequest,
+): Promise<LoginResponse> {
+  const response = await api.put<LoginResponse>(
+    `/api/auth/profile/${userId}`,
+    data,
+  )
+  return response.data
+}
+
+export async function requestDeactivation(
+  userId: string,
+): Promise<LoginResponse> {
+  const response = await api.put<LoginResponse>(
+    `/api/auth/request-deactivation/${userId}`,
+  )
+  return response.data
+}

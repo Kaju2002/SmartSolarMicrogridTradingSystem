@@ -18,6 +18,7 @@ type AuthContextValue = {
   user: AuthUser | null
   isAuthenticated: boolean
   login: (token: string, user: AuthUser, keepLoggedIn: boolean) => void
+  updateUser: (patch: Partial<AuthUser>) => void
   logout: () => void
 }
 
@@ -64,6 +65,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [],
   )
 
+  const updateUser = useCallback((patch: Partial<AuthUser>) => {
+    setUser((prev) => {
+      if (!prev) return prev
+      const next = { ...prev, ...patch }
+      if (localStorage.getItem('user')) {
+        localStorage.setItem('user', JSON.stringify(next))
+      } else if (sessionStorage.getItem('user')) {
+        sessionStorage.setItem('user', JSON.stringify(next))
+      }
+      return next
+    })
+  }, [])
+
   const logout = useCallback(() => {
     clearStorage()
     setToken(null)
@@ -76,9 +90,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user,
       isAuthenticated: Boolean(token),
       login,
+      updateUser,
       logout,
     }),
-    [token, user, login, logout],
+    [token, user, login, updateUser, logout],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
