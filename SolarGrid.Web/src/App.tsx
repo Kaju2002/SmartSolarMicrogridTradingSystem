@@ -10,6 +10,8 @@ import BackofficeLayout from './layouts/BackofficeLayout'
 import DashboardPage from './pages/backoffice/DashboardPage'
 import PendingApprovalsPage from './pages/backoffice/PendingApprovalsPage'
 import StationsPage from './pages/backoffice/StationsPage'
+import CreateStationPage from './pages/backoffice/CreateStationPage'
+import EditStationPage from './pages/backoffice/EditStationPage'
 import ReservationsPage from './pages/backoffice/ReservationsPage'
 import CreateOperatorPage from './pages/backoffice/CreateOperatorPage'
 import ProfilePage from './pages/backoffice/ProfilePage'
@@ -30,6 +32,8 @@ function App() {
               <Route path="/backoffice" element={<BackofficeLayout />}>
                 <Route index element={<DashboardPage />} />
                 <Route path="pending" element={<PendingApprovalsPage />} />
+                <Route path="stations/new" element={<CreateStationPage />} />
+                <Route path="stations/:id/edit" element={<EditStationPage />} />
                 <Route path="stations" element={<StationsPage />} />
                 <Route path="reservations" element={<ReservationsPage />} />
                 <Route path="operators" element={<CreateOperatorPage />} />
