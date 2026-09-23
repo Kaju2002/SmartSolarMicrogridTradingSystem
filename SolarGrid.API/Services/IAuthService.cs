@@ -19,6 +19,8 @@ public interface IAuthService
     Task<LoginResponseDto> UpdateUserStatusAsync(UpdateUserStatusDto request);
     // Pending users
     Task<List<User>> GetPendingUsersAsync();
+    // List Grid Operators and Prosumers (optional role filter)
+    Task<List<User>> GetUsersAsync(string? userType = null);
     // Get profile
     Task<User?> GetProfileAsync(string userId);
     // Update profile

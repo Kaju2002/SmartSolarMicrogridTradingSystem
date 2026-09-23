@@ -164,7 +164,33 @@ public class AuthService : IAuthService
     public async Task<List<User>> GetPendingUsersAsync()
     {
         var filter = Builders<User>.Filter.Eq(u => u.Status, "PendingApproval");
-        return await _users.Find(filter).ToListAsync();
+        var users = await _users.Find(filter).ToListAsync();
+        foreach (var user in users)
+            user.PasswordHash = string.Empty;
+        return users;
+    }
+
+    // List Grid Operators and Prosumers for Backoffice Users page
+    public async Task<List<User>> GetUsersAsync(string? userType = null)
+    {
+        FilterDefinition<User> filter;
+
+        if (!string.IsNullOrWhiteSpace(userType))
+        {
+            filter = Builders<User>.Filter.Eq(u => u.UserType, userType);
+        }
+        else
+        {
+            filter = Builders<User>.Filter.In(
+                u => u.UserType,
+                new[] { "GridOperator", "Prosumer" }
+            );
+        }
+
+        var users = await _users.Find(filter).SortByDescending(u => u.CreatedAt).ToListAsync();
+        foreach (var user in users)
+            user.PasswordHash = string.Empty;
+        return users;
     }
 
     // Get one user profile by id
