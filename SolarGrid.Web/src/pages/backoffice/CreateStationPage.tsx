@@ -1,8 +1,9 @@
-import { useState, type FormEvent, type ReactNode } from 'react'
+import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { useAuth } from '../../context/AuthContext'
 import { createStation } from '../../api/stations'
+import { getUsers, type AppUser } from '../../api/users'
 import { AppTimePicker } from '../../components/AppTimePicker'
 
 function errorMessage(err: unknown, fallback: string) {
@@ -63,9 +64,17 @@ export default function CreateStationPage() {
     batterySlots: '',
     openTime: '06:00',
     closeTime: '18:00',
+    assignedOperatorId: '',
   })
+  const [operators, setOperators] = useState<AppUser[]>([])
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    void getUsers('GridOperator')
+      .then((list) => setOperators(list.filter((u) => u.status === 'Active')))
+      .catch(() => setOperators([]))
+  }, [])
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -113,6 +122,7 @@ export default function CreateStationPage() {
         openTime: form.openTime || '06:00',
         closeTime: form.closeTime || '18:00',
         createdBy: user.userId,
+        assignedOperatorId: form.assignedOperatorId || null,
       })
 
       if (!result.success) {
@@ -258,6 +268,27 @@ export default function CreateStationPage() {
                 onChange={(closeTime) => setForm((f) => ({ ...f, closeTime }))}
               />
             </div>
+
+            <Field label="Assigned Grid Operator">
+              <select
+                className={inputClass}
+                value={form.assignedOperatorId}
+                onChange={(e) =>
+                  setForm((f) => ({
+                    ...f,
+                    assignedOperatorId: e.target.value,
+                  }))
+                }
+              >
+                <option value="">Unassigned</option>
+                {operators.map((op) => (
+                  <option key={op.id} value={op.id}>
+                    {op.fullName}
+                    {op.username ? ` (${op.username})` : ''}
+                  </option>
+                ))}
+              </select>
+            </Field>
           </FormCard>
         </div>
 

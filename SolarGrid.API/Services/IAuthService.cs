@@ -13,8 +13,10 @@ public interface IAuthService
 {
     // Login
     Task<LoginResponseDto> LoginAsync(LoginRequestDto request);
-    // Register
+    // Public Prosumer self-register
     Task<LoginResponseDto> RegisterAsync(RegisterRequestDto request);
+    // Backoffice-only Grid Operator create
+    Task<LoginResponseDto> CreateGridOperatorAsync(RegisterRequestDto request);
     // Update status
     Task<LoginResponseDto> UpdateUserStatusAsync(UpdateUserStatusDto request);
     // Pending users

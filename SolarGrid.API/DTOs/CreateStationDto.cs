@@ -17,4 +17,6 @@ public class CreateStationDto
     public string CloseTime { get; set; } = "18:00";
     public string CreatedBy { get; set; } = string.Empty;
     // Backoffice user id
+    public string? AssignedOperatorId { get; set; }
+    // optional GridOperator user id
 }

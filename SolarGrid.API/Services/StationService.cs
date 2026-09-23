@@ -15,17 +15,29 @@ public class StationService : IStationService
 {
     private readonly IMongoCollection<SolarStationInfo> _stations;
     private readonly IMongoCollection<EnergyReservation> _reservations;
+    private readonly IMongoCollection<User> _users;
 
-    // Setup Stations and Reservations collections
+    // Setup Stations, Reservations and Users collections
     public StationService(MongoDbContext dbContext)
     {
         _stations = dbContext.Database.GetCollection<SolarStationInfo>("Stations");
         _reservations = dbContext.Database.GetCollection<EnergyReservation>("Reservations");
+        _users = dbContext.Database.GetCollection<User>("Users");
     }
 
     // Add new solar station
     public async Task<StationResponseDto> CreateStationAsync(CreateStationDto request)
     {
+        var operatorCheck = await ValidateOperatorAsync(request.AssignedOperatorId);
+        if (!operatorCheck.Ok)
+        {
+            return new StationResponseDto
+            {
+                Success = false,
+                Message = operatorCheck.Message
+            };
+        }
+
         var station = new SolarStationInfo
         {
             StationName = request.StationName,
@@ -37,6 +49,7 @@ public class StationService : IStationService
             OpenTime = request.OpenTime,
             CloseTime = request.CloseTime,
             CreatedBy = request.CreatedBy,
+            AssignedOperatorId = operatorCheck.OperatorId,
             Status = "Active",
             CreatedAt = DateTime.UtcNow
         };
@@ -58,7 +71,7 @@ public class StationService : IStationService
         return await _stations.Find(_ => true).ToListAsync();
     }
 
-    // Partial update for capacity, slots or open/close time
+    // Partial update for capacity, slots, hours or assigned operator
     public async Task<StationResponseDto> UpdateStationAsync(string stationId, UpdateStationDto request)
     {
         var filter = Builders<SolarStationInfo>.Filter.Eq(s => s.Id, stationId);
@@ -87,6 +100,23 @@ public class StationService : IStationService
         if (request.CloseTime is not null)
             updates.Add(Builders<SolarStationInfo>.Update.Set(s => s.CloseTime, request.CloseTime));
 
+        if (request.UpdateAssignedOperator)
+        {
+            var operatorCheck = await ValidateOperatorAsync(request.AssignedOperatorId);
+            if (!operatorCheck.Ok)
+            {
+                return new StationResponseDto
+                {
+                    Success = false,
+                    Message = operatorCheck.Message
+                };
+            }
+
+            updates.Add(Builders<SolarStationInfo>.Update.Set(
+                s => s.AssignedOperatorId,
+                operatorCheck.OperatorId));
+        }
+
         updates.Add(Builders<SolarStationInfo>.Update.Set(s => s.UpdatedAt, DateTime.UtcNow));
 
         await _stations.UpdateOneAsync(filter, Builders<SolarStationInfo>.Update.Combine(updates));
@@ -100,6 +130,33 @@ public class StationService : IStationService
             Latitude = station.Latitude,
             Longitude = station.Longitude
         };
+    }
+
+    // Ensure assigned user is an Active Grid Operator (or clear)
+    private async Task<(bool Ok, string Message, string? OperatorId)> ValidateOperatorAsync(string? operatorId)
+    {
+        if (string.IsNullOrWhiteSpace(operatorId))
+        {
+            return (true, string.Empty, null);
+        }
+
+        var user = await _users.Find(u => u.Id == operatorId).FirstOrDefaultAsync();
+        if (user is null)
+        {
+            return (false, "Assigned operator not found", null);
+        }
+
+        if (!string.Equals(user.UserType, "GridOperator", StringComparison.OrdinalIgnoreCase))
+        {
+            return (false, "Assigned user must be a Grid Operator", null);
+        }
+
+        if (!string.Equals(user.Status, "Active", StringComparison.OrdinalIgnoreCase))
+        {
+            return (false, "Assigned Grid Operator must be Active", null);
+        }
+
+        return (true, string.Empty, user.Id);
     }
 
     // Deactivate only if no pending/approved bookings
