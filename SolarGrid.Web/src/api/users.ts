@@ -1,7 +1,7 @@
 import api from './client'
 import type { LoginResponse } from './auth'
 
-export type PendingUser = {
+export type AppUser = {
   id: string
   userType: string
   nic?: string | null
@@ -13,13 +13,23 @@ export type PendingUser = {
   createdAt: string
 }
 
+/** @deprecated use AppUser — kept for PendingApprovalsPage */
+export type PendingUser = AppUser
+
 export type UpdateUserStatusRequest = {
   userId: string
   newStatus: 'Active' | 'Deactivated'
 }
 
-export async function getPendingUsers(): Promise<PendingUser[]> {
-  const response = await api.get<PendingUser[]>('/api/auth/pending-users')
+export async function getPendingUsers(): Promise<AppUser[]> {
+  const response = await api.get<AppUser[]>('/api/auth/pending-users')
+  return response.data
+}
+
+export async function getUsers(userType?: string): Promise<AppUser[]> {
+  const response = await api.get<AppUser[]>('/api/auth/users', {
+    params: userType ? { userType } : undefined,
+  })
   return response.data
 }
 

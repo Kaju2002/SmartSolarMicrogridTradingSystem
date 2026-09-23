@@ -70,6 +70,14 @@ public class AuthController : ControllerBase
         return Ok(users);
     }
 
+    // GET Grid Operators and Prosumers (optional ?userType=)
+    [HttpGet("users")]
+    public async Task<IActionResult> GetUsers([FromQuery] string? userType = null)
+    {
+        var users = await _authService.GetUsersAsync(userType);
+        return Ok(users);
+    }
+
     // GET profile by user id
     [HttpGet("profile/{userId}")]
     public async Task<IActionResult> GetProfile(string userId)

@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext'
 const navItems = [
   { to: '/backoffice', label: 'Dashboard', end: true, icon: 'grid' },
   { to: '/backoffice/pending', label: 'Pending Approvals', end: false, icon: 'users' },
+  { to: '/backoffice/users', label: 'Users', end: false, icon: 'list' },
   { to: '/backoffice/stations', label: 'Stations', end: false, icon: 'station' },
   { to: '/backoffice/reservations', label: 'Reservations', end: false, icon: 'book' },
   { to: '/backoffice/operators', label: 'Create Grid Operator', end: false, icon: 'badge' },
@@ -57,6 +58,12 @@ function NavIcon({ name }: { name: string }) {
       return (
         <svg {...common}>
           <path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7-6.3-4.6L5.7 21l2.3-7-6-4.6h7.6L12 2z" />
+        </svg>
+      )
+    case 'list':
+      return (
+        <svg {...common}>
+          <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
         </svg>
       )
     default:

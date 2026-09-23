@@ -9,6 +9,7 @@ import Unauthorized from './pages/Unauthorized'
 import BackofficeLayout from './layouts/BackofficeLayout'
 import DashboardPage from './pages/backoffice/DashboardPage'
 import PendingApprovalsPage from './pages/backoffice/PendingApprovalsPage'
+import UsersPage from './pages/backoffice/UsersPage'
 import StationsPage from './pages/backoffice/StationsPage'
 import CreateStationPage from './pages/backoffice/CreateStationPage'
 import EditStationPage from './pages/backoffice/EditStationPage'
@@ -32,6 +33,7 @@ function App() {
               <Route path="/backoffice" element={<BackofficeLayout />}>
                 <Route index element={<DashboardPage />} />
                 <Route path="pending" element={<PendingApprovalsPage />} />
+                <Route path="users" element={<UsersPage />} />
                 <Route path="stations/new" element={<CreateStationPage />} />
                 <Route path="stations/:id/edit" element={<EditStationPage />} />
                 <Route path="stations" element={<StationsPage />} />
