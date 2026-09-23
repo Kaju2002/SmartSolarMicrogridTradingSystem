@@ -4,9 +4,9 @@ import ProtectedRoute from './components/ProtectedRoute'
 import RoleRoute from './components/RoleRoute'
 import Login from './pages/Login'
 import RoleHomeRedirect from './pages/RoleHomeRedirect'
-import OperatorHome from './pages/OperatorHome'
 import Unauthorized from './pages/Unauthorized'
 import BackofficeLayout from './layouts/BackofficeLayout'
+import OperatorLayout from './layouts/OperatorLayout'
 import DashboardPage from './pages/backoffice/DashboardPage'
 import PendingApprovalsPage from './pages/backoffice/PendingApprovalsPage'
 import UsersPage from './pages/backoffice/UsersPage'
@@ -16,6 +16,11 @@ import EditStationPage from './pages/backoffice/EditStationPage'
 import ReservationsPage from './pages/backoffice/ReservationsPage'
 import CreateOperatorPage from './pages/backoffice/CreateOperatorPage'
 import ProfilePage from './pages/backoffice/ProfilePage'
+import OperatorDashboardPage from './pages/operator/DashboardPage'
+import OperatorStationsPage from './pages/operator/StationsPage'
+import OperatorReservationsPage from './pages/operator/ReservationsPage'
+import OperatorVerifyQrPage from './pages/operator/VerifyQrPage'
+import OperatorProfilePage from './pages/operator/ProfilePage'
 import { ROLES } from './utils/roles'
 
 function App() {
@@ -44,7 +49,13 @@ function App() {
             </Route>
 
             <Route element={<RoleRoute allowed={[ROLES.GridOperator]} />}>
-              <Route path="/operator" element={<OperatorHome />} />
+              <Route path="/operator" element={<OperatorLayout />}>
+                <Route index element={<OperatorDashboardPage />} />
+                <Route path="stations" element={<OperatorStationsPage />} />
+                <Route path="reservations" element={<OperatorReservationsPage />} />
+                <Route path="verify" element={<OperatorVerifyQrPage />} />
+                <Route path="profile" element={<OperatorProfilePage />} />
+              </Route>
             </Route>
           </Route>
 
