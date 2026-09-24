@@ -1,11 +1,5 @@
-import OperatorPlaceholder from './OperatorPlaceholder'
+import ProfilePageContent from '../shared/ProfilePageContent'
 
 export default function OperatorProfilePage() {
-  return (
-    <OperatorPlaceholder
-      title="Profile"
-      subtitle="Your Grid Operator account."
-      nextStep="Step 6 — reuse the profile load/edit API already used in Backoffice."
-    />
-  )
+  return <ProfilePageContent homePath="/operator" homeLabel="Operator" />
 }
