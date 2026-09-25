@@ -1,3 +1,7 @@
+/*
+ * File: Theme.kt
+ * Description: Material3 app theme
+ */
 package com.solargrid.prosumer.ui.theme
 
 import android.app.Activity

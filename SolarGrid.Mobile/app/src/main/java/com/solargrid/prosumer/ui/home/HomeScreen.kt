@@ -1,3 +1,7 @@
+/*
+ * File: HomeScreen.kt
+ * Description: Post-login home placeholder
+ */
 package com.solargrid.prosumer.ui.home
 
 import androidx.compose.foundation.layout.Arrangement
@@ -59,7 +63,6 @@ fun HomeScreen(
         ) {
             Text(stringResource(R.string.sign_out))
         }
-        // Keep a primary button slot for later home actions
         Spacer(Modifier.height(8.dp))
         Button(
             onClick = { /* stations next */ },

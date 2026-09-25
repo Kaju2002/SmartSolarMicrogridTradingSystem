@@ -1,3 +1,7 @@
+/*
+ * File: RetrofitClient.kt
+ * Description: OkHttp/Retrofit client with JWT interceptor
+ */
 package com.solargrid.prosumer.data.api
 
 import com.solargrid.prosumer.data.SessionStore

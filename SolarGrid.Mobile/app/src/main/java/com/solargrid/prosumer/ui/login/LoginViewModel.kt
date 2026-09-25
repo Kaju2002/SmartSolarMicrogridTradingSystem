@@ -1,3 +1,7 @@
+/*
+ * File: LoginViewModel.kt
+ * Description: Login form state and submit logic
+ */
 package com.solargrid.prosumer.ui.login
 
 import androidx.lifecycle.ViewModel

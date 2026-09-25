@@ -1,3 +1,7 @@
+/*
+ * File: Type.kt
+ * Description: Typography styles
+ */
 package com.solargrid.prosumer.ui.theme
 
 import androidx.compose.material3.Typography

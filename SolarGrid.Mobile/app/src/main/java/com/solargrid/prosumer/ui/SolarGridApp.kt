@@ -1,5 +1,10 @@
+/*
+ * File: SolarGridApp.kt
+ * Description: Root navigation (login, register, home)
+ */
 package com.solargrid.prosumer.ui
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -20,9 +25,12 @@ import com.solargrid.prosumer.data.api.RetrofitClient
 import com.solargrid.prosumer.ui.home.HomeScreen
 import com.solargrid.prosumer.ui.login.LoginScreen
 import com.solargrid.prosumer.ui.login.LoginViewModel
+import com.solargrid.prosumer.ui.register.RegisterScreen
+import com.solargrid.prosumer.ui.register.RegisterViewModel
 
 private object Routes {
     const val LOGIN = "login"
+    const val REGISTER = "register"
     const val HOME = "home"
 }
 
@@ -59,6 +67,28 @@ fun SolarGridApp() {
                         navController.navigate(Routes.HOME) {
                             popUpTo(Routes.LOGIN) { inclusive = true }
                         }
+                    },
+                    onCreateAccount = {
+                        navController.navigate(Routes.REGISTER)
+                    },
+                )
+            }
+            composable(Routes.REGISTER) {
+                val registerViewModel: RegisterViewModel = viewModel(
+                    factory = RegisterViewModel.factory(authRepository),
+                )
+                RegisterScreen(
+                    viewModel = registerViewModel,
+                    onRegistered = {
+                        Toast.makeText(
+                            context,
+                            "Registered. Wait for operator approval, then sign in.",
+                            Toast.LENGTH_LONG,
+                        ).show()
+                        navController.popBackStack(Routes.LOGIN, inclusive = false)
+                    },
+                    onBackToLogin = {
+                        navController.popBackStack()
                     },
                 )
             }
