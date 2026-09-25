@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Solar Grid</string>
+    <string name="login_title">Sign in</string>
+    <string name="login_subtitle">Prosumer energy booking</string>
+    <string name="identifier_label">NIC or username</string>
+    <string name="password_label">Password</string>
+    <string name="sign_in">Sign in</string>
+    <string name="signing_in">Signing in…</string>
+    <string name="home_welcome">Welcome</string>
+    <string name="sign_out">Sign out</string>
+</resources>

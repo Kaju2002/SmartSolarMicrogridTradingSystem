@@ -44,7 +44,22 @@ pnpm-debug.log*
 .env.*
 !.env.example
 
-## Flutter / mobile (later SolarGrid.Mobile)
+## Android / IntelliJ (SolarGrid.Mobile)
+*.iml
+.gradle/
+.idea/
+**/local.properties
+**/captures/
+**/.externalNativeBuild/
+**/.cxx/
+*.apk
+*.aab
+*.ap_
+*.dex
+*.keystore
+*.jks
+
+## Flutter (if a Flutter module is added later)
 .dart_tool/
 .flutter-plugins
 .flutter-plugins-dependencies
@@ -52,5 +67,3 @@ pnpm-debug.log*
 .pub-cache/
 .pub/
 **/ios/Pods/
-**/android/.gradle/
-**/android/local.properties
