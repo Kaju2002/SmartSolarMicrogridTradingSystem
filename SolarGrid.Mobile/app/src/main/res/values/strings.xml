@@ -6,6 +6,18 @@
     <string name="password_label">Password</string>
     <string name="sign_in">Sign in</string>
     <string name="signing_in">Signing in…</string>
+    <string name="create_account_link">Create a Prosumer account</string>
+    <string name="register_title">Create account</string>
+    <string name="register_subtitle">Prosumer registration — pending operator approval</string>
+    <string name="full_name_label">Full name</string>
+    <string name="nic_label">NIC</string>
+    <string name="email_label">Email</string>
+    <string name="phone_label">Phone number</string>
+    <string name="confirm_password_label">Confirm password</string>
+    <string name="create_account">Create account</string>
+    <string name="have_account_sign_in">Already have an account? Sign in</string>
+    <string name="register_pending_hint">After register, wait for operator approval before login</string>
+    <string name="back">Back</string>
     <string name="home_welcome">Welcome</string>
     <string name="sign_out">Sign out</string>
 </resources>

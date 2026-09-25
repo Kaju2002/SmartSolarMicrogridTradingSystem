@@ -1,8 +1,13 @@
+/*
+ * File: AuthRepository.kt
+ * Description: Auth API calls and session save/clear
+ */
 package com.solargrid.prosumer.data
 
 import com.solargrid.prosumer.data.api.AuthApi
 import com.solargrid.prosumer.data.api.LoginRequest
 import com.solargrid.prosumer.data.api.LoginResponse
+import com.solargrid.prosumer.data.api.RegisterRequest
 import java.io.IOException
 
 class AuthRepository(
@@ -42,6 +47,53 @@ class AuthRepository(
                 fullName = body.fullName,
                 userType = body.userType,
             )
+            Result.success(body)
+        } catch (_: IOException) {
+            Result.failure(
+                Exception("Network error. Is the API running? Emulator uses http://10.0.2.2:5204"),
+            )
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /** Public Prosumer register — PendingApproval, no JWT yet. */
+    suspend fun register(
+        fullName: String,
+        nic: String,
+        email: String,
+        phoneNumber: String,
+        password: String,
+    ): Result<LoginResponse> {
+        return try {
+            val http = api.register(
+                RegisterRequest(
+                    userType = "Prosumer",
+                    nic = nic.trim(),
+                    username = null,
+                    password = password,
+                    fullName = fullName.trim(),
+                    email = email.trim(),
+                    phoneNumber = phoneNumber.trim(),
+                ),
+            )
+            val body = http.body()
+
+            if (!http.isSuccessful) {
+                val msg = body?.message?.takeIf { it.isNotBlank() }
+                    ?: when (http.code()) {
+                        409 -> "Username or NIC already exists"
+                        else -> "Server error (${http.code()})"
+                    }
+                return Result.failure(Exception(msg))
+            }
+
+            if (body == null || !body.success) {
+                return Result.failure(
+                    Exception(body?.message?.ifBlank { null } ?: "Registration failed"),
+                )
+            }
+
             Result.success(body)
         } catch (_: IOException) {
             Result.failure(

@@ -1,3 +1,7 @@
+/*
+ * File: MainActivity.kt
+ * Description: App entry activity and Compose host
+ */
 package com.solargrid.prosumer
 
 import android.os.Bundle

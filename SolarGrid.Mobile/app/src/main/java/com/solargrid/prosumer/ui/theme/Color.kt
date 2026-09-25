@@ -1,3 +1,7 @@
+/*
+ * File: Color.kt
+ * Description: App color tokens
+ */
 package com.solargrid.prosumer.ui.theme
 
 import androidx.compose.ui.graphics.Color

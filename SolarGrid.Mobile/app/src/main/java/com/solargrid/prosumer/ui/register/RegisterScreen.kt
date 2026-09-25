@@ -1,8 +1,8 @@
 /*
- * File: LoginScreen.kt
- * Description: Prosumer login form UI
+ * File: RegisterScreen.kt
+ * Description: Prosumer registration form UI
  */
-package com.solargrid.prosumer.ui.login
+package com.solargrid.prosumer.ui.register
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,6 +16,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
@@ -43,44 +44,54 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.solargrid.prosumer.R
 
 @Composable
-fun LoginScreen(
-    viewModel: LoginViewModel,
-    onLoggedIn: () -> Unit,
-    onCreateAccount: () -> Unit,
+fun RegisterScreen(
+    viewModel: RegisterViewModel,
+    onRegistered: () -> Unit,
+    onBackToLogin: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val focusManager = LocalFocusManager.current
 
-    LaunchedEffect(state.loggedIn) {
-        if (state.loggedIn) onLoggedIn()
+    LaunchedEffect(state.registered) {
+        if (state.registered) onRegistered()
     }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 24.dp, vertical = 32.dp),
-        verticalArrangement = Arrangement.Center,
+            .padding(horizontal = 24.dp, vertical = 16.dp),
     ) {
+        IconButton(
+            onClick = onBackToLogin,
+            enabled = !state.loading,
+            modifier = Modifier.align(Alignment.Start),
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = stringResource(R.string.back),
+            )
+        }
+
         Text(
-            text = stringResource(R.string.login_title),
+            text = stringResource(R.string.register_title),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.SemiBold,
         )
         Spacer(Modifier.height(6.dp))
         Text(
-            text = stringResource(R.string.login_subtitle),
+            text = stringResource(R.string.register_subtitle),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
-        Spacer(Modifier.height(28.dp))
+        Spacer(Modifier.height(20.dp))
 
         OutlinedTextField(
-            value = state.identifier,
-            onValueChange = viewModel::onIdentifierChange,
+            value = state.fullName,
+            onValueChange = viewModel::onFullNameChange,
             modifier = Modifier.fillMaxWidth(),
-            label = { Text(stringResource(R.string.identifier_label)) },
+            label = { Text(stringResource(R.string.full_name_label)) },
             singleLine = true,
             enabled = !state.loading,
             keyboardOptions = KeyboardOptions(
@@ -88,8 +99,49 @@ fun LoginScreen(
                 imeAction = ImeAction.Next,
             ),
         )
+        Spacer(Modifier.height(12.dp))
 
-        Spacer(Modifier.height(14.dp))
+        OutlinedTextField(
+            value = state.nic,
+            onValueChange = viewModel::onNicChange,
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text(stringResource(R.string.nic_label)) },
+            singleLine = true,
+            enabled = !state.loading,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next,
+            ),
+        )
+        Spacer(Modifier.height(12.dp))
+
+        OutlinedTextField(
+            value = state.email,
+            onValueChange = viewModel::onEmailChange,
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text(stringResource(R.string.email_label)) },
+            singleLine = true,
+            enabled = !state.loading,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Next,
+            ),
+        )
+        Spacer(Modifier.height(12.dp))
+
+        OutlinedTextField(
+            value = state.phoneNumber,
+            onValueChange = viewModel::onPhoneChange,
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text(stringResource(R.string.phone_label)) },
+            singleLine = true,
+            enabled = !state.loading,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Phone,
+                imeAction = ImeAction.Next,
+            ),
+        )
+        Spacer(Modifier.height(12.dp))
 
         OutlinedTextField(
             value = state.password,
@@ -117,12 +169,31 @@ fun LoginScreen(
             },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Next,
+            ),
+        )
+        Spacer(Modifier.height(12.dp))
+
+        OutlinedTextField(
+            value = state.confirmPassword,
+            onValueChange = viewModel::onConfirmPasswordChange,
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text(stringResource(R.string.confirm_password_label)) },
+            singleLine = true,
+            enabled = !state.loading,
+            visualTransformation = if (state.passwordVisible) {
+                VisualTransformation.None
+            } else {
+                PasswordVisualTransformation()
+            },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
                 imeAction = ImeAction.Done,
             ),
             keyboardActions = KeyboardActions(
                 onDone = {
                     focusManager.clearFocus()
-                    viewModel.login()
+                    viewModel.register()
                 },
             ),
         )
@@ -141,7 +212,7 @@ fun LoginScreen(
         Button(
             onClick = {
                 focusManager.clearFocus()
-                viewModel.login()
+                viewModel.register()
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -155,22 +226,22 @@ fun LoginScreen(
                     color = MaterialTheme.colorScheme.onPrimary,
                 )
             } else {
-                Text(stringResource(R.string.sign_in))
+                Text(stringResource(R.string.create_account))
             }
         }
 
         Spacer(Modifier.height(8.dp))
         TextButton(
-            onClick = onCreateAccount,
+            onClick = onBackToLogin,
             enabled = !state.loading,
             modifier = Modifier.align(Alignment.CenterHorizontally),
         ) {
-            Text(stringResource(R.string.create_account_link))
+            Text(stringResource(R.string.have_account_sign_in))
         }
 
         Spacer(Modifier.height(8.dp))
         Text(
-            text = "API: emulator → 10.0.2.2:5204",
+            text = stringResource(R.string.register_pending_hint),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.align(Alignment.CenterHorizontally),

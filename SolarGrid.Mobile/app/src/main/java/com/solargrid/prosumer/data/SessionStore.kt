@@ -1,8 +1,11 @@
+/*
+ * File: SessionStore.kt
+ * Description: SharedPreferences JWT session storage
+ */
 package com.solargrid.prosumer.data
 
 import android.content.Context
 
-/** Persists JWT session for Prosumer app. */
 class SessionStore(context: Context) {
     private val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
 
