@@ -91,8 +91,7 @@ fun SolarGridApp() {
             }
             composable(Routes.MAIN) {
                 MainShell(
-                    fullName = sessionStore.fullName,
-                    userType = sessionStore.userType,
+                    sessionStore = sessionStore,
                     onSignOut = {
                         authRepository.logout()
                         startDestination = Routes.LOGIN
