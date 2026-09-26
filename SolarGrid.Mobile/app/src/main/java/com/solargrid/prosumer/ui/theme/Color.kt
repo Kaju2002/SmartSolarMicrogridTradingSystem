@@ -10,11 +10,12 @@ import androidx.compose.ui.graphics.Color
 val PrimaryBlue = Color(0xFF4D7CFF)
 val PrimaryBlueDark = Color(0xFF3A63D9)
 
-// Login design accents
-val AccentGold = Color(0xFFF0C419)
+// Login design accents (#FFCC00 sun yellow)
+val AccentGold = Color(0xFFFFCC00)
 val FieldBorder = Color(0xFFD5D5D5)
 val FieldHint = Color(0xFF9A9A9A)
-val SignInButtonEnabled = Color(0xFF1A1A1A)
+val SignInButtonEnabled = AccentGold
+val SignInButtonText = Color(0xFF111111)
 val SignInButtonDisabled = Color(0xFFE8E8E8)
 val SignInButtonDisabledText = Color(0xFF9A9A9A)
 

@@ -7,22 +7,15 @@ package com.solargrid.prosumer.ui.login
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -34,11 +27,9 @@ import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -46,11 +37,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Outline
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -65,49 +52,21 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.solargrid.prosumer.R
+import com.solargrid.prosumer.ui.auth.AuthOrDivider
+import com.solargrid.prosumer.ui.auth.AuthPillShape
+import com.solargrid.prosumer.ui.auth.AuthSocialRow
+import com.solargrid.prosumer.ui.auth.WavyBottomShape
+import com.solargrid.prosumer.ui.auth.authFieldColors
 import com.solargrid.prosumer.ui.theme.AccentGold
-import com.solargrid.prosumer.ui.theme.FieldBorder
 import com.solargrid.prosumer.ui.theme.FieldHint
 import com.solargrid.prosumer.ui.theme.SignInButtonDisabled
 import com.solargrid.prosumer.ui.theme.SignInButtonDisabledText
 import com.solargrid.prosumer.ui.theme.SignInButtonEnabled
-
-private val PillShape = RoundedCornerShape(50)
-
-/** Wavy bottom edge matching the Sign In mockup. */
-private class WavyBottomShape : Shape {
-    override fun createOutline(
-        size: Size,
-        layoutDirection: LayoutDirection,
-        density: Density,
-    ): Outline {
-        val w = size.width
-        val h = size.height
-        val path = Path().apply {
-            moveTo(0f, 0f)
-            lineTo(w, 0f)
-            lineTo(w, h * 0.78f)
-            cubicTo(
-                w * 0.85f, h * 0.95f,
-                w * 0.55f, h * 1.02f,
-                w * 0.38f, h * 0.88f,
-            )
-            cubicTo(
-                w * 0.22f, h * 0.74f,
-                w * 0.08f, h * 0.82f,
-                0f, h * 0.92f,
-            )
-            close()
-        }
-        return Outline.Generic(path)
-    }
-}
+import com.solargrid.prosumer.ui.theme.SignInButtonText
 
 @Composable
 fun LoginScreen(
@@ -187,8 +146,8 @@ fun LoginScreen(
                 },
                 singleLine = true,
                 enabled = !state.loading,
-                shape = PillShape,
-                colors = loginFieldColors(),
+                shape = AuthPillShape,
+                colors = authFieldColors(),
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.Next,
@@ -236,8 +195,8 @@ fun LoginScreen(
                 },
                 singleLine = true,
                 enabled = !state.loading,
-                shape = PillShape,
-                colors = loginFieldColors(),
+                shape = AuthPillShape,
+                colors = authFieldColors(),
                 visualTransformation = if (state.passwordVisible) {
                     VisualTransformation.None
                 } else {
@@ -287,10 +246,10 @@ fun LoginScreen(
                     .fillMaxWidth()
                     .height(54.dp),
                 enabled = canSubmit,
-                shape = PillShape,
+                shape = AuthPillShape,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = SignInButtonEnabled,
-                    contentColor = Color.White,
+                    contentColor = SignInButtonText,
                     disabledContainerColor = SignInButtonDisabled,
                     disabledContentColor = SignInButtonDisabledText,
                 ),
@@ -299,7 +258,7 @@ fun LoginScreen(
                     CircularProgressIndicator(
                         modifier = Modifier.size(22.dp),
                         strokeWidth = 2.dp,
-                        color = Color.White,
+                        color = SignInButtonText,
                     )
                 } else {
                     Text(
@@ -311,32 +270,9 @@ fun LoginScreen(
             }
 
             Spacer(Modifier.height(22.dp))
-            OrDivider()
+            AuthOrDivider()
             Spacer(Modifier.height(18.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                SocialCircleButton(
-                    iconRes = R.drawable.ic_google,
-                    contentDescription = "Google",
-                    onClick = { comingSoon() },
-                )
-                Spacer(Modifier.width(20.dp))
-                SocialCircleButton(
-                    iconRes = R.drawable.ic_microsoft,
-                    contentDescription = "Microsoft",
-                    onClick = { comingSoon() },
-                )
-                Spacer(Modifier.width(20.dp))
-                SocialCircleButton(
-                    iconRes = R.drawable.ic_apple,
-                    contentDescription = "Apple",
-                    onClick = { comingSoon() },
-                )
-            }
+            AuthSocialRow(onComingSoon = ::comingSoon)
 
             Spacer(Modifier.height(28.dp))
             Text(
@@ -361,64 +297,5 @@ fun LoginScreen(
                     .padding(8.dp),
             )
         }
-    }
-}
-
-@Composable
-private fun loginFieldColors() = OutlinedTextFieldDefaults.colors(
-    focusedBorderColor = AccentGold,
-    unfocusedBorderColor = FieldBorder,
-    disabledBorderColor = FieldBorder,
-    focusedContainerColor = Color.White,
-    unfocusedContainerColor = Color.White,
-    disabledContainerColor = Color.White,
-    cursorColor = SignInButtonEnabled,
-    focusedTextColor = Color(0xFF111111),
-    unfocusedTextColor = Color(0xFF111111),
-)
-
-@Composable
-private fun OrDivider() {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        HorizontalDivider(
-            modifier = Modifier.weight(1f),
-            color = FieldBorder,
-        )
-        Text(
-            text = stringResource(R.string.or_divider),
-            color = FieldHint,
-            fontSize = 13.sp,
-            modifier = Modifier.padding(horizontal = 12.dp),
-        )
-        HorizontalDivider(
-            modifier = Modifier.weight(1f),
-            color = FieldBorder,
-        )
-    }
-}
-
-@Composable
-private fun SocialCircleButton(
-    iconRes: Int,
-    contentDescription: String,
-    onClick: () -> Unit,
-) {
-    Box(
-        modifier = Modifier
-            .size(52.dp)
-            .clip(CircleShape)
-            .border(1.dp, FieldBorder, CircleShape)
-            .background(Color.White)
-            .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center,
-    ) {
-        Image(
-            painter = painterResource(iconRes),
-            contentDescription = contentDescription,
-            modifier = Modifier.size(24.dp),
-        )
     }
 }

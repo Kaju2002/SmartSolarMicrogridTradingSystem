@@ -20,7 +20,6 @@ data class RegisterUiState(
     val email: String = "",
     val phoneNumber: String = "",
     val password: String = "",
-    val confirmPassword: String = "",
     val passwordVisible: Boolean = false,
     val loading: Boolean = false,
     val error: String? = null,
@@ -55,10 +54,6 @@ class RegisterViewModel(
         _uiState.update { it.copy(password = value, error = null) }
     }
 
-    fun onConfirmPasswordChange(value: String) {
-        _uiState.update { it.copy(confirmPassword = value, error = null) }
-    }
-
     fun togglePasswordVisible() {
         _uiState.update { it.copy(passwordVisible = !it.passwordVisible) }
     }
@@ -74,20 +69,16 @@ class RegisterViewModel(
                 _uiState.update { it.copy(error = "Enter your NIC.") }
                 return
             }
-            state.email.isBlank() -> {
-                _uiState.update { it.copy(error = "Enter your email.") }
-                return
-            }
             state.phoneNumber.isBlank() -> {
                 _uiState.update { it.copy(error = "Enter your phone number.") }
                 return
             }
-            state.password.length < 6 -> {
-                _uiState.update { it.copy(error = "Password must be at least 6 characters.") }
+            state.email.isBlank() -> {
+                _uiState.update { it.copy(error = "Enter your email.") }
                 return
             }
-            state.password != state.confirmPassword -> {
-                _uiState.update { it.copy(error = "Passwords do not match.") }
+            state.password.length < 6 -> {
+                _uiState.update { it.copy(error = "Password must be at least 6 characters.") }
                 return
             }
         }
