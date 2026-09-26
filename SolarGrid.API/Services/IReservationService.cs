@@ -11,12 +11,14 @@ namespace SolarGrid.API.Services;
 
 public interface IReservationService
 {
+    // NIC for a Prosumer user id; null for staff
+    Task<string?> GetProsumerNicAsync(string userId);
     // Create booking
     Task<ReservationResponseDto> CreateReservationAsync(CreateReservationDto request);
-    // Update booking
-    Task<ReservationResponseDto> UpdateReservationAsync(string reservationId, UpdateReservationDto request);
-    // Cancel booking
-    Task<ReservationResponseDto> CancelReservationAsync(string reservationId);
+    // Update booking; ownerNic null skips ownership check (staff)
+    Task<ReservationResponseDto> UpdateReservationAsync(string reservationId, UpdateReservationDto request, string? ownerNic);
+    // Cancel booking; ownerNic null skips ownership check (staff)
+    Task<ReservationResponseDto> CancelReservationAsync(string reservationId, string? ownerNic);
     // List all
     Task<List<EnergyReservation>> GetAllReservationsAsync();
     // List by NIC

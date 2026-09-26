@@ -15,19 +15,46 @@ public class ReservationService : IReservationService
 {
     private readonly IMongoCollection<EnergyReservation> _reservations;
     private readonly IMongoCollection<EnergyBookingSlot> _bookingSlots;
+    private readonly IMongoCollection<User> _users;
 
-    // Setup Reservations and EnergyBookingSlots collections
+    // Setup Reservations, EnergyBookingSlots and Users collections
     public ReservationService(MongoDbContext dbContext)
     {
         _reservations = dbContext.Database.GetCollection<EnergyReservation>("Reservations");
         _bookingSlots = dbContext.Database.GetCollection<EnergyBookingSlot>("EnergyBookingSlots");
+        _users = dbContext.Database.GetCollection<User>("Users");
     }
+
+    // NIC of a Prosumer account, or null for staff / unknown users
+    public async Task<string?> GetProsumerNicAsync(string userId)
+    {
+        var user = await _users.Find(u => u.Id == userId).FirstOrDefaultAsync();
+        if (user is null || user.UserType != "Prosumer")
+            return null;
+
+        return string.IsNullOrWhiteSpace(user.Nic) ? null : user.Nic.Trim();
+    }
+
+    // Future and no more than 7 days ahead
+    private static bool IsWithinBookingWindow(DateTime slotUtc)
+    {
+        var daysDifference = (slotUtc - DateTime.UtcNow).TotalDays;
+        return daysDifference >= 0 && daysDifference <= 7;
+    }
+
+    // Only live bookings can be changed or cancelled
+    private static bool IsChangeable(EnergyReservation reservation) =>
+        reservation.Status == "Pending" || reservation.Status == "Approved";
+
+    // ownerNic null = staff caller, no ownership check
+    private static bool IsOwnedBy(EnergyReservation reservation, string? ownerNic) =>
+        ownerNic is null ||
+        string.Equals(reservation.ProsumerNic.Trim(), ownerNic.Trim(), StringComparison.OrdinalIgnoreCase);
 
     // Create booking with 7-day rule and prevent double booking
     public async Task<ReservationResponseDto> CreateReservationAsync(CreateReservationDto request)
     {
-        var daysDifference = (request.ReservationDateTime - DateTime.UtcNow).TotalDays;
-        if (daysDifference < 0 || daysDifference > 7)
+        if (!IsWithinBookingWindow(request.ReservationDateTime))
         {
             return new ReservationResponseDto
             {
@@ -88,17 +115,30 @@ public class ReservationService : IReservationService
     }
 
     // Change slot time if more than 12 hours left
-    public async Task<ReservationResponseDto> UpdateReservationAsync(string reservationId, UpdateReservationDto request)
+    public async Task<ReservationResponseDto> UpdateReservationAsync(
+        string reservationId,
+        UpdateReservationDto request,
+        string? ownerNic)
     {
         var filter = Builders<EnergyReservation>.Filter.Eq(r => r.Id, reservationId);
         var existingReservation = await _reservations.Find(filter).FirstOrDefaultAsync();
 
-        if (existingReservation is null)
+        // Someone else's booking looks the same as a missing one
+        if (existingReservation is null || !IsOwnedBy(existingReservation, ownerNic))
         {
             return new ReservationResponseDto
             {
                 Success = false,
                 Message = "Reservation not found"
+            };
+        }
+
+        if (!IsChangeable(existingReservation))
+        {
+            return new ReservationResponseDto
+            {
+                Success = false,
+                Message = $"{existingReservation.Status} bookings cannot be changed"
             };
         }
 
@@ -109,6 +149,15 @@ public class ReservationService : IReservationService
             {
                 Success = false,
                 Message = "Cannot update within 12 hours of reservation"
+            };
+        }
+
+        if (!IsWithinBookingWindow(request.NewReservationDateTime))
+        {
+            return new ReservationResponseDto
+            {
+                Success = false,
+                Message = "New time must be within the next 7 days"
             };
         }
 
@@ -158,17 +207,27 @@ public class ReservationService : IReservationService
     }
 
     // Cancel booking and free the linked slot
-    public async Task<ReservationResponseDto> CancelReservationAsync(string reservationId)
+    public async Task<ReservationResponseDto> CancelReservationAsync(string reservationId, string? ownerNic)
     {
         var filter = Builders<EnergyReservation>.Filter.Eq(r => r.Id, reservationId);
         var existingReservation = await _reservations.Find(filter).FirstOrDefaultAsync();
 
-        if (existingReservation is null)
+        // Someone else's booking looks the same as a missing one
+        if (existingReservation is null || !IsOwnedBy(existingReservation, ownerNic))
         {
             return new ReservationResponseDto
             {
                 Success = false,
                 Message = "Reservation not found"
+            };
+        }
+
+        if (!IsChangeable(existingReservation))
+        {
+            return new ReservationResponseDto
+            {
+                Success = false,
+                Message = $"{existingReservation.Status} bookings cannot be cancelled"
             };
         }
 
