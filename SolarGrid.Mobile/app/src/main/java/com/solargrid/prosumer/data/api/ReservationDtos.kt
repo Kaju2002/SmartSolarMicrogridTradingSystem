@@ -1,6 +1,6 @@
 /*
  * File: ReservationDtos.kt
- * Description: Create reservation request/response models
+ * Description: Reservation create/list API models
  */
 package com.solargrid.prosumer.data.api
 
@@ -20,4 +20,17 @@ data class ReservationResponse(
     @SerializedName("status") val status: String? = null,
     @SerializedName("reservationDateTime") val reservationDateTime: String? = null,
     @SerializedName("qrCode") val qrCode: String? = null,
+)
+
+/** GET /api/reservations/prosumer/{nic} item (EnergyReservation). */
+data class ReservationItem(
+    @SerializedName("id") val id: String? = null,
+    @SerializedName("prosumerNic") val prosumerNic: String? = null,
+    @SerializedName("stationId") val stationId: String? = null,
+    @SerializedName("bookingSlotId") val bookingSlotId: String? = null,
+    @SerializedName("reservationDateTime") val reservationDateTime: String? = null,
+    @SerializedName("status") val status: String? = null,
+    @SerializedName("qrCode") val qrCode: String? = null,
+    @SerializedName("approvedBy") val approvedBy: String? = null,
+    @SerializedName("createdAt") val createdAt: String? = null,
 )

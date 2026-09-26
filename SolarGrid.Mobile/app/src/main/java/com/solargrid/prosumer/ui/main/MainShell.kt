@@ -31,6 +31,7 @@ import com.solargrid.prosumer.data.api.RetrofitClient
 import com.solargrid.prosumer.ui.book.BookScreen
 import com.solargrid.prosumer.ui.book.BookViewModel
 import com.solargrid.prosumer.ui.bookings.BookingsScreen
+import com.solargrid.prosumer.ui.bookings.BookingsViewModel
 import com.solargrid.prosumer.ui.home.HomeScreen
 import com.solargrid.prosumer.ui.home.HomeViewModel
 import com.solargrid.prosumer.ui.map.MapScreen
@@ -147,7 +148,13 @@ fun MainShell(
                 )
             }
             composable(MainDestination.BOOKINGS.route) {
-                BookingsScreen()
+                val bookingsViewModel: BookingsViewModel = viewModel(
+                    factory = BookingsViewModel.factory(
+                        reservationRepository = reservationRepository,
+                        stationRepository = stationRepository,
+                    ),
+                )
+                BookingsScreen(viewModel = bookingsViewModel)
             }
             composable(MainDestination.PROFILE.route) {
                 ProfileScreen(

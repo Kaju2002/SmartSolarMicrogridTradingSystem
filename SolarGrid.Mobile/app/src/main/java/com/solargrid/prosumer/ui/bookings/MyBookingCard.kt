@@ -33,6 +33,30 @@ import com.solargrid.prosumer.R
 import com.solargrid.prosumer.ui.theme.AccentGold
 import com.solargrid.prosumer.ui.theme.PrimaryBlue
 
+fun bookingStatusColor(status: String): Color =
+    when (status.lowercase()) {
+        "approved" -> PrimaryBlue
+        "pending" -> Color(0xFFFF9800)
+        "completed" -> Color(0xFF2E7D32)
+        "cancelled" -> Color(0xFFD32F2F)
+        else -> Color(0xFF6B7280)
+    }
+
+@Composable
+fun BookingStatusPill(status: String) {
+    val color = bookingStatusColor(status)
+    Text(
+        text = status,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 12.sp,
+        color = color,
+        modifier = Modifier
+            .clip(RoundedCornerShape(50))
+            .background(color.copy(alpha = 0.12f))
+            .padding(horizontal = 10.dp, vertical = 4.dp),
+    )
+}
+
 @Composable
 fun MyBookingCard(
     booking: BookingCardUi,
@@ -41,12 +65,6 @@ fun MyBookingCard(
     onClick: () -> Unit,
 ) {
     val shape = RoundedCornerShape(18.dp)
-    val statusColor = when (booking.status.lowercase()) {
-        "approved" -> PrimaryBlue
-        "pending" -> Color(0xFFFF9800)
-        "completed" -> Color(0xFF2E7D32)
-        else -> Color(0xFF6B7280)
-    }
 
     Column(
         modifier = modifier
@@ -71,61 +89,42 @@ fun MyBookingCard(
                 .background(Color(0xFF111111)),
         )
         Spacer(Modifier.height(12.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = booking.stationName,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 17.sp,
+                    color = Color(0xFF111111),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Text(
+                    text = booking.location,
+                    fontSize = 12.sp,
+                    color = Color(0xFF6B7280),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+            BookingStatusPill(booking.status)
+        }
+        Spacer(Modifier.height(12.dp))
         Text(
-            text = booking.stationName,
-            fontWeight = FontWeight.Bold,
-            fontSize = 17.sp,
+            text = stringResource(R.string.bookings_slot_label),
+            fontSize = 11.sp,
+            color = Color(0xFF9CA3AF),
+        )
+        Text(
+            text = booking.slotLabel,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 14.sp,
             color = Color(0xFF111111),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
-        Text(
-            text = booking.location,
-            fontSize = 12.sp,
-            color = Color(0xFF6B7280),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
-        Spacer(Modifier.height(8.dp))
-        Text(
-            text = booking.status,
-            fontWeight = FontWeight.SemiBold,
-            fontSize = 13.sp,
-            color = statusColor,
-        )
-        Spacer(Modifier.height(10.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.Bottom,
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = stringResource(R.string.bookings_slot_label),
-                    fontSize = 11.sp,
-                    color = Color(0xFF9CA3AF),
-                )
-                Text(
-                    text = booking.slotLabel,
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 12.sp,
-                    color = Color(0xFF333333),
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-            Column(horizontalAlignment = Alignment.End) {
-                Text(
-                    text = stringResource(R.string.bookings_energy_label),
-                    fontSize = 11.sp,
-                    color = Color(0xFF9CA3AF),
-                )
-                Text(
-                    text = booking.energyLabel,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 15.sp,
-                    color = Color(0xFF111111),
-                )
-            }
-        }
     }
 }
