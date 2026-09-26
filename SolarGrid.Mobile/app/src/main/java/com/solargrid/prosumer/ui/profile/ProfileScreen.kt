@@ -1,20 +1,22 @@
 /*
- * File: HomeScreen.kt
- * Description: Home tab — welcome overview
+ * File: ProfileScreen.kt
+ * Description: Prosumer profile and sign out
  */
-package com.solargrid.prosumer.ui.home
+package com.solargrid.prosumer.ui.profile
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,9 +27,10 @@ import androidx.compose.ui.unit.dp
 import com.solargrid.prosumer.R
 
 @Composable
-fun HomeScreen(
+fun ProfileScreen(
     fullName: String?,
     userType: String?,
+    onSignOut: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -37,14 +40,14 @@ fun HomeScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Icon(
-            imageVector = Icons.Outlined.Home,
+            imageVector = Icons.Outlined.Person,
             contentDescription = null,
-            modifier = Modifier.size(56.dp),
+            modifier = Modifier.size(64.dp),
             tint = MaterialTheme.colorScheme.primary,
         )
         Spacer(Modifier.height(16.dp))
         Text(
-            text = stringResource(R.string.home_welcome),
+            text = stringResource(R.string.profile_title),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.SemiBold,
         )
@@ -59,11 +62,12 @@ fun HomeScreen(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        Spacer(Modifier.height(12.dp))
-        Text(
-            text = stringResource(R.string.home_hint),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        Spacer(Modifier.height(28.dp))
+        OutlinedButton(
+            onClick = onSignOut,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(stringResource(R.string.sign_out))
+        }
     }
 }

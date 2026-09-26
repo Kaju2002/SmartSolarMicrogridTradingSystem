@@ -1,13 +1,11 @@
 /*
  * File: SolarGridApp.kt
- * Description: Root navigation (login, register, home)
+ * Description: Root navigation (login, register, main shell)
  */
 package com.solargrid.prosumer.ui
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,16 +20,16 @@ import androidx.navigation.compose.rememberNavController
 import com.solargrid.prosumer.data.AuthRepository
 import com.solargrid.prosumer.data.SessionStore
 import com.solargrid.prosumer.data.api.RetrofitClient
-import com.solargrid.prosumer.ui.home.HomeScreen
 import com.solargrid.prosumer.ui.login.LoginScreen
 import com.solargrid.prosumer.ui.login.LoginViewModel
+import com.solargrid.prosumer.ui.main.MainShell
 import com.solargrid.prosumer.ui.register.RegisterScreen
 import com.solargrid.prosumer.ui.register.RegisterViewModel
 
 private object Routes {
     const val LOGIN = "login"
     const val REGISTER = "register"
-    const val HOME = "home"
+    const val MAIN = "main"
 }
 
 @Composable
@@ -47,15 +45,14 @@ fun SolarGridApp() {
 
     val navController = rememberNavController()
     var startDestination by remember {
-        mutableStateOf(if (sessionStore.isLoggedIn) Routes.HOME else Routes.LOGIN)
+        mutableStateOf(if (sessionStore.isLoggedIn) Routes.MAIN else Routes.LOGIN)
     }
 
-    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = startDestination,
-            modifier = Modifier.padding(innerPadding),
-        ) {
+    NavHost(
+        navController = navController,
+        startDestination = startDestination,
+        modifier = Modifier.fillMaxSize(),
+    ) {
             composable(Routes.LOGIN) {
                 val loginViewModel: LoginViewModel = viewModel(
                     factory = LoginViewModel.factory(authRepository),
@@ -63,8 +60,8 @@ fun SolarGridApp() {
                 LoginScreen(
                     viewModel = loginViewModel,
                     onLoggedIn = {
-                        startDestination = Routes.HOME
-                        navController.navigate(Routes.HOME) {
+                        startDestination = Routes.MAIN
+                        navController.navigate(Routes.MAIN) {
                             popUpTo(Routes.LOGIN) { inclusive = true }
                         }
                     },
@@ -92,19 +89,18 @@ fun SolarGridApp() {
                     },
                 )
             }
-            composable(Routes.HOME) {
-                HomeScreen(
+            composable(Routes.MAIN) {
+                MainShell(
                     fullName = sessionStore.fullName,
                     userType = sessionStore.userType,
                     onSignOut = {
                         authRepository.logout()
                         startDestination = Routes.LOGIN
                         navController.navigate(Routes.LOGIN) {
-                            popUpTo(Routes.HOME) { inclusive = true }
+                            popUpTo(Routes.MAIN) { inclusive = true }
                         }
                     },
                 )
             }
         }
-    }
 }

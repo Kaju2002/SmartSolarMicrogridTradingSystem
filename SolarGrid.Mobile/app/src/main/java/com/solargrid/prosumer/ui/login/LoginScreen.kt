@@ -1,46 +1,113 @@
 /*
  * File: LoginScreen.kt
- * Description: Prosumer login form UI
+ * Description: Designed Prosumer sign-in UI
  */
 package com.solargrid.prosumer.ui.login
 
+import android.widget.Toast
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.solargrid.prosumer.R
+import com.solargrid.prosumer.ui.theme.AccentGold
+import com.solargrid.prosumer.ui.theme.FieldBorder
+import com.solargrid.prosumer.ui.theme.FieldHint
+import com.solargrid.prosumer.ui.theme.SignInButtonDisabled
+import com.solargrid.prosumer.ui.theme.SignInButtonDisabledText
+import com.solargrid.prosumer.ui.theme.SignInButtonEnabled
+
+private val PillShape = RoundedCornerShape(50)
+
+/** Wavy bottom edge matching the Sign In mockup. */
+private class WavyBottomShape : Shape {
+    override fun createOutline(
+        size: Size,
+        layoutDirection: LayoutDirection,
+        density: Density,
+    ): Outline {
+        val w = size.width
+        val h = size.height
+        val path = Path().apply {
+            moveTo(0f, 0f)
+            lineTo(w, 0f)
+            lineTo(w, h * 0.78f)
+            cubicTo(
+                w * 0.85f, h * 0.95f,
+                w * 0.55f, h * 1.02f,
+                w * 0.38f, h * 0.88f,
+            )
+            cubicTo(
+                w * 0.22f, h * 0.74f,
+                w * 0.08f, h * 0.82f,
+                0f, h * 0.92f,
+            )
+            close()
+        }
+        return Outline.Generic(path)
+    }
+}
 
 @Composable
 fun LoginScreen(
@@ -50,130 +117,308 @@ fun LoginScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val focusManager = LocalFocusManager.current
+    val context = LocalContext.current
+    val canSubmit = state.identifier.isNotBlank() &&
+        state.password.isNotBlank() &&
+        !state.loading
 
     LaunchedEffect(state.loggedIn) {
         if (state.loggedIn) onLoggedIn()
     }
 
+    fun comingSoon() {
+        Toast.makeText(context, context.getString(R.string.coming_soon), Toast.LENGTH_SHORT).show()
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 24.dp, vertical = 32.dp),
-        verticalArrangement = Arrangement.Center,
+            .background(Color.White)
+            .verticalScroll(rememberScrollState()),
     ) {
-        Text(
-            text = stringResource(R.string.login_title),
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.SemiBold,
-        )
-        Spacer(Modifier.height(6.dp))
-        Text(
-            text = stringResource(R.string.login_subtitle),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        Image(
+            painter = painterResource(R.drawable.login_hero),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(240.dp)
+                .clip(WavyBottomShape()),
         )
 
-        Spacer(Modifier.height(28.dp))
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 28.dp)
+                .padding(top = 8.dp, bottom = 28.dp),
+        ) {
+            Text(
+                text = stringResource(R.string.login_title),
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF111111),
+            )
 
-        OutlinedTextField(
-            value = state.identifier,
-            onValueChange = viewModel::onIdentifierChange,
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text(stringResource(R.string.identifier_label)) },
-            singleLine = true,
-            enabled = !state.loading,
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Next,
-            ),
-        )
+            Spacer(Modifier.height(22.dp))
 
-        Spacer(Modifier.height(14.dp))
-
-        OutlinedTextField(
-            value = state.password,
-            onValueChange = viewModel::onPasswordChange,
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text(stringResource(R.string.password_label)) },
-            singleLine = true,
-            enabled = !state.loading,
-            visualTransformation = if (state.passwordVisible) {
-                VisualTransformation.None
-            } else {
-                PasswordVisualTransformation()
-            },
-            trailingIcon = {
-                IconButton(onClick = viewModel::togglePasswordVisible) {
-                    Icon(
-                        imageVector = if (state.passwordVisible) {
-                            Icons.Filled.VisibilityOff
-                        } else {
-                            Icons.Filled.Visibility
-                        },
-                        contentDescription = null,
+            Text(
+                text = stringResource(R.string.identifier_label),
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 14.sp,
+                color = Color(0xFF111111),
+            )
+            Spacer(Modifier.height(8.dp))
+            OutlinedTextField(
+                value = state.identifier,
+                onValueChange = viewModel::onIdentifierChange,
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = {
+                    Text(
+                        text = stringResource(R.string.identifier_hint),
+                        color = FieldHint,
                     )
-                }
-            },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Done,
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = {
+                },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Person,
+                        contentDescription = null,
+                        tint = FieldHint,
+                    )
+                },
+                singleLine = true,
+                enabled = !state.loading,
+                shape = PillShape,
+                colors = loginFieldColors(),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next,
+                ),
+            )
+
+            Spacer(Modifier.height(16.dp))
+
+            Text(
+                text = stringResource(R.string.password_label),
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 14.sp,
+                color = Color(0xFF111111),
+            )
+            Spacer(Modifier.height(8.dp))
+            OutlinedTextField(
+                value = state.password,
+                onValueChange = viewModel::onPasswordChange,
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = {
+                    Text(
+                        text = stringResource(R.string.password_hint),
+                        color = FieldHint,
+                    )
+                },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Lock,
+                        contentDescription = null,
+                        tint = FieldHint,
+                    )
+                },
+                trailingIcon = {
+                    IconButton(onClick = viewModel::togglePasswordVisible) {
+                        Icon(
+                            imageVector = if (state.passwordVisible) {
+                                Icons.Outlined.VisibilityOff
+                            } else {
+                                Icons.Outlined.Visibility
+                            },
+                            contentDescription = null,
+                            tint = FieldHint,
+                        )
+                    }
+                },
+                singleLine = true,
+                enabled = !state.loading,
+                shape = PillShape,
+                colors = loginFieldColors(),
+                visualTransformation = if (state.passwordVisible) {
+                    VisualTransformation.None
+                } else {
+                    PasswordVisualTransformation()
+                },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done,
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        focusManager.clearFocus()
+                        if (canSubmit) viewModel.login()
+                    },
+                ),
+            )
+
+            Spacer(Modifier.height(10.dp))
+            Text(
+                text = stringResource(R.string.forgot_password),
+                color = AccentGold,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 13.sp,
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .clickable(enabled = !state.loading) { comingSoon() }
+                    .padding(vertical = 4.dp),
+            )
+
+            if (!state.error.isNullOrBlank()) {
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    text = state.error.orEmpty(),
+                    color = Color(0xFFD32F2F),
+                    fontSize = 13.sp,
+                )
+            }
+
+            Spacer(Modifier.height(20.dp))
+
+            Button(
+                onClick = {
                     focusManager.clearFocus()
                     viewModel.login()
                 },
-            ),
-        )
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(54.dp),
+                enabled = canSubmit,
+                shape = PillShape,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = SignInButtonEnabled,
+                    contentColor = Color.White,
+                    disabledContainerColor = SignInButtonDisabled,
+                    disabledContentColor = SignInButtonDisabledText,
+                ),
+            ) {
+                if (state.loading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(22.dp),
+                        strokeWidth = 2.dp,
+                        color = Color.White,
+                    )
+                } else {
+                    Text(
+                        text = stringResource(R.string.sign_in),
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 16.sp,
+                    )
+                }
+            }
 
-        if (!state.error.isNullOrBlank()) {
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(22.dp))
+            OrDivider()
+            Spacer(Modifier.height(18.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                SocialCircleButton(
+                    iconRes = R.drawable.ic_google,
+                    contentDescription = "Google",
+                    onClick = { comingSoon() },
+                )
+                Spacer(Modifier.width(20.dp))
+                SocialCircleButton(
+                    iconRes = R.drawable.ic_microsoft,
+                    contentDescription = "Microsoft",
+                    onClick = { comingSoon() },
+                )
+                Spacer(Modifier.width(20.dp))
+                SocialCircleButton(
+                    iconRes = R.drawable.ic_apple,
+                    contentDescription = "Apple",
+                    onClick = { comingSoon() },
+                )
+            }
+
+            Spacer(Modifier.height(28.dp))
             Text(
-                text = state.error.orEmpty(),
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall,
+                text = buildAnnotatedString {
+                    append(stringResource(R.string.no_account_prefix))
+                    append(" ")
+                    withStyle(
+                        SpanStyle(
+                            color = AccentGold,
+                            fontWeight = FontWeight.Bold,
+                        ),
+                    ) {
+                        append(stringResource(R.string.register_now))
+                    }
+                },
+                fontSize = 14.sp,
+                color = Color(0xFF333333),
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(enabled = !state.loading, onClick = onCreateAccount)
+                    .padding(8.dp),
             )
         }
+    }
+}
 
-        Spacer(Modifier.height(24.dp))
+@Composable
+private fun loginFieldColors() = OutlinedTextFieldDefaults.colors(
+    focusedBorderColor = AccentGold,
+    unfocusedBorderColor = FieldBorder,
+    disabledBorderColor = FieldBorder,
+    focusedContainerColor = Color.White,
+    unfocusedContainerColor = Color.White,
+    disabledContainerColor = Color.White,
+    cursorColor = SignInButtonEnabled,
+    focusedTextColor = Color(0xFF111111),
+    unfocusedTextColor = Color(0xFF111111),
+)
 
-        Button(
-            onClick = {
-                focusManager.clearFocus()
-                viewModel.login()
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(52.dp),
-            enabled = !state.loading,
-        ) {
-            if (state.loading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.height(22.dp),
-                    strokeWidth = 2.dp,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                )
-            } else {
-                Text(stringResource(R.string.sign_in))
-            }
-        }
-
-        Spacer(Modifier.height(8.dp))
-        TextButton(
-            onClick = onCreateAccount,
-            enabled = !state.loading,
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-        ) {
-            Text(stringResource(R.string.create_account_link))
-        }
-
-        Spacer(Modifier.height(8.dp))
+@Composable
+private fun OrDivider() {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        HorizontalDivider(
+            modifier = Modifier.weight(1f),
+            color = FieldBorder,
+        )
         Text(
-            text = "API: emulator → 10.0.2.2:5204",
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.align(Alignment.CenterHorizontally),
+            text = stringResource(R.string.or_divider),
+            color = FieldHint,
+            fontSize = 13.sp,
+            modifier = Modifier.padding(horizontal = 12.dp),
+        )
+        HorizontalDivider(
+            modifier = Modifier.weight(1f),
+            color = FieldBorder,
+        )
+    }
+}
+
+@Composable
+private fun SocialCircleButton(
+    iconRes: Int,
+    contentDescription: String,
+    onClick: () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .size(52.dp)
+            .clip(CircleShape)
+            .border(1.dp, FieldBorder, CircleShape)
+            .background(Color.White)
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        Image(
+            painter = painterResource(iconRes),
+            contentDescription = contentDescription,
+            modifier = Modifier.size(24.dp),
         )
     }
 }
