@@ -14,4 +14,5 @@ data class NearbyStation(
     @SerializedName("latitude") val latitude: Double? = null,
     @SerializedName("longitude") val longitude: Double? = null,
     @SerializedName("distanceKm") val distanceKm: Double? = null,
+    @SerializedName("ratePerKwh") val ratePerKwh: Double? = null,
 )

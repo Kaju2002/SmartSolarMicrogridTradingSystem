@@ -14,6 +14,8 @@ data class StationCardUi(
     val capacityKw: String,
     val priceLabel: String,
     @DrawableRes val imageRes: Int,
+    /** LKR per kWh from API; null/0 = no estimate. */
+    val ratePerKwh: Double? = null,
 )
 
 val SampleStations = listOf(

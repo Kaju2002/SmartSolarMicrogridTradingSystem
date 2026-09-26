@@ -6,6 +6,7 @@ export type Station = {
   latitude: number
   longitude: number
   capacityKWh: number
+  ratePerKwh?: number
   batterySlots: number
   availableSlots: number
   openTime: string
@@ -22,6 +23,7 @@ export type CreateStationRequest = {
   latitude: number
   longitude: number
   capacityKWh: number
+  ratePerKwh: number
   batterySlots: number
   openTime: string
   closeTime: string
@@ -31,6 +33,7 @@ export type CreateStationRequest = {
 
 export type UpdateStationRequest = {
   capacityKWh?: number
+  ratePerKwh?: number
   batterySlots?: number
   openTime?: string
   closeTime?: string

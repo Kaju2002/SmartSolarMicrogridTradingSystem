@@ -69,6 +69,7 @@ export default function EditStationPage() {
   const [error, setError] = useState('')
   const [form, setForm] = useState({
     capacityKWh: '',
+    ratePerKwh: '',
     batterySlots: '',
     openTime: '06:00',
     closeTime: '18:00',
@@ -107,6 +108,7 @@ export default function EditStationPage() {
         setStation(found)
         setForm({
           capacityKWh: String(found.capacityKWh),
+          ratePerKwh: String(found.ratePerKwh ?? ''),
           batterySlots: String(found.batterySlots),
           openTime: found.openTime || '06:00',
           closeTime: found.closeTime || '18:00',
@@ -134,10 +136,19 @@ export default function EditStationPage() {
 
     setError('')
     const capacityKWh = Number(form.capacityKWh)
+    const ratePerKwh = Number(form.ratePerKwh)
     const batterySlots = Number(form.batterySlots)
 
-    if (Number.isNaN(capacityKWh) || Number.isNaN(batterySlots)) {
-      setError('Capacity and battery slots must be numbers.')
+    if (
+      Number.isNaN(capacityKWh) ||
+      Number.isNaN(ratePerKwh) ||
+      Number.isNaN(batterySlots)
+    ) {
+      setError('Capacity, rate, and battery slots must be numbers.')
+      return
+    }
+    if (ratePerKwh <= 0) {
+      setError('Rate per kWh must be greater than 0.')
       return
     }
     if (batterySlots < 1) {
@@ -149,6 +160,7 @@ export default function EditStationPage() {
     try {
       const result = await updateStation(id, {
         capacityKWh,
+        ratePerKwh,
         batterySlots,
         openTime: form.openTime,
         closeTime: form.closeTime,
@@ -281,6 +293,19 @@ export default function EditStationPage() {
                   value={form.capacityKWh}
                   onChange={(e) =>
                     setForm((f) => ({ ...f, capacityKWh: e.target.value }))
+                  }
+                  required
+                />
+              </Field>
+              <Field label="Rate (LKR / kWh)">
+                <input
+                  className={inputClass}
+                  type="number"
+                  step="any"
+                  min="0.01"
+                  value={form.ratePerKwh}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, ratePerKwh: e.target.value }))
                   }
                   required
                 />

@@ -61,6 +61,7 @@ export default function CreateStationPage() {
     latitude: '',
     longitude: '',
     capacityKWh: '',
+    ratePerKwh: '',
     batterySlots: '',
     openTime: '06:00',
     closeTime: '18:00',
@@ -89,6 +90,7 @@ export default function CreateStationPage() {
     const latitude = Number(form.latitude)
     const longitude = Number(form.longitude)
     const capacityKWh = Number(form.capacityKWh)
+    const ratePerKwh = Number(form.ratePerKwh)
     const batterySlots = Number(form.batterySlots)
 
     if (!stationName) {
@@ -99,11 +101,16 @@ export default function CreateStationPage() {
       Number.isNaN(latitude) ||
       Number.isNaN(longitude) ||
       Number.isNaN(capacityKWh) ||
+      Number.isNaN(ratePerKwh) ||
       Number.isNaN(batterySlots)
     ) {
       setError(
-        'Latitude, longitude, capacity, and battery slots must be numbers.',
+        'Latitude, longitude, capacity, rate, and battery slots must be numbers.',
       )
+      return
+    }
+    if (ratePerKwh <= 0) {
+      setError('Rate per kWh must be greater than 0.')
       return
     }
     if (batterySlots < 1) {
@@ -118,6 +125,7 @@ export default function CreateStationPage() {
         latitude,
         longitude,
         capacityKWh,
+        ratePerKwh,
         batterySlots,
         openTime: form.openTime || '06:00',
         closeTime: form.closeTime || '18:00',
@@ -238,6 +246,20 @@ export default function CreateStationPage() {
                     setForm((f) => ({ ...f, capacityKWh: e.target.value }))
                   }
                   placeholder="500"
+                  required
+                />
+              </Field>
+              <Field label="Rate (LKR / kWh)">
+                <input
+                  className={inputClass}
+                  type="number"
+                  step="any"
+                  min="0.01"
+                  value={form.ratePerKwh}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, ratePerKwh: e.target.value }))
+                  }
+                  placeholder="45"
                   required
                 />
               </Field>

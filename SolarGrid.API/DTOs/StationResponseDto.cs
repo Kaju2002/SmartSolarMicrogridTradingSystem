@@ -16,4 +16,6 @@ public class StationResponseDto
     public double? Longitude { get; set; }
     public double? DistanceKm { get; set; }
     // nearby search only
+    public double? RatePerKwh { get; set; }
+    // LKR per kWh when returned for nearby / book
 }

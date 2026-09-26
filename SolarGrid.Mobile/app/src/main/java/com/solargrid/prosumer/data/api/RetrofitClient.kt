@@ -28,6 +28,9 @@ object RetrofitClient {
     fun createStationsApi(sessionStore: SessionStore): StationsApi =
         createRetrofit(sessionStore).create(StationsApi::class.java)
 
+    fun createReservationsApi(sessionStore: SessionStore): ReservationsApi =
+        createRetrofit(sessionStore).create(ReservationsApi::class.java)
+
     private fun createRetrofit(sessionStore: SessionStore): Retrofit {
         val logging = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY

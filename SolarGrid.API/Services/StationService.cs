@@ -44,6 +44,7 @@ public class StationService : IStationService
             Latitude = request.Latitude,
             Longitude = request.Longitude,
             CapacityKWh = request.CapacityKWh,
+            RatePerKwh = request.RatePerKwh,
             BatterySlots = request.BatterySlots,
             AvailableSlots = request.BatterySlots,
             OpenTime = request.OpenTime,
@@ -90,6 +91,9 @@ public class StationService : IStationService
 
         if (request.CapacityKWh.HasValue)
             updates.Add(Builders<SolarStationInfo>.Update.Set(s => s.CapacityKWh, request.CapacityKWh.Value));
+
+        if (request.RatePerKwh.HasValue)
+            updates.Add(Builders<SolarStationInfo>.Update.Set(s => s.RatePerKwh, request.RatePerKwh.Value));
 
         if (request.BatterySlots.HasValue)
             updates.Add(Builders<SolarStationInfo>.Update.Set(s => s.BatterySlots, request.BatterySlots.Value));
@@ -223,7 +227,8 @@ public class StationService : IStationService
                     StationName = s.StationName,
                     Latitude = s.Latitude,
                     Longitude = s.Longitude,
-                    DistanceKm = distance
+                    DistanceKm = distance,
+                    RatePerKwh = s.RatePerKwh
                 };
             })
             .Where(s => s.DistanceKm <= radiusKm)
