@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Locale
 import java.util.TimeZone
 
@@ -30,6 +31,10 @@ data class BookingsUiState(
     val selectedId: String = "",
     val loading: Boolean = false,
     val error: String? = null,
+    /** Cancel / change request in flight. */
+    val busy: Boolean = false,
+    /** One-shot toast text. */
+    val message: String? = null,
 )
 
 class BookingsViewModel(
@@ -50,6 +55,66 @@ class BookingsViewModel(
 
     fun selectBooking(id: String) {
         _uiState.update { it.copy(selectedId = id, error = null) }
+    }
+
+    fun consumeMessage() {
+        _uiState.update { it.copy(message = null) }
+    }
+
+    fun cancel(reservationId: String) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(busy = true) }
+            reservationRepository.cancel(reservationId).fold(
+                onSuccess = {
+                    _uiState.update { it.copy(busy = false, message = "Booking cancelled") }
+                    refresh()
+                },
+                onFailure = { err ->
+                    _uiState.update {
+                        it.copy(busy = false, message = err.message ?: "Could not cancel booking")
+                    }
+                },
+            )
+        }
+    }
+
+    /** [dayOffset] 0 = today (local). */
+    fun reschedule(reservationId: String, dayOffset: Int, hour: Int) {
+        val slot = Calendar.getInstance().apply {
+            add(Calendar.DAY_OF_YEAR, dayOffset)
+            set(Calendar.HOUR_OF_DAY, hour)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        if (slot.timeInMillis <= System.currentTimeMillis()) {
+            _uiState.update { it.copy(message = "Pick a future date and time.") }
+            return
+        }
+        val current = _uiState.value.bookings.firstOrNull { it.id == reservationId }
+        if (current != null && current.slotMillis == slot.timeInMillis) {
+            _uiState.update { it.copy(message = "That is already your booking time.") }
+            return
+        }
+
+        val iso = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
+            .apply { timeZone = TimeZone.getTimeZone("UTC") }
+            .format(slot.time)
+
+        viewModelScope.launch {
+            _uiState.update { it.copy(busy = true) }
+            reservationRepository.reschedule(reservationId, iso).fold(
+                onSuccess = {
+                    _uiState.update { it.copy(busy = false, message = "Booking time changed") }
+                    refresh()
+                },
+                onFailure = { err ->
+                    _uiState.update {
+                        it.copy(busy = false, message = err.message ?: "Could not change booking")
+                    }
+                },
+            )
+        }
     }
 
     fun refresh() {
@@ -129,6 +194,7 @@ class BookingsViewModel(
                 },
                 status = statusText,
                 slotLabel = label,
+                slotMillis = sortKey,
                 qrCode = qrCode?.takeIf { it.isNotBlank() },
                 imageRes = image,
             ),
