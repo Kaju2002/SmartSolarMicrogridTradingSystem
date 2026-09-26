@@ -12,6 +12,7 @@ public class CreateStationDto
     public double Latitude { get; set; }
     public double Longitude { get; set; }
     public double CapacityKWh { get; set; }
+    public double RatePerKwh { get; set; }
     public int BatterySlots { get; set; }
     public string OpenTime { get; set; } = "06:00";
     public string CloseTime { get; set; } = "18:00";

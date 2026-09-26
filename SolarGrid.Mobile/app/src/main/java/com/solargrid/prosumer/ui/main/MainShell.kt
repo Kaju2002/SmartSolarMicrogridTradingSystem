@@ -22,11 +22,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.solargrid.prosumer.data.BookingDraftStore
 import com.solargrid.prosumer.data.DashboardRepository
+import com.solargrid.prosumer.data.ReservationRepository
 import com.solargrid.prosumer.data.SessionStore
 import com.solargrid.prosumer.data.StationRepository
 import com.solargrid.prosumer.data.api.RetrofitClient
 import com.solargrid.prosumer.ui.book.BookScreen
+import com.solargrid.prosumer.ui.book.BookViewModel
 import com.solargrid.prosumer.ui.bookings.BookingsScreen
 import com.solargrid.prosumer.ui.home.HomeScreen
 import com.solargrid.prosumer.ui.home.HomeViewModel
@@ -39,6 +42,7 @@ fun MainShell(
     sessionStore: SessionStore,
     onSignOut: () -> Unit,
 ) {
+    val bookingDraftStore = remember { BookingDraftStore() }
     val dashboardRepository = remember {
         DashboardRepository(
             api = RetrofitClient.createDashboardApi(sessionStore),
@@ -48,6 +52,12 @@ fun MainShell(
     val stationRepository = remember {
         StationRepository(
             api = RetrofitClient.createStationsApi(sessionStore),
+        )
+    }
+    val reservationRepository = remember {
+        ReservationRepository(
+            api = RetrofitClient.createReservationsApi(sessionStore),
+            sessionStore = sessionStore,
         )
     }
 
@@ -117,13 +127,24 @@ fun MainShell(
                 )
                 MapScreen(
                     viewModel = mapViewModel,
-                    onBookStation = { _, _ ->
+                    onBookStation = { id, name ->
+                        bookingDraftStore.setStation(id, name)
                         openTab(MainDestination.BOOK.route)
                     },
                 )
             }
             composable(MainDestination.BOOK.route) {
-                BookScreen()
+                val bookViewModel: BookViewModel = viewModel(
+                    factory = BookViewModel.factory(
+                        stationRepository = stationRepository,
+                        reservationRepository = reservationRepository,
+                        bookingDraftStore = bookingDraftStore,
+                    ),
+                )
+                BookScreen(
+                    viewModel = bookViewModel,
+                    onBooked = { openTab(MainDestination.BOOKINGS.route) },
+                )
             }
             composable(MainDestination.BOOKINGS.route) {
                 BookingsScreen()

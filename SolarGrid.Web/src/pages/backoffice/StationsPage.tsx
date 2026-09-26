@@ -189,7 +189,8 @@ export default function StationsPage() {
                         {station.longitude.toFixed(4)}
                       </td>
                       <td className="px-5 py-4 text-ink">
-                        {station.capacityKWh} kWh · {station.batterySlots} slots
+                        {station.capacityKWh} kWh · LKR {station.ratePerKwh ?? 0}/kWh ·{' '}
+                        {station.batterySlots} slots
                       </td>
                       <td className="px-5 py-4 text-muted">
                         {station.openTime} – {station.closeTime}

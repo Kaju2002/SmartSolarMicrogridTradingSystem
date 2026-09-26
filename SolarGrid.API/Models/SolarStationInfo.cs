@@ -23,6 +23,9 @@ public class SolarStationInfo
 
     public double CapacityKWh { get; set; }
 
+    public double RatePerKwh { get; set; }
+    // LKR per kWh for booking estimates
+
     public int BatterySlots { get; set; }
     // total slots
 
