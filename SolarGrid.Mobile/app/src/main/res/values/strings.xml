@@ -1,10 +1,17 @@
 <resources>
     <string name="app_name">Solar Grid</string>
-    <string name="login_title">Sign in</string>
+    <string name="login_title">Sign In</string>
     <string name="login_subtitle">Prosumer energy booking</string>
     <string name="identifier_label">NIC or username</string>
+    <string name="identifier_hint">Input your NIC or username</string>
     <string name="password_label">Password</string>
-    <string name="sign_in">Sign in</string>
+    <string name="password_hint">Input password</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="or_divider">or</string>
+    <string name="no_account_prefix">Don\'t have an account?</string>
+    <string name="register_now">Register Now</string>
+    <string name="coming_soon">Coming soon</string>
+    <string name="sign_in">Sign In</string>
     <string name="signing_in">Signing in…</string>
     <string name="create_account_link">Create a Prosumer account</string>
     <string name="register_title">Create account</string>
@@ -19,5 +26,18 @@
     <string name="register_pending_hint">After register, wait for operator approval before login</string>
     <string name="back">Back</string>
     <string name="home_welcome">Welcome</string>
+    <string name="home_hint">Use the tabs below to find stations and book energy.</string>
     <string name="sign_out">Sign out</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_map">Map</string>
+    <string name="nav_book">Book</string>
+    <string name="nav_bookings">Bookings</string>
+    <string name="nav_profile">Profile</string>
+    <string name="map_title">Map</string>
+    <string name="map_placeholder">Nearby stations map coming next.</string>
+    <string name="book_title">Book</string>
+    <string name="book_placeholder">Book an energy slot coming next.</string>
+    <string name="bookings_title">Bookings</string>
+    <string name="bookings_placeholder">Your bookings list coming next.</string>
+    <string name="profile_title">Profile</string>
 </resources>
