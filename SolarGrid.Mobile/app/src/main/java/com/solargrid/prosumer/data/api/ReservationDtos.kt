@@ -13,6 +13,11 @@ data class CreateReservationRequest(
     @SerializedName("reservationDateTime") val reservationDateTime: String,
 )
 
+data class UpdateReservationRequest(
+    /** ISO-8601 UTC */
+    @SerializedName("newReservationDateTime") val newReservationDateTime: String,
+)
+
 data class ReservationResponse(
     @SerializedName("success") val success: Boolean = false,
     @SerializedName("message") val message: String = "",

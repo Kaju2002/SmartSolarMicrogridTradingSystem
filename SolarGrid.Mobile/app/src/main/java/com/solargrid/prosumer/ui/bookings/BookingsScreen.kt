@@ -5,6 +5,7 @@
 package com.solargrid.prosumer.ui.bookings
 
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -17,19 +18,29 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.QrCode2
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,6 +55,8 @@ import com.solargrid.prosumer.ui.theme.AccentGold
 import com.solargrid.prosumer.ui.theme.PrimaryBlue
 import com.solargrid.prosumer.ui.theme.SignInButtonText
 
+private val DangerRed = Color(0xFFD32F2F)
+
 @Composable
 fun BookingsScreen(
     viewModel: BookingsViewModel,
@@ -51,9 +64,20 @@ fun BookingsScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val selected = state.bookings.firstOrNull { it.id == state.selectedId }
+    var showQr by remember { mutableStateOf(false) }
+    var showReschedule by remember { mutableStateOf(false) }
+    var showCancelConfirm by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.onScreenVisible()
+    }
+
+    LaunchedEffect(state.message) {
+        val msg = state.message
+        if (!msg.isNullOrBlank()) {
+            Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+            viewModel.consumeMessage()
+        }
     }
 
     Column(
@@ -126,7 +150,7 @@ fun BookingsScreen(
                 .padding(horizontal = 20.dp)
                 .height(48.dp),
             shape = RoundedCornerShape(50),
-            border = androidx.compose.foundation.BorderStroke(1.dp, PrimaryBlue),
+            border = BorderStroke(1.dp, PrimaryBlue),
         ) {
             Text(
                 text = if (state.loading) {
@@ -190,38 +214,158 @@ fun BookingsScreen(
                     )
                     BookingStatusPill(selected.status)
                 }
-                Spacer(Modifier.height(14.dp))
-                Button(
-                    onClick = {
-                        val msg = if (selected.status.equals("Approved", ignoreCase = true)) {
-                            if (!selected.qrCode.isNullOrBlank()) {
-                                context.getString(R.string.bookings_qr_toast)
-                            } else {
-                                context.getString(R.string.bookings_qr_missing)
-                            }
-                        } else {
-                            context.getString(R.string.bookings_detail_toast, selected.status)
+                Spacer(Modifier.height(12.dp))
+
+                val statusNote = when {
+                    selected.isApproved && selected.qrCode == null ->
+                        stringResource(R.string.bookings_qr_missing)
+                    selected.status.equals("Pending", ignoreCase = true) ->
+                        stringResource(R.string.bookings_pending_note)
+                    selected.status.equals("Cancelled", ignoreCase = true) ->
+                        stringResource(R.string.bookings_cancelled_note)
+                    selected.status.equals("Completed", ignoreCase = true) ->
+                        stringResource(R.string.bookings_completed_note)
+                    else -> null
+                }
+                if (statusNote != null) {
+                    Text(text = statusNote, fontSize = 13.sp, color = Color(0xFF6B7280))
+                    Spacer(Modifier.height(12.dp))
+                }
+
+                if (selected.isApproved && selected.qrCode != null) {
+                    Button(
+                        onClick = { showQr = true },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        shape = RoundedCornerShape(50),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = AccentGold,
+                            contentColor = SignInButtonText,
+                        ),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.QrCode2,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp),
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(R.string.bookings_show_qr),
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                    }
+                    Spacer(Modifier.height(10.dp))
+                }
+
+                if (selected.canChange()) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    ) {
+                        OutlinedButton(
+                            onClick = { showReschedule = true },
+                            enabled = !state.busy,
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(46.dp),
+                            shape = RoundedCornerShape(50),
+                            border = BorderStroke(1.dp, PrimaryBlue),
+                        ) {
+                            Text(
+                                text = stringResource(R.string.bookings_change_time),
+                                color = PrimaryBlue,
+                                fontWeight = FontWeight.SemiBold,
+                            )
                         }
-                        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    shape = RoundedCornerShape(50),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = AccentGold,
-                        contentColor = SignInButtonText,
-                    ),
-                ) {
+                        OutlinedButton(
+                            onClick = { showCancelConfirm = true },
+                            enabled = !state.busy,
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(46.dp),
+                            shape = RoundedCornerShape(50),
+                            border = BorderStroke(1.dp, DangerRed),
+                        ) {
+                            Text(
+                                text = stringResource(R.string.bookings_cancel),
+                                color = DangerRed,
+                                fontWeight = FontWeight.SemiBold,
+                            )
+                        }
+                    }
+                } else if (selected.isActive) {
                     Text(
-                        text = if (selected.status.equals("Approved", ignoreCase = true)) {
-                            stringResource(R.string.bookings_show_qr)
-                        } else {
-                            stringResource(R.string.bookings_view_detail)
-                        },
-                        fontWeight = FontWeight.SemiBold,
+                        text = stringResource(R.string.bookings_locked_note, CHANGE_LOCK_HOURS),
+                        fontSize = 12.sp,
+                        color = Color(0xFF9CA3AF),
                     )
                 }
+
+                if (state.busy) {
+                    Spacer(Modifier.height(10.dp))
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .size(22.dp)
+                            .align(Alignment.CenterHorizontally),
+                        strokeWidth = 2.dp,
+                        color = PrimaryBlue,
+                    )
+                }
+            }
+
+            if (showQr && selected.qrCode != null) {
+                QrPassDialog(
+                    booking = selected,
+                    qrCode = selected.qrCode,
+                    onDismiss = { showQr = false },
+                )
+            }
+
+            if (showReschedule) {
+                RescheduleDialog(
+                    booking = selected,
+                    onConfirm = { dayOffset, hour ->
+                        showReschedule = false
+                        viewModel.reschedule(selected.id, dayOffset, hour)
+                    },
+                    onDismiss = { showReschedule = false },
+                )
+            }
+
+            if (showCancelConfirm) {
+                AlertDialog(
+                    onDismissRequest = { showCancelConfirm = false },
+                    title = { Text(stringResource(R.string.cancel_confirm_title)) },
+                    text = {
+                        Text(
+                            stringResource(
+                                R.string.cancel_confirm_body,
+                                selected.stationName,
+                                selected.slotLabel,
+                            ),
+                        )
+                    },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                showCancelConfirm = false
+                                viewModel.cancel(selected.id)
+                            },
+                        ) {
+                            Text(
+                                text = stringResource(R.string.cancel_confirm_yes),
+                                color = DangerRed,
+                                fontWeight = FontWeight.SemiBold,
+                            )
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showCancelConfirm = false }) {
+                            Text(stringResource(R.string.cancel_confirm_no))
+                        }
+                    },
+                )
             }
         }
 
