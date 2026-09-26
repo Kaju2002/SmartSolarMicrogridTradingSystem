@@ -33,6 +33,13 @@ class SessionStore(context: Context) {
             prefs.edit().putString(KEY_USER_TYPE, value).apply()
         }
 
+    /** Login identifier (NIC preferred) for dashboard APIs. */
+    var nic: String?
+        get() = prefs.getString(KEY_NIC, null)
+        private set(value) {
+            prefs.edit().putString(KEY_NIC, value).apply()
+        }
+
     val isLoggedIn: Boolean
         get() = !token.isNullOrBlank()
 
@@ -41,12 +48,14 @@ class SessionStore(context: Context) {
         userId: String?,
         fullName: String?,
         userType: String?,
+        nic: String?,
     ) {
         prefs.edit()
             .putString(KEY_TOKEN, token)
             .putString(KEY_USER_ID, userId)
             .putString(KEY_FULL_NAME, fullName)
             .putString(KEY_USER_TYPE, userType)
+            .putString(KEY_NIC, nic)
             .apply()
     }
 
@@ -60,5 +69,6 @@ class SessionStore(context: Context) {
         private const val KEY_USER_ID = "userId"
         private const val KEY_FULL_NAME = "fullName"
         private const val KEY_USER_TYPE = "userType"
+        private const val KEY_NIC = "nic"
     }
 }

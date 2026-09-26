@@ -46,6 +46,7 @@ class AuthRepository(
                 userId = body.userId,
                 fullName = body.fullName,
                 userType = body.userType,
+                nic = identifier.trim(),
             )
             Result.success(body)
         } catch (_: IOException) {

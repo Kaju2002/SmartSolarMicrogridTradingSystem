@@ -19,7 +19,16 @@ object RetrofitClient {
      */
     const val BASE_URL = "http://10.0.2.2:5204/"
 
-    fun createAuthApi(sessionStore: SessionStore): AuthApi {
+    fun createAuthApi(sessionStore: SessionStore): AuthApi =
+        createRetrofit(sessionStore).create(AuthApi::class.java)
+
+    fun createDashboardApi(sessionStore: SessionStore): DashboardApi =
+        createRetrofit(sessionStore).create(DashboardApi::class.java)
+
+    fun createStationsApi(sessionStore: SessionStore): StationsApi =
+        createRetrofit(sessionStore).create(StationsApi::class.java)
+
+    private fun createRetrofit(sessionStore: SessionStore): Retrofit {
         val logging = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
@@ -48,6 +57,5 @@ object RetrofitClient {
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(AuthApi::class.java)
     }
 }
