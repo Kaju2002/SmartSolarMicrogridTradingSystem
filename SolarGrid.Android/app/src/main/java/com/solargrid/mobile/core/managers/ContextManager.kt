@@ -2,7 +2,7 @@
  * File: ContextManager.kt
  * Description: Singleton holder for the application context used by other managers
  */
-package com.solargrid.mobile.managers
+package com.solargrid.mobile.core.managers
 
 import android.content.Context
 
