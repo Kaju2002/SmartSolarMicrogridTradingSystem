@@ -19,5 +19,13 @@
     <string name="login_error_backoffice">Backoffice users please use the web portal.</string>
 
     <string name="register_coming_soon">Registration screen is coming soon.</string>
-    <string name="login_ready_placeholder">Fields OK. API login comes in the next step.</string>
+
+    <string name="or_divider">or</string>
+    <string name="social_google">Sign in with Google</string>
+    <string name="social_microsoft">Sign in with Microsoft</string>
+    <string name="social_apple">Sign in with Apple</string>
+    <string name="social_coming_soon">Social sign-in is not available yet. Use your NIC or username.</string>
+    <string name="login_welcome">Welcome, %1$s</string>
+    <string name="login_error_role">This account type cannot use the mobile app.</string>
+    <string name="logout">Logout</string>
 </resources>

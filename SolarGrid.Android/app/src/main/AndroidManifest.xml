@@ -38,6 +38,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".home.ProsumerHomeActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".verification.operator.OperatorHomeActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

@@ -1,12 +1,13 @@
 /*
  * File: LoginActivity.kt
  * Module: Identity and Access (Vithusha)
- * Description: Sign-in screen. Shows activity_login.xml, checks the fields are
- *              filled and (from Step 6) hands the credentials to LoginManager.
+ * Description: Sign-in screen. Checks the fields are filled and passes them to LoginManager.
  */
 package com.solargrid.mobile.auth
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
@@ -14,10 +15,16 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
+import androidx.lifecycle.lifecycleScope
 import com.solargrid.mobile.R
+import com.solargrid.mobile.auth.models.UserEntity
 import com.solargrid.mobile.databinding.ActivityLoginBinding
+import com.solargrid.mobile.home.ProsumerHomeActivity
+import com.solargrid.mobile.verification.operator.OperatorHomeActivity
+import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
 
@@ -32,6 +39,38 @@ class LoginActivity : AppCompatActivity() {
 
         applyWindowInsets()
         setupListeners()
+        checkSavedSession()
+    }
+
+    // Already logged in on this phone? Then skip the form.
+    // Form stays hidden while checking so it does not flash on screen.
+    private fun checkSavedSession() {
+        binding.root.isInvisible = true
+        lifecycleScope.launch {
+            val user = LoginManager.getInstance().restoreSession()
+            if (user != null) {
+                openHome(user)
+            } else {
+                binding.root.isInvisible = false
+            }
+        }
+    }
+
+    // Send each role to its own home screen
+    private fun openHome(user: UserEntity) {
+        val target = when (user.userType) {
+            LoginManager.USER_TYPE_PROSUMER -> ProsumerHomeActivity::class.java
+            LoginManager.USER_TYPE_OPERATOR -> OperatorHomeActivity::class.java
+            else -> {
+                lifecycleScope.launch { LoginManager.getInstance().logout() }
+                binding.root.isInvisible = false
+                showError(getString(R.string.login_error_role))
+                return
+            }
+        }
+        startActivity(Intent(this, target))
+        // Close login so Back from home does not come back here
+        finish()
     }
 
     // Hero image stays behind the status bar; bottom padding keeps the form
@@ -64,6 +103,14 @@ class LoginActivity : AppCompatActivity() {
         binding.tvRegister.setOnClickListener {
             Toast.makeText(this, R.string.register_coming_soon, Toast.LENGTH_SHORT).show()
         }
+
+        // Social buttons are design only; the API has no social login
+        val socialClick = View.OnClickListener {
+            Toast.makeText(this, R.string.social_coming_soon, Toast.LENGTH_SHORT).show()
+        }
+        binding.btnGoogle.setOnClickListener(socialClick)
+        binding.btnMicrosoft.setOnClickListener(socialClick)
+        binding.btnApple.setOnClickListener(socialClick)
     }
 
     // Reads the fields, rejects empty input, otherwise continues to login.
@@ -79,8 +126,30 @@ class LoginActivity : AppCompatActivity() {
             return
         }
 
-        // Step 6 replaces this with LoginManager.login(identifier, password)
-        Toast.makeText(this, R.string.login_ready_placeholder, Toast.LENGTH_SHORT).show()
+        lifecycleScope.launch {
+            setLoading(true)
+            val result = LoginManager.getInstance().login(identifier, password)
+            setLoading(false)
+
+            result
+                .onSuccess { user -> openHome(user) }
+                .onFailure { error ->
+                    showError(error.message ?: getString(R.string.login_error_server))
+                }
+        }
+    }
+
+    // Spinner on, inputs locked while waiting for the API
+    private fun setLoading(loading: Boolean) {
+        binding.pbLoading.isVisible = loading
+        binding.btnSignIn.isEnabled = !loading
+        binding.btnSignIn.text = if (loading) "" else getString(R.string.sign_in)
+        binding.etIdentifier.isEnabled = !loading
+        binding.etPassword.isEnabled = !loading
+        binding.tvRegister.isEnabled = !loading
+        binding.btnGoogle.isEnabled = !loading
+        binding.btnMicrosoft.isEnabled = !loading
+        binding.btnApple.isEnabled = !loading
     }
 
     // Shows a red message above the Sign In button

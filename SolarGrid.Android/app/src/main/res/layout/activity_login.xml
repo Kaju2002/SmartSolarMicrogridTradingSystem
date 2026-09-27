@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Hero image; the white wave sits on its bottom edge -->
+        <!-- Hero image; the white step edge sits on its bottom (Figma shape) -->
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/login_hero_height">
@@ -34,11 +34,11 @@
 
             <ImageView
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/login_wave_height"
+                android:layout_height="@dimen/login_hero_edge_height"
                 android:layout_gravity="bottom"
                 android:importantForAccessibility="no"
                 android:scaleType="fitXY"
-                android:src="@drawable/bg_wave_bottom" />
+                android:src="@drawable/bg_hero_step" />
         </FrameLayout>
 
         <!-- Sign-in form -->
@@ -188,12 +188,82 @@
                     android:visibility="gone" />
             </FrameLayout>
 
+            <!-- "or" divider -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_lg"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"
+                    android:background="@color/field_border" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/space_md"
+                    android:text="@string/or_divider"
+                    android:textColor="@color/text_hint"
+                    android:textSize="@dimen/text_small" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"
+                    android:background="@color/field_border" />
+            </LinearLayout>
+
+            <!-- Social sign-in (UI only; the API supports NIC/username + password) -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/space_md"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/btnGoogle"
+                    android:layout_width="@dimen/social_button_size"
+                    android:layout_height="@dimen/social_button_size"
+                    android:background="@drawable/bg_social_circle"
+                    android:contentDescription="@string/social_google"
+                    android:padding="@dimen/space_md"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_google" />
+
+                <ImageButton
+                    android:id="@+id/btnMicrosoft"
+                    android:layout_width="@dimen/social_button_size"
+                    android:layout_height="@dimen/social_button_size"
+                    android:layout_marginStart="@dimen/space_lg"
+                    android:background="@drawable/bg_social_circle"
+                    android:contentDescription="@string/social_microsoft"
+                    android:padding="@dimen/space_md"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_microsoft" />
+
+                <ImageButton
+                    android:id="@+id/btnApple"
+                    android:layout_width="@dimen/social_button_size"
+                    android:layout_height="@dimen/social_button_size"
+                    android:layout_marginStart="@dimen/space_lg"
+                    android:background="@drawable/bg_social_circle"
+                    android:contentDescription="@string/social_apple"
+                    android:padding="@dimen/space_md"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_apple" />
+            </LinearLayout>
+
             <!-- "Don't have an account? Register Now" -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="@dimen/space_xl"
+                android:layout_marginTop="@dimen/space_lg"
                 android:orientation="horizontal">
 
                 <TextView
