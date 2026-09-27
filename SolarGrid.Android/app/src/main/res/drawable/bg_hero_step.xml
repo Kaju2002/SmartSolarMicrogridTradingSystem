@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- White edge laid over the bottom of the login hero image (Figma "step" shape):
+     rounded bottom-left corner, and a raised white tab on the right with rounded corners -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="360dp"
+    android:height="26dp"
+    android:viewportWidth="360"
+    android:viewportHeight="26">
+
+    <!-- Bottom-left rounded corner -->
+    <path
+        android:fillColor="@color/white"
+        android:pathData="M0,16 L0,26 L10,26 Q0,26 0,16 Z" />
+
+    <!-- Right tab -->
+    <path
+        android:fillColor="@color/white"
+        android:pathData="M360,26 L360,1 Q360,11 350,11 L217,11 Q210,11 210,18 L210,19 Q210,26 203,26 Z" />
+</vector>
