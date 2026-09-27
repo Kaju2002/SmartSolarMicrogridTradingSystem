@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    File: fragment_bookings.xml
+    Module: Reservation Management (Kajanthan)
+    Description: Bookings tab. Empty state until the booking list is added.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="@dimen/screen_padding"
+    tools:context=".reservation.BookingsFragment">
+
+    <TextView
+        style="@style/Widget.SolarGrid.ScreenTitle"
+        android:layout_marginTop="@dimen/space_sm"
+        android:text="@string/bookings_title" />
+
+    <TextView
+        style="@style/Widget.SolarGrid.ScreenSubtitle"
+        android:text="@string/bookings_subtitle" />
+
+    <!-- Empty state, centred in the space left -->
+    <LinearLayout
+        android:id="@+id/layoutBookingsEmpty"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="@dimen/empty_icon_size"
+            android:layout_height="@dimen/empty_icon_size"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_calendar_outlined"
+            app:tint="@color/text_hint" />
+
+        <TextView
+            style="@style/Widget.SolarGrid.EmptyText"
+            android:text="@string/bookings_empty" />
+    </LinearLayout>
+</LinearLayout>

@@ -23,7 +23,7 @@ import androidx.lifecycle.lifecycleScope
 import com.solargrid.mobile.R
 import com.solargrid.mobile.auth.models.UserEntity
 import com.solargrid.mobile.databinding.ActivityLoginBinding
-import com.solargrid.mobile.home.ProsumerHomeActivity
+import com.solargrid.mobile.home.ProsumerMainActivity
 import com.solargrid.mobile.onboarding.OnboardingActivity
 import com.solargrid.mobile.onboarding.OnboardingManager
 import com.solargrid.mobile.verification.operator.OperatorHomeActivity
@@ -80,7 +80,7 @@ class LoginActivity : AppCompatActivity() {
     // Send each role to its own home screen
     private fun openHome(user: UserEntity) {
         val target = when (user.userType) {
-            LoginManager.USER_TYPE_PROSUMER -> ProsumerHomeActivity::class.java
+            LoginManager.USER_TYPE_PROSUMER -> ProsumerMainActivity::class.java
             LoginManager.USER_TYPE_OPERATOR -> OperatorHomeActivity::class.java
             else -> {
                 lifecycleScope.launch { LoginManager.getInstance().logout() }

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Station Management (Gabilan): station list texts -->
+<resources>
+    <string name="stations_title">Stations</string>
+    <string name="stations_subtitle">Solar charging stations near you</string>
+    <string name="stations_empty">No stations to show yet.</string>
+</resources>
