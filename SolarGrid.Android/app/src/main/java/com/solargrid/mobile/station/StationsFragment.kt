@@ -3,6 +3,7 @@
  * Module: Station Management (Gabilan)
  * Description: Stations tab. Finds nearby stations (Colombo when the phone's location is not
  *              available) and shows them as map pins with a swipeable card per station.
+ *              Moving the map offers "Search this area".
  */
 package com.solargrid.mobile.station
 
@@ -15,6 +16,7 @@ import android.provider.Settings
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.createBitmap
 import androidx.core.view.isVisible
@@ -36,6 +38,7 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.solargrid.mobile.R
 import com.solargrid.mobile.core.managers.DeviceLocationManager
+import com.solargrid.mobile.core.utils.distanceKm
 import com.solargrid.mobile.databinding.FragmentStationsBinding
 import com.solargrid.mobile.station.models.Station
 import kotlinx.coroutines.launch
@@ -53,16 +56,24 @@ class StationsFragment : Fragment(R.layout.fragment_stations) {
     // Reload when the user comes back from the settings screen
     private var reloadOnResume = false
 
-    // Loaded stations and where we searched from (null when we fell back to Colombo)
+    // Near the user, around Colombo (location unknown), or an area the user moved the map to
+    private enum class SearchMode { NEAR_ME, CITY, AREA }
+
+    // Loaded stations and the user's position (null when unknown)
     private var stations: List<Station> = emptyList()
     private var userLocation: LatLng? = null
+    private var searchMode = SearchMode.NEAR_ME
     private var selectedIndex = RecyclerView.NO_POSITION
+
+    // True after the user drags or zooms the map; shows "Search this area"
+    private var mapMovedByUser = false
 
     // Map objects live only while the view exists
     private var googleMap: GoogleMap? = null
     private val markers = mutableListOf<Marker>()
     private var pinIcon: BitmapDescriptor? = null
     private var selectedPinIcon: BitmapDescriptor? = null
+    private var unavailablePinIcon: BitmapDescriptor? = null
 
     private val cardAdapter = StationCardAdapter { position ->
         selectStation(position, scrollCards = true)
@@ -108,11 +119,19 @@ class StationsFragment : Fragment(R.layout.fragment_stations) {
         googleMap = null
         pinIcon = null
         selectedPinIcon = null
+        unavailablePinIcon = null
         _binding = null
     }
 
     private fun setupListeners() {
-        binding.btnUseLocation.setOnClickListener { onUseLocationClicked() }
+        binding.btnUseLocation.setOnClickListener {
+            if (searchMode == SearchMode.AREA && locationManager.hasLocationPermission()) {
+                loadStations()
+            } else {
+                onUseLocationClicked()
+            }
+        }
+        binding.btnSearchArea.setOnClickListener { searchThisArea() }
         binding.btnRetry.setOnClickListener { loadStations() }
     }
 
@@ -150,13 +169,18 @@ class StationsFragment : Fragment(R.layout.fragment_stations) {
                 }
                 true
             }
-            map.moveCamera(
-                CameraUpdateFactory.newLatLngZoom(
-                    LatLng(StationManager.CITY_LATITUDE, StationManager.CITY_LONGITUDE), CITY_ZOOM
-                )
-            )
+            // Only the user's own drags and zooms offer "Search this area", not our camera moves
+            map.setOnCameraMoveStartedListener { reason ->
+                if (reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) mapMovedByUser = true
+            }
+            map.setOnCameraIdleListener {
+                val views = _binding ?: return@setOnCameraIdleListener
+                if (mapMovedByUser && !views.progressStations.isVisible) views.btnSearchArea.isVisible = true
+            }
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(cityCenter(), CITY_ZOOM))
             pinIcon = pinFrom(R.drawable.ic_map_pin)
             selectedPinIcon = pinFrom(R.drawable.ic_map_pin_selected)
+            unavailablePinIcon = pinFrom(R.drawable.ic_map_pin_unavailable)
             renderMap()
         }
     }
@@ -185,17 +209,36 @@ class StationsFragment : Fragment(R.layout.fragment_stations) {
 
     // Search around the phone, or around Colombo with a wider radius when that fails
     private fun loadStations() {
-        showLoading()
+        showLoading(R.string.stations_finding_location)
         viewLifecycleOwner.lifecycleScope.launch {
             val myLocation = locationManager.getCurrentLocation()
-            val center = myLocation ?: LatLng(StationManager.CITY_LATITUDE, StationManager.CITY_LONGITUDE)
-            val radiusKm = if (myLocation != null) StationManager.DEFAULT_RADIUS_KM else StationManager.CITY_RADIUS_KM
-
-            StationManager.getInstance()
-                .getNearbyStations(center.latitude, center.longitude, radiusKm)
-                .onSuccess { showStations(it, myLocation, radiusKm.toInt()) }
-                .onFailure { showError(it.message ?: getString(R.string.station_error_load)) }
+            userLocation = myLocation
+            if (myLocation != null) {
+                search(myLocation, StationManager.DEFAULT_RADIUS_KM, SearchMode.NEAR_ME)
+            } else {
+                search(cityCenter(), StationManager.CITY_RADIUS_KM, SearchMode.CITY)
+            }
         }
+    }
+
+    // Search the part of the map the user is looking at (up to the city radius)
+    private fun searchThisArea() {
+        val map = googleMap ?: return
+        val center = map.cameraPosition.target
+        val corner = map.projection.visibleRegion.latLngBounds.northeast
+        val radiusKm = distanceKm(center, corner).coerceIn(MIN_AREA_RADIUS_KM, StationManager.CITY_RADIUS_KM)
+
+        showLoading(R.string.stations_finding_area)
+        viewLifecycleOwner.lifecycleScope.launch { search(center, radiusKm, SearchMode.AREA) }
+    }
+
+    // Distances are shown from the user only, so Colombo and area searches measure from userLocation
+    private suspend fun search(center: LatLng, radiusKm: Double, mode: SearchMode) {
+        val distanceFrom = if (mode == SearchMode.NEAR_ME) center else userLocation
+        StationManager.getInstance()
+            .getNearbyStations(center.latitude, center.longitude, radiusKm, distanceFrom)
+            .onSuccess { showStations(it, mode, radiusKm.toInt()) }
+            .onFailure { showError(it.message ?: getString(R.string.station_error_load)) }
     }
 
     // Ask again, or send the user to Settings when Android won't show the dialog any more
@@ -221,50 +264,56 @@ class StationsFragment : Fragment(R.layout.fragment_stations) {
         startActivity(intent)
     }
 
-    private fun showLoading() {
+    private fun showLoading(@StringRes message: Int) {
+        mapMovedByUser = false
         binding.cardSearchArea.isVisible = true
-        binding.tvSearchArea.setText(R.string.stations_finding_location)
+        binding.tvSearchArea.setText(message)
         binding.tvSearchAreaHint.isVisible = false
         binding.btnUseLocation.isVisible = false
+        binding.btnSearchArea.isVisible = false
         binding.rvStations.isVisible = false
         binding.progressStations.isVisible = true
         binding.layoutStationsEmpty.isVisible = false
     }
 
-    // Update the search card, then show pins and cards (or the empty state)
-    private fun showStations(found: List<Station>, myLocation: LatLng?, radiusKm: Int) {
-        val nearMe = myLocation != null
+    // Update the search card, then show pins and cards. With no stations the map stays
+    // visible so the user can move it and search somewhere else.
+    private fun showStations(found: List<Station>, mode: SearchMode, radiusKm: Int) {
         stations = found
-        userLocation = myLocation
+        searchMode = mode
         selectedIndex = if (found.isEmpty()) RecyclerView.NO_POSITION else 0
         binding.progressStations.isVisible = false
-
-        binding.tvSearchArea.text = if (nearMe) {
-            resources.getQuantityString(R.plurals.stations_count_near_you, found.size, found.size, radiusKm)
-        } else {
-            resources.getQuantityString(R.plurals.stations_count_near_city, found.size, found.size)
-        }
-        binding.tvSearchAreaHint.isVisible = !nearMe
-        binding.btnUseLocation.isVisible = !nearMe
-        if (!nearMe) {
-            binding.tvSearchAreaHint.setText(
-                if (locationManager.hasLocationPermission()) R.string.stations_location_unknown
-                else R.string.stations_location_off
-            )
-        }
-
-        binding.layoutStationsEmpty.isVisible = found.isEmpty()
-        binding.btnRetry.isVisible = false
-        binding.tvStationsEmpty.text = if (nearMe) {
-            getString(R.string.stations_empty_near_you, radiusKm)
-        } else {
-            getString(R.string.stations_empty_near_city)
-        }
+        binding.layoutStationsEmpty.isVisible = false
+        bindSearchCard(radiusKm)
 
         binding.rvStations.isVisible = found.isNotEmpty()
         cardAdapter.submit(found, selectedIndex)
         binding.rvStations.scrollToPosition(0)
-        renderMap()
+        renderMap(moveCamera = mode != SearchMode.AREA)
+    }
+
+    // Count, why we searched there, and a way back to the user's location
+    private fun bindSearchCard(radiusKm: Int) {
+        val count = stations.size
+        binding.tvSearchArea.text = when (searchMode) {
+            SearchMode.NEAR_ME -> resources.getQuantityString(R.plurals.stations_count_near_you, count, count, radiusKm)
+            SearchMode.CITY -> resources.getQuantityString(R.plurals.stations_count_near_city, count, count)
+            SearchMode.AREA -> resources.getQuantityString(R.plurals.stations_count_in_area, count, count)
+        }
+
+        val hint = when {
+            searchMode == SearchMode.CITY && locationManager.hasLocationPermission() -> R.string.stations_location_unknown
+            searchMode == SearchMode.CITY -> R.string.stations_location_off
+            count == 0 -> R.string.stations_try_other_area
+            else -> null
+        }
+        binding.tvSearchAreaHint.isVisible = hint != null
+        hint?.let { binding.tvSearchAreaHint.setText(it) }
+
+        binding.btnUseLocation.isVisible = searchMode != SearchMode.NEAR_ME
+        binding.btnUseLocation.setText(
+            if (searchMode == SearchMode.AREA) R.string.stations_my_location else R.string.stations_use_location
+        )
     }
 
     // Load failed: hide the search card and offer a retry
@@ -273,25 +322,26 @@ class StationsFragment : Fragment(R.layout.fragment_stations) {
         binding.cardSearchArea.isVisible = false
         binding.progressStations.isVisible = false
         binding.rvStations.isVisible = false
+        binding.btnSearchArea.isVisible = false
         binding.layoutStationsEmpty.isVisible = true
         binding.tvStationsEmpty.text = message
         binding.btnRetry.isVisible = true
     }
 
-    // Redraw the pins and fit the camera; waits until both the map and the stations are ready
-    private fun renderMap() {
+    // Redraw the pins and fit the camera. After "Search this area" the camera stays put unless
+    // a station found in the search circle is off screen. Waits until the map and stations are ready.
+    private fun renderMap(moveCamera: Boolean = true) {
         val map = googleMap ?: return
         markers.forEach { it.remove() }
         markers.clear()
 
         stations.forEachIndexed { index, station ->
-            val selected = index == selectedIndex
             val marker = map.addMarker(
                 MarkerOptions()
                     .position(station.position())
                     .title(station.stationName)
-                    .icon(if (selected) selectedPinIcon else pinIcon)
-                    .zIndex(if (selected) 1f else 0f)
+                    .icon(pinFor(index))
+                    .zIndex(if (index == selectedIndex) 1f else 0f)
             )
             marker?.tag = index
             marker?.let { markers += it }
@@ -303,13 +353,26 @@ class StationsFragment : Fragment(R.layout.fragment_stations) {
             if (_binding == null) return@post
             val cardsHeight = if (binding.rvStations.isVisible) binding.rvStations.height else 0
             map.setPadding(0, 0, 0, cardsHeight)
-            fitCamera(map)
+            if (moveCamera) {
+                fitCamera(map)
+            } else {
+                val onScreen = map.projection.visibleRegion.latLngBounds
+                if (stations.any { !onScreen.contains(it.position()) }) fitCamera(map, includeUser = false)
+            }
         }
     }
 
+    // Dark pin for the selected station, grey when closed or full, gold otherwise
+    private fun pinFor(index: Int): BitmapDescriptor? = when {
+        index == selectedIndex -> selectedPinIcon
+        StationFormatter.isAvailableNow(stations[index]) -> pinIcon
+        else -> unavailablePinIcon
+    }
+
     // Show every station (and the user) on screen
-    private fun fitCamera(map: GoogleMap) {
-        val points = stations.map { it.position() } + listOfNotNull(userLocation)
+    private fun fitCamera(map: GoogleMap, includeUser: Boolean = true) {
+        val user = if (includeUser) userLocation else null
+        val points = stations.map { it.position() } + listOfNotNull(user)
         when (points.size) {
             0 -> return
             1 -> map.animateCamera(CameraUpdateFactory.newLatLngZoom(points[0], SINGLE_STATION_ZOOM))
@@ -341,11 +404,11 @@ class StationsFragment : Fragment(R.layout.fragment_stations) {
         cardAdapter.setSelected(index)
 
         markers.getOrNull(previous)?.apply {
-            setIcon(pinIcon)
+            setIcon(pinFor(previous))
             zIndex = 0f
         }
         markers.getOrNull(index)?.apply {
-            setIcon(selectedPinIcon)
+            setIcon(pinFor(index))
             zIndex = 1f
         }
         if (previous != index) {
@@ -375,8 +438,11 @@ class StationsFragment : Fragment(R.layout.fragment_stations) {
     // StationManager already dropped stations without a position
     private fun Station.position() = LatLng(latitude ?: 0.0, longitude ?: 0.0)
 
+    private fun cityCenter() = LatLng(StationManager.CITY_LATITUDE, StationManager.CITY_LONGITUDE)
+
     companion object {
         private const val CITY_ZOOM = 11f
         private const val SINGLE_STATION_ZOOM = 14f
+        private const val MIN_AREA_RADIUS_KM = 1.0
     }
 }

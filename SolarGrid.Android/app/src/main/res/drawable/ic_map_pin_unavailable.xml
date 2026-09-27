@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Station map pin when the station is closed now or has no free slots: grey -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="34dp"
+    android:height="42.5dp"
+    android:viewportWidth="48"
+    android:viewportHeight="60">
+
+    <path
+        android:fillColor="@color/station_closed_pin"
+        android:pathData="M24,2C11.85,2 2,11.85 2,24C2,38 24,58 24,58C24,58 46,38 46,24C46,11.85 36.15,2 24,2Z"
+        android:strokeColor="@color/station_closed"
+        android:strokeWidth="2.5" />
+    <path
+        android:fillColor="@color/white"
+        android:pathData="M15,24a9,9 0,1 0,18 0a9,9 0,1 0,-18 0Z" />
+    <path
+        android:fillColor="@color/station_closed"
+        android:pathData="M20,24a4,4 0,1 0,8 0a4,4 0,1 0,-8 0Z" />
+</vector>
