@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    File: activity_onboarding.xml
+    Module: Onboarding (shared)
+    Description: First-launch intro. Three swipeable pages with a Skip link on top.
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    tools:context=".onboarding.OnboardingActivity">
+
+    <!-- Pages: item_onboarding_page.xml -->
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/vpOnboarding"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- Top margin is set in code so it sits below the status bar -->
+    <TextView
+        android:id="@+id/tvSkip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="@dimen/space_sm"
+        android:layout_marginEnd="@dimen/space_md"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:fontFamily="sans-serif-medium"
+        android:paddingStart="@dimen/space_md"
+        android:paddingTop="@dimen/space_sm"
+        android:paddingEnd="@dimen/space_md"
+        android:paddingBottom="@dimen/space_sm"
+        android:shadowColor="#66000000"
+        android:shadowDy="1"
+        android:shadowRadius="4"
+        android:text="@string/onboarding_skip"
+        android:textColor="@color/white"
+        android:textSize="15sp" />
+</FrameLayout>

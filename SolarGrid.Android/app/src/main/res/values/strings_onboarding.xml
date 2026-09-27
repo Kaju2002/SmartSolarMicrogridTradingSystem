@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Onboarding: first-launch intro, one page per main flow (station, reservation, QR) -->
+<resources>
+    <string name="onboarding_title_1">Find solar stations near you</string>
+    <string name="onboarding_body_1">See capacity, rate per kWh and open hours on the map.</string>
+
+    <string name="onboarding_title_2">Reserve energy in advance</string>
+    <string name="onboarding_body_2">Pick a station and a time slot, then manage it from your bookings.</string>
+
+    <string name="onboarding_title_3">Show your QR at the station</string>
+    <string name="onboarding_body_3">The operator scans it to confirm and finalize your energy session.</string>
+
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_get_started">Get started</string>
+</resources>

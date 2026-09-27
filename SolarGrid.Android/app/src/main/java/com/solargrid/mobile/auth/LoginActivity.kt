@@ -24,6 +24,8 @@ import com.solargrid.mobile.R
 import com.solargrid.mobile.auth.models.UserEntity
 import com.solargrid.mobile.databinding.ActivityLoginBinding
 import com.solargrid.mobile.home.ProsumerHomeActivity
+import com.solargrid.mobile.onboarding.OnboardingActivity
+import com.solargrid.mobile.onboarding.OnboardingManager
 import com.solargrid.mobile.verification.operator.OperatorHomeActivity
 import kotlinx.coroutines.launch
 
@@ -44,6 +46,14 @@ class LoginActivity : AppCompatActivity() {
     // Inflates the layout and wires up insets and click listeners
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // First launch: show the intro before anything else
+        if (!OnboardingManager.getInstance().isDone()) {
+            startActivity(Intent(this, OnboardingActivity::class.java))
+            finish()
+            return
+        }
+
         enableEdgeToEdge()
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)

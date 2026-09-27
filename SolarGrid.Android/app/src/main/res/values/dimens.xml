@@ -15,6 +15,18 @@
     <dimen name="register_hero_height">170dp</dimen>
     <dimen name="social_button_size">56dp</dimen>
 
+    <!-- Onboarding card (Figma: 345 x 250 step shape, 24dp from the screen edges) -->
+    <dimen name="onboarding_card_height">250dp</dimen>
+    <dimen name="onboarding_card_margin">24dp</dimen>
+    <dimen name="onboarding_card_padding">22dp</dimen>
+    <dimen name="onboarding_text_width">220dp</dimen>
+    <dimen name="onboarding_arrow_size">80dp</dimen>
+    <dimen name="onboarding_arrow_margin_end">20dp</dimen>
+    <dimen name="onboarding_arrow_margin_bottom">24dp</dimen>
+    <dimen name="onboarding_dot_size">6dp</dimen>
+    <dimen name="onboarding_dot_active_width">18dp</dimen>
+    <dimen name="text_onboarding_title">24sp</dimen>
+
     <dimen name="text_title">32sp</dimen>
     <dimen name="text_body">14sp</dimen>
     <dimen name="text_small">13sp</dimen>
