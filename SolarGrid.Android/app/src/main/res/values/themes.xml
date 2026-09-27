@@ -1,8 +1,14 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.SolarGrid" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    <!-- Light-only theme: every screen is designed on a white background -->
+    <style name="Base.Theme.SolarGrid" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/accent_gold</item>
+        <item name="colorOnPrimary">@color/text_primary</item>
+        <item name="colorSecondary">@color/primary_blue</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorError">@color/error_red</item>
+        <item name="android:colorBackground">@color/white</item>
+        <item name="android:statusBarColor" tools:targetApi="l">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
     </style>
 
     <style name="Theme.SolarGrid" parent="Base.Theme.SolarGrid" />

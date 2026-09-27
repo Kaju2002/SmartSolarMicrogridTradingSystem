@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Text field border: gold when focused, light grey otherwise -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="@color/accent_gold" android:state_focused="true" />
+    <item android:color="@color/field_border" />
+</selector>
