@@ -40,6 +40,13 @@
     <dimen name="home_card_width">168dp</dimen>
     <dimen name="home_card_image">84dp</dimen>
     <dimen name="home_card_radius">24dp</dimen>
+
+    <!-- Stations map: card carousel over the map -->
+    <dimen name="station_card_gap">6dp</dimen>
+    <dimen name="station_card_stroke">2dp</dimen>
+    <dimen name="station_card_elevation">6dp</dimen>
+    <dimen name="text_station_stat">17sp</dimen>
+    <dimen name="text_station_label">12sp</dimen>
     <dimen name="home_row_min_height">76dp</dimen>
     <dimen name="home_row_icon_tile">46dp</dimen>
     <dimen name="home_row_divider_inset">78dp</dimen>
