@@ -1,12 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Team: Prosumer home texts -->
 <resources>
-    <string name="prosumer_home_subtitle">Prosumer dashboard</string>
-    <string name="home_hint">Open the Stations tab to find a solar charging station and book a slot.</string>
-
     <!-- Bottom navigation tabs -->
     <string name="nav_home">Home</string>
     <string name="nav_stations">Stations</string>
     <string name="nav_bookings">Bookings</string>
     <string name="nav_profile">Profile</string>
+
+    <!-- Hero -->
+    <string name="home_greeting_morning">Good morning</string>
+    <string name="home_greeting_afternoon">Good afternoon</string>
+    <string name="home_greeting_evening">Good evening</string>
+    <string name="home_greeting_with_name">%1$s, %2$s</string>
+    <string name="home_hero_title">Welcome to\nSolarGrid</string>
+    <string name="home_hero_subtitle">Clean solar charging, booked in seconds</string>
+    <string name="home_avatar_description">Open profile</string>
+
+    <!-- Feature cards -->
+    <string name="home_section_start">Get started</string>
+    <string name="home_card_find_title">Find stations</string>
+    <string name="home_card_find_subtitle">Solar hubs near you</string>
+    <string name="home_card_book_title">Book a slot</string>
+    <string name="home_card_book_subtitle">Up to 7 days ahead</string>
+    <string name="home_card_qr_title">Show QR</string>
+    <string name="home_card_qr_subtitle">For approved bookings</string>
+
+    <!-- Your SolarGrid rows -->
+    <string name="home_section_yours">Your SolarGrid</string>
+    <string name="home_row_bookings">My bookings</string>
+    <string name="home_row_bookings_sub">View and manage your slots</string>
+    <string name="home_row_how">How booking works</string>
+    <string name="home_row_how_sub">Three simple steps</string>
+    <string name="home_row_why">Why solar charging</string>
+    <string name="home_row_why_sub">Clean energy, lower cost</string>
+    <string name="home_row_profile">Account and profile</string>
+    <string name="home_row_profile_sub">Your details and logout</string>
+
+    <!-- Tip card -->
+    <string name="home_tip_title">Booking tip</string>
+    <string name="home_tip_body">Book up to 7 days ahead. You can change or cancel up to 12 hours before your slot.</string>
+    <string name="home_tip_link">See how it works</string>
+
+    <!-- Info sheets -->
+    <string name="home_how_body">1. Pick a solar station and a free time slot, up to 7 days ahead.\n\n2. A Grid Operator approves the booking and you get a QR code.\n\n3. Show the QR code at the station. The operator scans it and charging starts.\n\nYou can change or cancel a booking up to 12 hours before the slot.</string>
+    <string name="home_why_body">Solar hubs charge your vehicle with clean energy made from sunlight, so every kWh cuts fuel costs and carbon emissions.\n\nSolarGrid shows free slots and the LKR rate per kWh for each station, so you know the cost before you book.</string>
 </resources>
