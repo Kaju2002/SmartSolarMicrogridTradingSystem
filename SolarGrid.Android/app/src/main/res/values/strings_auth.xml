@@ -50,4 +50,8 @@
     <string name="login_welcome">Welcome, %1$s</string>
     <string name="login_error_role">This account type cannot use the mobile app.</string>
     <string name="logout">Logout</string>
+
+    <!-- Profile tab -->
+    <string name="profile_title">Profile</string>
+    <string name="profile_nic">NIC: %1$s</string>
 </resources>

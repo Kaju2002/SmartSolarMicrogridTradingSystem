@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    File: fragment_home.xml
+    Module: Team
+    Description: Home tab. Greeting now; dashboard cards come later.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="@dimen/screen_padding"
+    tools:context=".home.HomeFragment">
+
+    <TextView
+        android:id="@+id/tvWelcome"
+        style="@style/Widget.SolarGrid.ScreenTitle"
+        android:layout_marginTop="@dimen/space_sm"
+        tools:text="Welcome, Kajan" />
+
+    <TextView
+        style="@style/Widget.SolarGrid.ScreenSubtitle"
+        android:text="@string/prosumer_home_subtitle" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_lg"
+        android:text="@string/home_hint"
+        android:textColor="@color/text_hint"
+        android:textSize="@dimen/text_body" />
+</LinearLayout>

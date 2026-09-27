@@ -54,4 +54,46 @@
         <item name="android:padding">@dimen/space_md</item>
         <item name="android:scaleType">fitCenter</item>
     </style>
+
+    <!-- Big bold heading at the top of each tab screen -->
+    <style name="Widget.SolarGrid.ScreenTitle" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">@dimen/text_title</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- One-line description under a screen title -->
+    <style name="Widget.SolarGrid.ScreenSubtitle" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/space_xs</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:textSize">@dimen/text_body</item>
+    </style>
+
+    <!-- Grey icon + text shown when a list has nothing yet -->
+    <style name="Widget.SolarGrid.EmptyText" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/space_sm</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/text_hint</item>
+        <item name="android:textSize">@dimen/text_body</item>
+    </style>
+
+    <!-- White bottom nav with labels always shown and a gold pill behind the selected icon -->
+    <style name="Widget.SolarGrid.BottomNav" parent="Widget.Material3.BottomNavigationView">
+        <item name="android:background">@color/white</item>
+        <item name="itemIconTint">@color/nav_item_color</item>
+        <item name="itemTextColor">@color/nav_item_color</item>
+        <item name="labelVisibilityMode">labeled</item>
+        <item name="itemActiveIndicatorStyle">@style/Widget.SolarGrid.BottomNav.Indicator</item>
+    </style>
+
+    <!-- Gold pill for the selected tab -->
+    <style name="Widget.SolarGrid.BottomNav.Indicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">@color/accent_gold</item>
+    </style>
 </resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Reservation Management (Kajanthan): booking texts -->
+<resources>
+    <string name="bookings_title">My Bookings</string>
+    <string name="bookings_subtitle">Your charging slot reservations</string>
+    <string name="bookings_empty">No bookings yet. Pick a station to book a slot.</string>
+</resources>

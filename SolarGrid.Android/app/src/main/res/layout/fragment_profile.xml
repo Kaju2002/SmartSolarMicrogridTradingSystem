@@ -1,37 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    File: activity_prosumer_home.xml
-    Module: Team
-    Description: Prosumer home (placeholder until the dashboard is built)
+    File: fragment_profile.xml
+    Module: Identity and Access (Vithusha)
+    Description: Profile tab. User name, NIC and logout.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    android:fitsSystemWindows="true"
     android:orientation="vertical"
     android:padding="@dimen/screen_padding"
-    tools:context=".home.ProsumerHomeActivity">
+    tools:context=".auth.ProfileFragment">
 
     <TextView
-        android:id="@+id/tvWelcome"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/Widget.SolarGrid.ScreenTitle"
+        android:layout_marginTop="@dimen/space_sm"
+        android:text="@string/profile_title" />
+
+    <!-- Initials in a gold circle -->
+    <TextView
+        android:id="@+id/tvAvatar"
+        android:layout_width="@dimen/avatar_size"
+        android:layout_height="@dimen/avatar_size"
         android:layout_marginTop="@dimen/space_lg"
+        android:background="@drawable/bg_avatar_circle"
+        android:gravity="center"
+        android:importantForAccessibility="no"
         android:textColor="@color/text_primary"
-        android:textSize="@dimen/text_title"
+        android:textSize="@dimen/text_avatar"
         android:textStyle="bold"
-        tools:text="Welcome, Kajan" />
+        tools:text="KA" />
 
     <TextView
+        android:id="@+id/tvProfileName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/space_xs"
-        android:text="@string/prosumer_home_subtitle"
-        android:textColor="@color/text_secondary"
-        android:textSize="@dimen/text_body" />
+        android:layout_marginTop="@dimen/space_md"
+        android:textColor="@color/text_primary"
+        android:textSize="@dimen/text_profile_name"
+        android:textStyle="bold"
+        tools:text="Kajanthan" />
+
+    <TextView
+        android:id="@+id/tvProfileNic"
+        style="@style/Widget.SolarGrid.ScreenSubtitle"
+        tools:text="NIC: 200012345678" />
 
     <Space
         android:layout_width="match_parent"
