@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- White wave laid over the bottom of the hero image (same curve as the old design) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="360dp"
+    android:height="60dp"
+    android:viewportWidth="360"
+    android:viewportHeight="60">
+    <path
+        android:fillColor="@color/white"
+        android:pathData="M360,9.2 C306,48.5 198,64.6 136.8,32.3 C79.2,0 28.8,18.5 0,41.5 L0,60 L360,60 Z" />
+</vector>
