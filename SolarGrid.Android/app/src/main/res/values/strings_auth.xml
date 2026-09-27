@@ -17,4 +17,7 @@
     <string name="login_error_offline">No internet connection.</string>
     <string name="login_error_server">Cannot reach the server. Is the API running?</string>
     <string name="login_error_backoffice">Backoffice users please use the web portal.</string>
+
+    <string name="register_coming_soon">Registration screen is coming soon.</string>
+    <string name="login_ready_placeholder">Fields OK. API login comes in the next step.</string>
 </resources>
