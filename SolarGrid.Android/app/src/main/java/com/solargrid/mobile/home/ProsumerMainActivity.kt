@@ -28,6 +28,7 @@ import kotlinx.coroutines.launch
 class ProsumerMainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityProsumerMainBinding
+    private var statusBarHeight = 0
 
     // Set up insets, tabs and back handling, then make sure someone is logged in
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,11 +50,22 @@ class ProsumerMainActivity : AppCompatActivity() {
 
     // Tabs start below the status bar; the nav pads itself for the gesture bar
     private fun applyWindowInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.fragmentContainer) { view, insets ->
-            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.updatePadding(top = bars.top)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.fragmentContainer) { _, insets ->
+            statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
+            updateTopPadding(binding.bottomNav.selectedItemId)
             insets
         }
+    }
+
+    // Home's hero goes behind the status bar and pads its own text; other tabs sit below it
+    private fun updateTopPadding(itemId: Int) {
+        val top = if (itemId == R.id.nav_home) 0 else statusBarHeight
+        binding.fragmentContainer.updatePadding(top = top)
+    }
+
+    // Lets a tab (e.g. Home shortcuts) switch to another tab
+    fun openTab(itemId: Int) {
+        binding.bottomNav.selectedItemId = itemId
     }
 
     // Tapping a tab shows its fragment; tapping the open tab does nothing for now
@@ -96,6 +108,7 @@ class ProsumerMainActivity : AppCompatActivity() {
             transaction.show(existing)
         }
         transaction.commit()
+        updateTopPadding(itemId)
     }
 
     // Fragment tag for each nav item

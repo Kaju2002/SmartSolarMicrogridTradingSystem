@@ -14,6 +14,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.solargrid.mobile.R
+import com.solargrid.mobile.core.utils.initialsOf
 import com.solargrid.mobile.databinding.FragmentProfileBinding
 import kotlinx.coroutines.launch
 
@@ -49,15 +50,6 @@ class ProfileFragment : Fragment() {
             binding.tvProfileNic.text = getString(R.string.profile_nic, user.nic.orEmpty())
         }
     }
-
-    // "Kajan Siva" -> "KS", "Kajan" -> "K"
-    private fun initialsOf(fullName: String): String =
-        fullName.trim()
-            .split(Regex("\\s+"))
-            .filter { it.isNotEmpty() }
-            .take(2)
-            .joinToString("") { it.first().uppercase() }
-            .ifEmpty { "?" }
 
     // Clear the session, then login becomes the only screen
     private fun logout() {

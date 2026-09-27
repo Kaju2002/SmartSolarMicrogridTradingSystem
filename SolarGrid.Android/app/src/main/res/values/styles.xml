@@ -83,6 +83,17 @@
         <item name="android:textSize">@dimen/text_body</item>
     </style>
 
+    <!-- Small grey caps heading above a group, e.g. "YOUR SOLARGRID" -->
+    <style name="Widget.SolarGrid.SectionLabel" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">0.08</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/text_hint</item>
+        <item name="android:textSize">@dimen/text_section_label</item>
+    </style>
+
     <!-- White bottom nav with labels always shown and a gold pill behind the selected icon -->
     <style name="Widget.SolarGrid.BottomNav" parent="Widget.Material3.BottomNavigationView">
         <item name="android:background">@color/white</item>
@@ -90,6 +101,17 @@
         <item name="itemTextColor">@color/nav_item_color</item>
         <item name="labelVisibilityMode">labeled</item>
         <item name="itemActiveIndicatorStyle">@style/Widget.SolarGrid.BottomNav.Indicator</item>
+        <item name="itemTextAppearanceActive">@style/TextAppearance.SolarGrid.NavLabel.Active</item>
+        <item name="itemTextAppearanceInactive">@style/TextAppearance.SolarGrid.NavLabel</item>
+    </style>
+
+    <!-- Bottom nav labels: a bit larger than the default, bold when selected -->
+    <style name="TextAppearance.SolarGrid.NavLabel" parent="TextAppearance.Material3.LabelMedium">
+        <item name="android:textSize">@dimen/text_nav_label</item>
+    </style>
+
+    <style name="TextAppearance.SolarGrid.NavLabel.Active">
+        <item name="android:textStyle">bold</item>
     </style>
 
     <!-- Gold pill for the selected tab -->
