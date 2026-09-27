@@ -12,6 +12,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -29,6 +30,16 @@ import kotlinx.coroutines.launch
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
+
+    // Register screen sends back the new NIC so the user only types the password later
+    private val registerLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val nic = result.data?.getStringExtra(RegisterActivity.EXTRA_NIC)
+            if (result.resultCode == RESULT_OK && !nic.isNullOrBlank()) {
+                binding.etIdentifier.setText(nic)
+                binding.etPassword.requestFocus()
+            }
+        }
 
     // Inflates the layout and wires up insets and click listeners
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -101,7 +112,7 @@ class LoginActivity : AppCompatActivity() {
         binding.etPassword.doAfterTextChanged { hideError() }
 
         binding.tvRegister.setOnClickListener {
-            Toast.makeText(this, R.string.register_coming_soon, Toast.LENGTH_SHORT).show()
+            registerLauncher.launch(Intent(this, RegisterActivity::class.java))
         }
 
         // Social buttons are design only; the API has no social login

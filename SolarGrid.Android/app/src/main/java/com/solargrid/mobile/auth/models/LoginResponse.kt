@@ -1,9 +1,9 @@
 /*
  * File: LoginResponse.kt
  * Module: Identity and Access (Vithusha)
- * Description: JSON returned by POST api/auth/login. Matches LoginResponseDto
- *              in SolarGrid.API. The API sends this same shape on 200 (success)
- *              and on 401 (wrong credentials or inactive account).
+ * Description: JSON returned by POST api/auth/login and api/auth/register.
+ *              Matches LoginResponseDto in SolarGrid.API. The API sends this
+ *              same shape on success and on errors (401 login, 409 register).
  */
 package com.solargrid.mobile.auth.models
 

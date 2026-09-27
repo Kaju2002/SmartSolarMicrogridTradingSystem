@@ -4,6 +4,8 @@
  * Author: Vithusha (Identity and Access)
  * Date: 20/09/2026
  */
+using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 using MongoDB.Driver;
 using SolarGrid.API.Data;
 using SolarGrid.API.DTOs;
@@ -14,6 +16,10 @@ namespace SolarGrid.API.Services;
 
 public class AuthService : IAuthService
 {
+    private const int MinPasswordLength = 6;
+    private static readonly Regex NicRegex = new(@"^(\d{9}[VvXx]|\d{12})$", RegexOptions.Compiled);
+    private static readonly Regex PhoneRegex = new(@"^\+?\d{9,15}$", RegexOptions.Compiled);
+
     private readonly IMongoCollection<User> _users;
     private readonly JwtTokenHelper _jwtTokenHelper;
 
@@ -76,28 +82,65 @@ public class AuthService : IAuthService
         };
     }
 
-    // Public self-register — Prosumer only (PendingApproval)
-    public async Task<LoginResponseDto> RegisterAsync(RegisterRequestDto request)
+    // Check register fields, null when valid
+    public string? ValidateRegistration(RegisterRequestDto request)
     {
         if (!string.IsNullOrWhiteSpace(request.UserType)
             && !string.Equals(request.UserType, "Prosumer", StringComparison.OrdinalIgnoreCase))
+            return "Public registration is limited to Prosumer accounts";
+
+        if (string.IsNullOrWhiteSpace(request.FullName))
+            return "Full name is required";
+        if (request.FullName.Trim().Length > 100)
+            return "Full name must be 100 characters or less";
+
+        // Old NIC: 9 digits + V/X, new NIC: 12 digits
+        var nic = request.Nic?.Trim() ?? string.Empty;
+        if (nic.Length == 0)
+            return "NIC is required";
+        if (!NicRegex.IsMatch(nic))
+            return "NIC must be 12 digits or 9 digits followed by V or X";
+
+        var phone = request.PhoneNumber?.Trim() ?? string.Empty;
+        if (phone.Length == 0)
+            return "Phone number is required";
+        if (!PhoneRegex.IsMatch(phone))
+            return "Phone number must be 9 to 15 digits";
+
+        var email = request.Email?.Trim() ?? string.Empty;
+        if (email.Length == 0)
+            return "E-mail is required";
+        if (!new EmailAddressAttribute().IsValid(email) || !email.Contains('.'))
+            return "E-mail is not valid";
+
+        if (string.IsNullOrEmpty(request.Password) || request.Password.Length < MinPasswordLength)
+            return $"Password must be at least {MinPasswordLength} characters";
+
+        return null;
+    }
+
+    // Public self-register — Prosumer only (PendingApproval)
+    public async Task<LoginResponseDto> RegisterAsync(RegisterRequestDto request)
+    {
+        var error = ValidateRegistration(request);
+        if (error is not null)
         {
             return new LoginResponseDto
             {
                 Success = false,
-                Message = "Public registration is limited to Prosumer accounts"
+                Message = error
             };
         }
 
         return await CreateUserAsync(
             userType: "Prosumer",
             status: "PendingApproval",
-            nic: request.Nic,
-            username: request.Username,
+            nic: request.Nic!.Trim().ToUpperInvariant(),
+            username: null,
             password: request.Password,
-            fullName: request.FullName,
-            email: request.Email,
-            phoneNumber: request.PhoneNumber);
+            fullName: request.FullName.Trim(),
+            email: request.Email.Trim(),
+            phoneNumber: request.PhoneNumber.Trim());
     }
 
     // Backoffice creates an Active Grid Operator

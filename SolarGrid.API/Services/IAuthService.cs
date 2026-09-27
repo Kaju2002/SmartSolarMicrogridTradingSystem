@@ -15,6 +15,8 @@ public interface IAuthService
     Task<LoginResponseDto> LoginAsync(LoginRequestDto request);
     // Public Prosumer self-register
     Task<LoginResponseDto> RegisterAsync(RegisterRequestDto request);
+    // Register field rules, null when valid
+    string? ValidateRegistration(RegisterRequestDto request);
     // Backoffice-only Grid Operator create
     Task<LoginResponseDto> CreateGridOperatorAsync(RegisterRequestDto request);
     // Update status
