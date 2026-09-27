@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    File: activity_login.xml
+    File: activity_register.xml
     Module: Identity and Access (Vithusha)
-    Description: Sign-in screen for Prosumers (NIC) and Grid Operators (username).
-                 Hero image with a step edge on top, then the sign-in form.
+    Description: Prosumer sign-up screen. New accounts wait for Backoffice approval.
 -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -12,25 +11,24 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     android:fillViewport="true"
-    tools:context=".auth.LoginActivity">
+    tools:context=".auth.RegisterActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Hero image; the white step edge sits on its bottom (Figma shape) -->
+        <!-- Hero image with the same step edge as login -->
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/login_hero_height">
+            android:layout_height="@dimen/register_hero_height">
 
             <ImageView
-                android:id="@+id/ivHero"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:importantForAccessibility="no"
                 android:scaleType="centerCrop"
-                android:src="@drawable/img_login_hero" />
+                android:src="@drawable/img_register_hero" />
 
             <ImageView
                 android:layout_width="match_parent"
@@ -41,7 +39,7 @@
                 android:src="@drawable/bg_hero_step" />
         </FrameLayout>
 
-        <!-- Sign-in form -->
+        <!-- Sign-up form -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -52,10 +50,9 @@
             android:paddingBottom="@dimen/screen_padding">
 
             <TextView
-                android:id="@+id/tvTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/login_title"
+                android:text="@string/register_title"
                 android:textColor="@color/text_primary"
                 android:textSize="@dimen/text_title"
                 android:textStyle="bold" />
@@ -64,32 +61,97 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/space_xs"
-                android:text="@string/login_subtitle"
+                android:text="@string/register_subtitle"
                 android:textColor="@color/text_secondary"
                 android:textSize="@dimen/text_body" />
 
-            <!-- NIC (Prosumer) or username (Operator) -->
+            <!-- Full name -->
             <TextView
                 style="@style/Widget.SolarGrid.FieldLabel"
                 android:layout_marginTop="@dimen/space_lg"
-                android:labelFor="@id/etIdentifier"
-                android:text="@string/identifier_label" />
+                android:labelFor="@id/etFullName"
+                android:text="@string/full_name_label" />
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilIdentifier"
+                android:id="@+id/tilFullName"
                 style="@style/Widget.SolarGrid.TextInputLayout.Pill"
                 android:layout_marginTop="@dimen/space_sm"
                 app:startIconDrawable="@drawable/ic_person">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etIdentifier"
+                    android:id="@+id/etFullName"
                     style="@style/Widget.SolarGrid.EditText.Pill"
-                    android:hint="@string/identifier_hint"
+                    android:hint="@string/full_name_hint"
                     android:imeOptions="actionNext"
-                    android:inputType="text" />
+                    android:inputType="textPersonName|textCapWords" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Password with show/hide eye icon -->
+            <!-- NIC: old (9 digits + V/X) or new (12 digits) -->
+            <TextView
+                style="@style/Widget.SolarGrid.FieldLabel"
+                android:layout_marginTop="@dimen/space_md"
+                android:labelFor="@id/etNic"
+                android:text="@string/nic_label" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilNic"
+                style="@style/Widget.SolarGrid.TextInputLayout.Pill"
+                android:layout_marginTop="@dimen/space_sm"
+                app:startIconDrawable="@drawable/ic_badge">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etNic"
+                    style="@style/Widget.SolarGrid.EditText.Pill"
+                    android:hint="@string/nic_hint"
+                    android:imeOptions="actionNext"
+                    android:inputType="textCapCharacters|textNoSuggestions"
+                    android:maxLength="12" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Phone -->
+            <TextView
+                style="@style/Widget.SolarGrid.FieldLabel"
+                android:layout_marginTop="@dimen/space_md"
+                android:labelFor="@id/etPhone"
+                android:text="@string/phone_label" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilPhone"
+                style="@style/Widget.SolarGrid.TextInputLayout.Pill"
+                android:layout_marginTop="@dimen/space_sm"
+                app:startIconDrawable="@drawable/ic_phone">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etPhone"
+                    style="@style/Widget.SolarGrid.EditText.Pill"
+                    android:hint="@string/phone_hint"
+                    android:imeOptions="actionNext"
+                    android:inputType="phone"
+                    android:maxLength="15" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- E-mail -->
+            <TextView
+                style="@style/Widget.SolarGrid.FieldLabel"
+                android:layout_marginTop="@dimen/space_md"
+                android:labelFor="@id/etEmail"
+                android:text="@string/email_label" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilEmail"
+                style="@style/Widget.SolarGrid.TextInputLayout.Pill"
+                android:layout_marginTop="@dimen/space_sm"
+                app:startIconDrawable="@drawable/ic_email">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etEmail"
+                    style="@style/Widget.SolarGrid.EditText.Pill"
+                    android:hint="@string/email_hint"
+                    android:imeOptions="actionNext"
+                    android:inputType="textEmailAddress" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Password -->
             <TextView
                 style="@style/Widget.SolarGrid.FieldLabel"
                 android:layout_marginTop="@dimen/space_md"
@@ -107,11 +169,33 @@
                     android:id="@+id/etPassword"
                     style="@style/Widget.SolarGrid.EditText.Pill"
                     android:hint="@string/password_hint"
+                    android:imeOptions="actionNext"
+                    android:inputType="textPassword" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Confirm password (checked on the phone so typos are caught before sending) -->
+            <TextView
+                style="@style/Widget.SolarGrid.FieldLabel"
+                android:layout_marginTop="@dimen/space_md"
+                android:labelFor="@id/etConfirmPassword"
+                android:text="@string/confirm_password_label" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilConfirmPassword"
+                style="@style/Widget.SolarGrid.TextInputLayout.Pill"
+                android:layout_marginTop="@dimen/space_sm"
+                app:endIconMode="password_toggle"
+                app:startIconDrawable="@drawable/ic_lock">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etConfirmPassword"
+                    style="@style/Widget.SolarGrid.EditText.Pill"
+                    android:hint="@string/confirm_password_hint"
                     android:imeOptions="actionDone"
                     android:inputType="textPassword" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Shown only when login fails; LoginActivity sets text and visibility -->
+            <!-- Shown only when sign-up fails; RegisterActivity sets text and visibility -->
             <TextView
                 android:id="@+id/tvError"
                 android:layout_width="match_parent"
@@ -120,7 +204,7 @@
                 android:textColor="@color/error_red"
                 android:textSize="@dimen/text_small"
                 android:visibility="gone"
-                tools:text="Invalid credentials"
+                tools:text="Username or NIC already exists"
                 tools:visibility="visible" />
 
             <!-- Button and spinner share one spot; spinner replaces the text while loading -->
@@ -130,9 +214,9 @@
                 android:layout_marginTop="@dimen/space_lg">
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnSignIn"
+                    android:id="@+id/btnCreateAccount"
                     style="@style/Widget.SolarGrid.Button.Primary"
-                    android:text="@string/sign_in" />
+                    android:text="@string/create_account" />
 
                 <ProgressBar
                     android:id="@+id/pbLoading"
@@ -173,7 +257,7 @@
                     android:background="@color/field_border" />
             </LinearLayout>
 
-            <!-- Social sign-in (UI only; the API supports NIC/username + password) -->
+            <!-- Social sign-up (UI only; the API supports NIC + password) -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -202,7 +286,7 @@
                     android:src="@drawable/ic_apple" />
             </LinearLayout>
 
-            <!-- "Don't have an account? Register Now" -->
+            <!-- "Already have an account? Login Now" -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -213,18 +297,18 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/no_account_prefix"
+                    android:text="@string/have_account_prefix"
                     android:textColor="@color/text_secondary"
                     android:textSize="@dimen/text_body" />
 
                 <TextView
-                    android:id="@+id/tvRegister"
+                    android:id="@+id/tvLogin"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/space_xs"
                     android:background="?attr/selectableItemBackground"
                     android:padding="@dimen/space_xs"
-                    android:text="@string/register_now"
+                    android:text="@string/login_now"
                     android:textColor="@color/accent_gold"
                     android:textSize="@dimen/text_body"
                     android:textStyle="bold" />

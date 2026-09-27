@@ -18,7 +18,29 @@
     <string name="login_error_server">Cannot reach the server. Is the API running?</string>
     <string name="login_error_backoffice">Backoffice users please use the web portal.</string>
 
-    <string name="register_coming_soon">Registration screen is coming soon.</string>
+    <!-- Register -->
+    <string name="register_title">Sign Up</string>
+    <string name="register_subtitle">Prosumer account, activated after Backoffice approval</string>
+    <string name="full_name_label">Full name</string>
+    <string name="full_name_hint">Input full name</string>
+    <string name="nic_label">NIC</string>
+    <string name="nic_hint">Input NIC (e.g. 200012345678)</string>
+    <string name="phone_label">Phone number</string>
+    <string name="phone_hint">Input phone number</string>
+    <string name="email_label">E-mail</string>
+    <string name="email_hint">Input e-mail</string>
+    <string name="confirm_password_label">Confirm password</string>
+    <string name="confirm_password_hint">Input password again</string>
+    <string name="create_account">Create Account</string>
+    <string name="have_account_prefix">Already have an account?</string>
+    <string name="login_now">Login Now</string>
+
+    <string name="register_error_empty">Fill in all fields.</string>
+    <string name="register_error_password_mismatch">Passwords do not match.</string>
+    <string name="register_error_failed">Registration failed. Check your details and try again.</string>
+    <string name="register_success_title">Registration submitted</string>
+    <string name="register_success_message">Your account is waiting for Backoffice approval. You can sign in once it is approved.</string>
+    <string name="ok">OK</string>
 
     <string name="or_divider">or</string>
     <string name="social_google">Sign in with Google</string>

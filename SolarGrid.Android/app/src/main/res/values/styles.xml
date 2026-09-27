@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Shared widget styles so login, register and later forms look the same -->
+<resources>
+
+    <!-- Bold label above a form field -->
+    <style name="Widget.SolarGrid.FieldLabel" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">@dimen/text_body</item>
+    </style>
+
+    <!-- Pill-shaped outlined field: gold border on focus, no floating hint -->
+    <style name="Widget.SolarGrid.TextInputLayout.Pill" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="boxCornerRadiusTopStart">@dimen/pill_radius</item>
+        <item name="boxCornerRadiusTopEnd">@dimen/pill_radius</item>
+        <item name="boxCornerRadiusBottomStart">@dimen/pill_radius</item>
+        <item name="boxCornerRadiusBottomEnd">@dimen/pill_radius</item>
+        <item name="boxStrokeColor">@color/selector_input_stroke</item>
+        <item name="hintEnabled">false</item>
+        <item name="startIconTint">@color/text_hint</item>
+        <item name="endIconTint">@color/text_hint</item>
+    </style>
+
+    <!-- Text inside a pill field -->
+    <style name="Widget.SolarGrid.EditText.Pill" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textColorHint">@color/text_hint</item>
+        <item name="android:textSize">@dimen/text_body</item>
+    </style>
+
+    <!-- Gold pill button (Sign In, Create Account); greys out when disabled -->
+    <style name="Widget.SolarGrid.Button.Primary" parent="Widget.Material3.Button">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/button_height</item>
+        <item name="backgroundTint">@color/selector_button_primary_bg</item>
+        <item name="android:textColor">@color/selector_button_primary_text</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="cornerRadius">@dimen/pill_radius</item>
+    </style>
+
+    <!-- Round Google / Microsoft / Apple button -->
+    <style name="Widget.SolarGrid.SocialButton" parent="">
+        <item name="android:layout_width">@dimen/social_button_size</item>
+        <item name="android:layout_height">@dimen/social_button_size</item>
+        <item name="android:background">@drawable/bg_social_circle</item>
+        <item name="android:padding">@dimen/space_md</item>
+        <item name="android:scaleType">fitCenter</item>
+    </style>
+</resources>

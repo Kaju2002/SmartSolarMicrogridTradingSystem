@@ -12,6 +12,7 @@
     <dimen name="button_height">54dp</dimen>
     <dimen name="login_hero_height">270dp</dimen>
     <dimen name="login_hero_edge_height">26dp</dimen>
+    <dimen name="register_hero_height">170dp</dimen>
     <dimen name="social_button_size">56dp</dimen>
 
     <dimen name="text_title">32sp</dimen>
