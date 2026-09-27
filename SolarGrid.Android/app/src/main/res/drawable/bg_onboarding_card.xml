@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- White onboarding card (Figma "Content" shape): rounded text block on top,
+     and a lower tab at the bottom-right that holds the arrow button -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="345dp"
+    android:height="250dp"
+    android:viewportWidth="345"
+    android:viewportHeight="250">
+
+    <path
+        android:fillColor="@color/white"
+        android:pathData="M20,0 L258,0 Q278,0 278,20 L278,101 Q278,121 298,121 L325,121 Q345,121 345,141 L345,230 Q345,250 325,250 L240,250 Q220,250 220,230 L220,228 Q220,216 208,216 L20,216 Q0,216 0,196 L0,20 Q0,0 20,0 Z" />
+</vector>
