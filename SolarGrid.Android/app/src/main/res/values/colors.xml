@@ -33,6 +33,7 @@
     <color name="station_open_bg">#FFE3F4E8</color>
     <color name="station_closed">#FF5F6368</color>
     <color name="station_closed_bg">#FFEDEDED</color>
+    <color name="station_closed_pin">#FFC7C9CC</color>
 
     <!-- Feedback -->
     <color name="error_red">#FFD32F2F</color>

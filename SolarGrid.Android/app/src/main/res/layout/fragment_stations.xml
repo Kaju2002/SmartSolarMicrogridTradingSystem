@@ -119,6 +119,27 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
+            <!-- Shown after the user moves the map themselves -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSearchArea"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|center_horizontal"
+                android:layout_marginTop="@dimen/space_md"
+                android:elevation="@dimen/station_card_elevation"
+                android:paddingStart="@dimen/space_md"
+                android:paddingEnd="20dp"
+                android:text="@string/stations_search_area"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp"
+                android:visibility="gone"
+                app:backgroundTint="@color/white"
+                app:cornerRadius="@dimen/pill_radius"
+                app:icon="@drawable/ic_search"
+                app:iconSize="20dp"
+                app:iconTint="@color/text_primary"
+                tools:visibility="visible" />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvStations"
                 android:layout_width="match_parent"

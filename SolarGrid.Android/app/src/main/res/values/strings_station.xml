@@ -14,14 +14,20 @@
         <item quantity="one">%1$d station near Colombo</item>
         <item quantity="other">%1$d stations near Colombo</item>
     </plurals>
+    <plurals name="stations_count_in_area">
+        <item quantity="one">%1$d station in this area</item>
+        <item quantity="other">%1$d stations in this area</item>
+    </plurals>
     <string name="stations_finding_location">Finding stations near you…</string>
+    <string name="stations_finding_area">Finding stations in this area…</string>
     <string name="stations_location_off">Your location is off</string>
     <string name="stations_location_unknown">Couldn\'t find your location</string>
+    <string name="stations_try_other_area">Move the map to look somewhere else</string>
     <string name="stations_use_location">Use my location</string>
+    <string name="stations_my_location">My location</string>
+    <string name="stations_search_area">Search this area</string>
 
-    <!-- Empty and error states -->
-    <string name="stations_empty_near_you">No stations within %1$d km of you yet.</string>
-    <string name="stations_empty_near_city">No stations near Colombo yet.</string>
+    <!-- Error state -->
     <string name="stations_retry">Try again</string>
 
     <!-- Station card -->

@@ -5,10 +5,12 @@
  */
 package com.solargrid.mobile.station
 
+import com.google.android.gms.maps.model.LatLng
 import com.google.gson.JsonParseException
 import com.solargrid.mobile.R
 import com.solargrid.mobile.core.managers.ContextManager
 import com.solargrid.mobile.core.managers.NetworkManager
+import com.solargrid.mobile.core.utils.distanceKm
 import com.solargrid.mobile.station.models.Station
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -25,17 +27,30 @@ class StationManager private constructor() {
     private val lastNearby = mutableMapOf<String, Station>()
 
     // Active stations near a point, nearest first. Stations without an id or position are skipped.
+    // The API measures distance from the search point; pass distanceFrom to measure from somewhere
+    // else (e.g. the user while browsing another area), or null when the user's position is unknown.
     suspend fun getNearbyStations(
         latitude: Double,
         longitude: Double,
-        radiusKm: Double = DEFAULT_RADIUS_KM
+        radiusKm: Double = DEFAULT_RADIUS_KM,
+        distanceFrom: LatLng? = LatLng(latitude, longitude)
     ): Result<List<Station>> = withContext(Dispatchers.IO) {
         val response = call { stationService.getNearby(latitude, longitude, radiusKm) }
             ?: return@withContext connectionFailure()
 
         val body = response.body()
         if (response.isSuccessful && body != null) {
-            val stations = body.filter { it.stationId != null && it.latitude != null && it.longitude != null }
+            val measuredFromCenter = distanceFrom?.latitude == latitude && distanceFrom.longitude == longitude
+            val stations = body
+                .filter { it.stationId != null && it.latitude != null && it.longitude != null }
+                .map { station ->
+                    if (measuredFromCenter) {
+                        station
+                    } else {
+                        val position = LatLng(station.latitude!!, station.longitude!!)
+                        station.copy(distanceKm = distanceFrom?.let { distanceKm(it, position) })
+                    }
+                }
             synchronized(lastNearby) {
                 lastNearby.clear()
                 stations.forEach { lastNearby[it.stationId!!] = it }

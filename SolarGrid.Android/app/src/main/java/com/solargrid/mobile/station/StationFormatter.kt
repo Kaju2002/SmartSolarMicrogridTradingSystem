@@ -76,6 +76,14 @@ object StationFormatter {
         )
     }
 
+    // False when the station is closed now or has no free slots; unknown values count as available
+    fun isAvailableNow(station: Station): Boolean {
+        val hasHours = station.openTime != null && station.closeTime != null
+        val openNow = !hasHours || station.isOpenAt(minuteOfDayNow())
+        val hasSlots = (station.availableSlots ?: 1) > 0
+        return openNow && hasSlots
+    }
+
     private fun unknown(context: Context) = context.getString(R.string.station_value_unknown)
 
     private fun minuteOfDayNow(): Int {
