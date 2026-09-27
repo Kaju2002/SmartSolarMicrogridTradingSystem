@@ -2,7 +2,7 @@
  * File: NetworkManager.kt
  * Description: Retrofit/OkHttp setup, JWT header and connectivity check
  */
-package com.solargrid.mobile.managers
+package com.solargrid.mobile.core.managers
 
 import android.content.Context
 import android.net.ConnectivityManager

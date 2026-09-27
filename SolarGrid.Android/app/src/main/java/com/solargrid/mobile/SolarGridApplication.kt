@@ -5,7 +5,7 @@
 package com.solargrid.mobile
 
 import android.app.Application
-import com.solargrid.mobile.managers.ContextManager
+import com.solargrid.mobile.core.managers.ContextManager
 
 class SolarGridApplication : Application() {
 
