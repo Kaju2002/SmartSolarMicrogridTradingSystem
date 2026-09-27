@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Station map pin for the selected station: bigger, dark with a gold centre -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="46dp"
+    android:height="57.5dp"
+    android:viewportWidth="48"
+    android:viewportHeight="60">
+
+    <path
+        android:fillColor="@color/text_primary"
+        android:pathData="M24,2C11.85,2 2,11.85 2,24C2,38 24,58 24,58C24,58 46,38 46,24C46,11.85 36.15,2 24,2Z"
+        android:strokeColor="@color/white"
+        android:strokeWidth="2.5" />
+    <path
+        android:fillColor="@color/accent_gold"
+        android:pathData="M14,24a10,10 0,1 0,20 0a10,10 0,1 0,-20 0Z" />
+</vector>

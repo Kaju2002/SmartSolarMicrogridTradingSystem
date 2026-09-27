@@ -4,6 +4,7 @@
  * Author: Gabilan (Station Management)
  * Date: 21/09/2026
  */
+using MongoDB.Bson;
 using MongoDB.Driver;
 using SolarGrid.API.Data;
 using SolarGrid.API.DTOs;
@@ -218,24 +219,47 @@ public class StationService : IStationService
         var nearby = activeStations
             .Select(s =>
             {
-                var distance = CalculateDistance(latitude, longitude, s.Latitude, s.Longitude);
-                return new StationResponseDto
-                {
-                    Success = true,
-                    Message = "Nearby station",
-                    StationId = s.Id,
-                    StationName = s.StationName,
-                    Latitude = s.Latitude,
-                    Longitude = s.Longitude,
-                    DistanceKm = distance,
-                    RatePerKwh = s.RatePerKwh
-                };
+                var station = ToPublicDto(s, "Nearby station");
+                station.DistanceKm = CalculateDistance(latitude, longitude, s.Latitude, s.Longitude);
+                return station;
             })
             .Where(s => s.DistanceKm <= radiusKm)
             .OrderBy(s => s.DistanceKm)
             .ToList();
 
         return nearby;
+    }
+
+    // One station by id (deactivated ones too, so old bookings can still show the name)
+    public async Task<StationResponseDto?> GetStationByIdAsync(string stationId)
+    {
+        // Bad id format would make the Mongo driver throw
+        if (!ObjectId.TryParse(stationId, out _))
+            return null;
+
+        var station = await _stations.Find(s => s.Id == stationId).FirstOrDefaultAsync();
+        return station is null ? null : ToPublicDto(station, "Station found");
+    }
+
+    // Fields a Prosumer may see (no creator or assigned operator ids)
+    private static StationResponseDto ToPublicDto(SolarStationInfo s, string message)
+    {
+        return new StationResponseDto
+        {
+            Success = true,
+            Message = message,
+            StationId = s.Id,
+            StationName = s.StationName,
+            Latitude = s.Latitude,
+            Longitude = s.Longitude,
+            RatePerKwh = s.RatePerKwh,
+            CapacityKWh = s.CapacityKWh,
+            BatterySlots = s.BatterySlots,
+            AvailableSlots = s.AvailableSlots,
+            OpenTime = s.OpenTime,
+            CloseTime = s.CloseTime,
+            Status = s.Status
+        };
     }
 
     // Haversine distance in km

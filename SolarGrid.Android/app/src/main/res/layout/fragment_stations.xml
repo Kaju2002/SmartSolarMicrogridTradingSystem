@@ -2,7 +2,8 @@
 <!--
     File: fragment_stations.xml
     Module: Station Management (Gabilan)
-    Description: Stations tab. Empty state until the station list is added.
+    Description: Stations tab. Header with the search area card, then a full-width map
+                 with a swipeable card per station. Loading, empty and error states share the map area.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -10,36 +11,169 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="@dimen/screen_padding"
     tools:context=".station.StationsFragment">
 
-    <TextView
-        style="@style/Widget.SolarGrid.ScreenTitle"
-        android:layout_marginTop="@dimen/space_sm"
-        android:text="@string/stations_title" />
-
-    <TextView
-        style="@style/Widget.SolarGrid.ScreenSubtitle"
-        android:text="@string/stations_subtitle" />
-
-    <!-- Empty state, centred in the space left -->
     <LinearLayout
-        android:id="@+id/layoutStationsEmpty"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="vertical">
-
-        <ImageView
-            android:layout_width="@dimen/empty_icon_size"
-            android:layout_height="@dimen/empty_icon_size"
-            android:importantForAccessibility="no"
-            android:src="@drawable/ic_solar_outlined"
-            app:tint="@color/text_hint" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="@dimen/screen_padding"
+        android:paddingTop="@dimen/screen_padding"
+        android:paddingEnd="@dimen/screen_padding"
+        android:paddingBottom="@dimen/space_md">
 
         <TextView
-            style="@style/Widget.SolarGrid.EmptyText"
-            android:text="@string/stations_empty" />
+            style="@style/Widget.SolarGrid.ScreenTitle"
+            android:layout_marginTop="@dimen/space_sm"
+            android:text="@string/stations_title" />
+
+        <TextView
+            style="@style/Widget.SolarGrid.ScreenSubtitle"
+            android:text="@string/stations_subtitle" />
+
+        <!-- Where we searched and how many stations were found -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardSearchArea"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_md"
+            app:cardBackgroundColor="@color/surface_soft"
+            app:cardCornerRadius="@dimen/home_card_radius"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:minHeight="72dp"
+                android:orientation="horizontal"
+                android:paddingStart="@dimen/space_md"
+                android:paddingTop="@dimen/space_sm"
+                android:paddingEnd="@dimen/space_sm"
+                android:paddingBottom="@dimen/space_sm">
+
+                <ImageView
+                    android:layout_width="@dimen/home_row_icon_tile"
+                    android:layout_height="@dimen/home_row_icon_tile"
+                    android:background="@drawable/bg_icon_tile"
+                    android:importantForAccessibility="no"
+                    android:padding="11dp"
+                    android:src="@drawable/ic_location" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/space_md"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvSearchArea"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/stations_finding_location"
+                        android:textColor="@color/text_primary"
+                        android:textSize="@dimen/text_row_title"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvSearchAreaHint"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="@dimen/text_row_subtitle"
+                        android:visibility="gone"
+                        tools:text="@string/stations_location_off"
+                        tools:visibility="visible" />
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnUseLocation"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/stations_use_location"
+                    android:textColor="@color/primary_blue"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <!-- Map with the station cards floating at the bottom -->
+        <FrameLayout
+            android:id="@+id/layoutMap"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/mapStations"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvStations"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:clipToPadding="false"
+                android:orientation="horizontal"
+                android:overScrollMode="never"
+                android:paddingStart="@dimen/screen_padding"
+                android:paddingEnd="@dimen/screen_padding"
+                android:visibility="gone"
+                tools:listitem="@layout/item_station_card"
+                tools:visibility="visible" />
+        </FrameLayout>
+
+        <ProgressBar
+            android:id="@+id/progressStations"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center"
+            android:indeterminateTint="@color/text_primary"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/layoutStationsEmpty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingStart="@dimen/screen_padding"
+            android:paddingEnd="@dimen/screen_padding"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="@dimen/empty_icon_size"
+                android:layout_height="@dimen/empty_icon_size"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_solar_outlined"
+                app:tint="@color/text_hint" />
+
+            <TextView
+                android:id="@+id/tvStationsEmpty"
+                style="@style/Widget.SolarGrid.EmptyText"
+                android:text="@string/stations_empty" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnRetry"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_md"
+                android:text="@string/stations_retry"
+                android:textColor="@color/text_primary"
+                android:visibility="gone" />
+        </LinearLayout>
+    </FrameLayout>
 </LinearLayout>

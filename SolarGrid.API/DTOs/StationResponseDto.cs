@@ -18,4 +18,12 @@ public class StationResponseDto
     // nearby search only
     public double? RatePerKwh { get; set; }
     // LKR per kWh when returned for nearby / book
+
+    // Station card details for the mobile app (nearby / get by id)
+    public double? CapacityKWh { get; set; }
+    public int? BatterySlots { get; set; }
+    public int? AvailableSlots { get; set; }
+    public string? OpenTime { get; set; }
+    public string? CloseTime { get; set; }
+    public string? Status { get; set; }
 }

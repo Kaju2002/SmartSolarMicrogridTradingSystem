@@ -4,4 +4,53 @@
     <string name="stations_title">Stations</string>
     <string name="stations_subtitle">Solar charging stations near you</string>
     <string name="stations_empty">No stations to show yet.</string>
+
+    <!-- Search area card -->
+    <plurals name="stations_count_near_you">
+        <item quantity="one">%1$d station within %2$d km of you</item>
+        <item quantity="other">%1$d stations within %2$d km of you</item>
+    </plurals>
+    <plurals name="stations_count_near_city">
+        <item quantity="one">%1$d station near Colombo</item>
+        <item quantity="other">%1$d stations near Colombo</item>
+    </plurals>
+    <string name="stations_finding_location">Finding stations near you…</string>
+    <string name="stations_location_off">Your location is off</string>
+    <string name="stations_location_unknown">Couldn\'t find your location</string>
+    <string name="stations_use_location">Use my location</string>
+
+    <!-- Empty and error states -->
+    <string name="stations_empty_near_you">No stations within %1$d km of you yet.</string>
+    <string name="stations_empty_near_city">No stations near Colombo yet.</string>
+    <string name="stations_retry">Try again</string>
+
+    <!-- Station card -->
+    <string name="station_open_now">Open now</string>
+    <string name="station_closed">Closed</string>
+    <string name="station_hours">%1$s – %2$s</string>
+    <string name="station_distance_km">%1$s km</string>
+    <string name="station_distance_m">%1$d m</string>
+    <string name="station_rate">LKR %1$s</string>
+    <string name="station_slots">%1$d of %2$d</string>
+    <string name="station_value_unknown">–</string>
+    <string name="station_label_away">away</string>
+    <string name="station_label_rate">per kWh</string>
+    <string name="station_label_slots">slots free</string>
+    <string name="station_unnamed">Solar station</string>
+    <string name="station_capacity">%1$s kWh</string>
+
+    <!-- Station detail sheet -->
+    <string name="station_distance_away">%1$s away</string>
+    <string name="station_info_hours">Opening hours</string>
+    <string name="station_info_price">Price per kWh</string>
+    <string name="station_info_slots">Free battery slots</string>
+    <string name="station_info_capacity">Capacity</string>
+    <string name="station_directions">Directions</string>
+    <string name="station_book_slot">Book a slot</string>
+    <string name="station_book_coming">Booking opens here in the next update.</string>
+    <string name="station_no_maps_app">No app found to open directions.</string>
+
+    <string name="station_error_session">Your session has expired. Please sign in again.</string>
+    <string name="station_error_not_found">Station not found.</string>
+    <string name="station_error_load">Could not load stations. Please try again.</string>
 </resources>

@@ -21,4 +21,6 @@ public interface IStationService
     Task<StationResponseDto> DeactivateStationAsync(string stationId);
     // Nearby stations
     Task<List<StationResponseDto>> GetNearbyStationsAsync(double latitude, double longitude, double radiusKm);
+    // One station for the mobile app, null if not found
+    Task<StationResponseDto?> GetStationByIdAsync(string stationId);
 }

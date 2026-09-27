@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    File: item_station_info.xml
+    Module: Station Management (Gabilan)
+    Description: One fact tile in the station detail sheet: icon, label and value.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:background="@drawable/bg_info_tile"
+    android:orientation="vertical"
+    android:padding="@dimen/space_md">
+
+    <ImageView
+        android:id="@+id/ivInfoIcon"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:importantForAccessibility="no"
+        tools:src="@drawable/ic_schedule" />
+
+    <TextView
+        android:id="@+id/tvInfoLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/text_hint"
+        android:textSize="@dimen/text_small"
+        tools:text="@string/station_info_hours" />
+
+    <TextView
+        android:id="@+id/tvInfoValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:textColor="@color/text_primary"
+        android:textSize="@dimen/text_station_stat"
+        android:textStyle="bold"
+        tools:text="06:00 – 18:00" />
+</LinearLayout>
