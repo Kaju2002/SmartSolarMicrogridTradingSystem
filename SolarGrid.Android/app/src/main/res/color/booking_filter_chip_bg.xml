@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Bookings filter chips: gold when picked, soft grey otherwise -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="@color/accent_gold" android:state_checked="true" />
+    <item android:color="@color/surface_soft" />
+</selector>

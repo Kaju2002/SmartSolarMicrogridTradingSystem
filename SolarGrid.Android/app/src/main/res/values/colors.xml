@@ -35,6 +35,12 @@
     <color name="station_closed_bg">#FFEDEDED</color>
     <color name="station_closed_pin">#FFC7C9CC</color>
 
+    <!-- Booking status pill (Approved reuses station_open, Cancelled station_closed) -->
+    <color name="booking_pending">#FF8A6A00</color>
+    <color name="booking_pending_bg">#FFFFF4D4</color>
+    <color name="booking_completed">#FF3A63D9</color>
+    <color name="booking_completed_bg">#FFE7EDFA</color>
+
     <!-- Feedback -->
     <color name="error_red">#FFD32F2F</color>
 </resources>

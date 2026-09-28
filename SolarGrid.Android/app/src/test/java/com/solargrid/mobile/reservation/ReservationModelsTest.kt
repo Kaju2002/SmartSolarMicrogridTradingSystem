@@ -119,4 +119,43 @@ class ReservationModelsTest {
     fun slotWithoutTimeIsNotBookable() {
         assertFalse(BookingSlot(null, "06:00", "07:00", 5, 40.0, BookingSlot.STATUS_AVAILABLE).isAvailable())
     }
+
+    // 03:30 UTC is 09:00 in Sri Lanka
+    @Test
+    fun showsSriLankaClock() {
+        val start = ReservationTime.parseUtc("2026-09-29T03:30:00Z")!!
+
+        assertEquals("09:00", ReservationTime.clock(start))
+        assertEquals("10:00", ReservationTime.clock(start + ReservationTime.SLOT_LENGTH_MS))
+    }
+
+    // A booking counts as past only after its one-hour slot ends
+    @Test
+    fun bookingIsPastAfterSlotEnds() {
+        val booking = Reservation("r1", "s1", "2026-09-29T03:30:00Z", 10.0, 450.0, Reservation.STATUS_APPROVED, null, null)
+        val start = ReservationTime.parseUtc(booking.reservationDateTime)!!
+
+        assertFalse(ReservationFormatter.isPast(booking, now = start + 30 * 60 * 1000L))
+        assertTrue(ReservationFormatter.isPast(booking, now = start + ReservationTime.SLOT_LENGTH_MS))
+    }
+
+    // Change / cancel stays open until exactly 12 hours before the slot, like the API
+    @Test
+    fun changeClosesTwelveHoursBefore() {
+        val booking = Reservation("r1", "s1", "2026-09-29T03:30:00Z", 10.0, 450.0, Reservation.STATUS_PENDING, null, null)
+        val deadline = ReservationFormatter.changeDeadline(booking)!!
+
+        assertEquals(ReservationTime.parseUtc(booking.reservationDateTime)!! - 12 * 60 * 60 * 1000L, deadline)
+        assertTrue(ReservationFormatter.canChange(booking, now = deadline))
+        assertFalse(ReservationFormatter.canChange(booking, now = deadline + 1))
+    }
+
+    // Cancelled and completed bookings can't be changed, however far away
+    @Test
+    fun onlyLiveBookingsCanChange() {
+        val cancelled = Reservation("r1", "s1", "2026-09-29T03:30:00Z", 10.0, 450.0, Reservation.STATUS_CANCELLED, null, null)
+        val farAhead = ReservationTime.parseUtc(cancelled.reservationDateTime)!! - 3 * 24 * 60 * 60 * 1000L
+
+        assertFalse(ReservationFormatter.canChange(cancelled, now = farAhead))
+    }
 }

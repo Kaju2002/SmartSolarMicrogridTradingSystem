@@ -4,6 +4,8 @@
  * Description: Booking screen opened from a station. The user picks a day (next 7 days), a free
  *              hourly slot and how many kWh, then confirms. Slot states, kWh limits, booking rules
  *              and the final cost come from the API; the cost shown before booking is a preview.
+ *              In change mode it moves an existing booking: the kWh stays the same, so only slots
+ *              with enough kWh left can be picked.
  */
 package com.solargrid.mobile.reservation
 
@@ -25,6 +27,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.solargrid.mobile.R
 import com.solargrid.mobile.databinding.ActivityBookSlotBinding
 import com.solargrid.mobile.reservation.models.BookingSlot
+import com.solargrid.mobile.reservation.models.Reservation
 import com.solargrid.mobile.reservation.models.ReservationResult
 import com.solargrid.mobile.station.StationFormatter
 import com.solargrid.mobile.station.StationManager
@@ -58,6 +61,12 @@ class BookSlotActivity : AppCompatActivity() {
     // True while the booking request is running
     private var booking = false
 
+    // Change mode: the booking being moved, its current slot and its fixed kWh
+    private var changeId: String? = null
+    private var changeSlot: Long? = null
+    private var changeKWh = 0.0
+    private val isChange get() = changeId != null
+
     private val dayAdapter = BookingDayAdapter { position -> selectDay(position) }
     private val slotAdapter = BookingSlotAdapter { slot -> selectSlot(slot) }
 
@@ -72,7 +81,11 @@ class BookSlotActivity : AppCompatActivity() {
             finish()
             return
         }
-        selectedDay = savedInstanceState?.getInt(STATE_DAY)?.coerceIn(days.indices) ?: 0
+        changeId = intent.getStringExtra(EXTRA_CHANGE_ID)
+        changeSlot = ReservationTime.parseUtc(intent.getStringExtra(EXTRA_CHANGE_SLOT))
+        changeKWh = intent.getDoubleExtra(EXTRA_CHANGE_KWH, 0.0)
+
+        selectedDay = savedInstanceState?.getInt(STATE_DAY)?.coerceIn(days.indices) ?: startDay()
         requestedKWh = savedInstanceState?.getInt(STATE_KWH, DEFAULT_KWH) ?: DEFAULT_KWH
         val restoredSlot = savedInstanceState?.getString(STATE_SLOT)
 
@@ -87,6 +100,13 @@ class BookSlotActivity : AppCompatActivity() {
         outState.putInt(STATE_DAY, selectedDay)
         outState.putString(STATE_SLOT, selectedSlot?.slotDateTime)
         outState.putInt(STATE_KWH, requestedKWh)
+    }
+
+    // Change mode opens on the booking's own day; new bookings open on today
+    private fun startDay(): Int {
+        val current = changeSlot ?: return 0
+        val date = ReservationTime.apiDate(current)
+        return days.indexOfFirst { ReservationTime.apiDate(it) == date }.coerceAtLeast(0)
     }
 
     // Keep the top bar below the status bar and the Confirm button above the gesture bar
@@ -116,7 +136,42 @@ class BookSlotActivity : AppCompatActivity() {
 
         binding.btnRetrySlots.setOnClickListener { loadSlots() }
         binding.btnConfirm.setOnClickListener { confirmBooking() }
+        if (isChange) setupChangeMode()
         updateSummary()
+    }
+
+    // "Change time" title, the current slot note and the Move button
+    private fun setupChangeMode() {
+        binding.tvTitle.setText(R.string.booking_change_title)
+        binding.btnConfirm.setText(R.string.booking_change_confirm)
+
+        val current = changeSlot ?: return
+        val time = getString(
+            R.string.booking_time_range,
+            ReservationTime.dayLabel(current),
+            ReservationTime.clock(current),
+            ReservationTime.clock(current + ReservationTime.SLOT_LENGTH_MS)
+        )
+        binding.tvChangeNote.isVisible = true
+        binding.tvChangeNote.text = if (changeKWh > 0) {
+            getString(R.string.booking_change_current, time, ReservationFormatter.number(changeKWh))
+        } else {
+            getString(R.string.booking_change_current_no_kwh, time)
+        }
+    }
+
+    // Change mode: mark the booking's own slot, and grey out slots without room for its kWh
+    private fun markForChange(list: List<BookingSlot>): List<BookingSlot> {
+        if (!isChange) return list
+        return list.map { slot ->
+            when {
+                ReservationTime.parseUtc(slot.slotDateTime) == changeSlot ->
+                    slot.copy(status = BookingSlot.STATUS_CURRENT)
+                slot.isAvailable() && (slot.kWhLeft ?: 0.0) < changeKWh ->
+                    slot.copy(status = BookingSlot.STATUS_FULL)
+                else -> slot
+            }
+        }
     }
 
     // Name, hours and price from the map's cache first, then fresh from the API
@@ -166,7 +221,7 @@ class BookSlotActivity : AppCompatActivity() {
         slotsJob = lifecycleScope.launch {
             reservationManager.getAvailability(stationId, date)
                 .onSuccess { availability ->
-                    slots = availability.slots.orEmpty()
+                    slots = markForChange(availability.slots.orEmpty())
                     ratePerKwh = availability.ratePerKwh ?: 0.0
                     minKWh = ceil(availability.minKWh ?: 1.0).toInt().coerceAtLeast(1)
                     selectedSlot = slots.firstOrNull { it.slotDateTime == keepSlotTime && it.isAvailable() }
@@ -189,9 +244,10 @@ class BookSlotActivity : AppCompatActivity() {
     }
 
     // Show the energy picker for the picked slot and keep the request inside its limit
+    // (hidden in change mode: the API keeps the booking's kWh)
     private fun updateEnergy() {
         val range = kWhRange()
-        binding.layoutEnergy.isVisible = range != null
+        binding.layoutEnergy.isVisible = range != null && !isChange
         if (range != null) {
             requestedKWh = requestedKWh.coerceIn(range)
             binding.sliderKWh.isVisible = range.last > range.first
@@ -260,9 +316,11 @@ class BookSlotActivity : AppCompatActivity() {
     // Bottom bar: "Tue, 29 Sep · 09:00 – 10:00 · 10 kWh" once a slot is picked
     private fun updateSummary() {
         val slot = selectedSlot
-        val canBook = slot != null && kWhRange() != null
+        val canBook = slot != null && (isChange || kWhRange() != null)
         binding.tvSummary.text = if (slot == null || !canBook) {
             getString(R.string.booking_pick_slot)
+        } else if (isChange) {
+            getString(R.string.booking_change_summary, ReservationTime.dayLabel(days[selectedDay]), slot.startTime, slot.endTime)
         } else {
             getString(
                 R.string.booking_summary,
@@ -276,6 +334,10 @@ class BookSlotActivity : AppCompatActivity() {
     private fun confirmBooking() {
         val slot = selectedSlot ?: return
         val slotTime = slot.slotDateTime ?: return
+        if (isChange) {
+            confirmChange(slot, slotTime)
+            return
+        }
         val kWh = requestedKWh
         setBooking(true)
 
@@ -291,9 +353,39 @@ class BookSlotActivity : AppCompatActivity() {
         }
     }
 
+    // Move the booking; the Bookings tab shows "Booking moved to ..." and reloads
+    private fun confirmChange(slot: BookingSlot, slotTime: String) {
+        val id = changeId ?: return
+        setBooking(true)
+
+        lifecycleScope.launch {
+            val result = reservationManager.updateReservation(id, slotTime)
+            setBooking(false)
+            result
+                .onSuccess {
+                    val message = getString(
+                        R.string.booking_changed_done, ReservationTime.dayLabel(days[selectedDay]), slot.startTime
+                    )
+                    setResult(RESULT_OK, Intent().putExtra(EXTRA_RESULT_MESSAGE, message))
+                    finish()
+                }
+                .onFailure { error ->
+                    showError(error.message, R.string.booking_error_update)
+                    loadSlots()
+                }
+        }
+    }
+
     private fun setBooking(inProgress: Boolean) {
         booking = inProgress
-        binding.btnConfirm.setText(if (inProgress) R.string.booking_confirming else R.string.booking_confirm)
+        binding.btnConfirm.setText(
+            when {
+                isChange && inProgress -> R.string.booking_changing
+                isChange -> R.string.booking_change_confirm
+                inProgress -> R.string.booking_confirming
+                else -> R.string.booking_confirm
+            }
+        )
         updateSummary()
     }
 
@@ -329,6 +421,10 @@ class BookSlotActivity : AppCompatActivity() {
 
     companion object {
         private const val EXTRA_STATION_ID = "station_id"
+        private const val EXTRA_CHANGE_ID = "change_reservation_id"
+        private const val EXTRA_CHANGE_SLOT = "change_slot"
+        private const val EXTRA_CHANGE_KWH = "change_kwh"
+        private const val EXTRA_RESULT_MESSAGE = "result_message"
         private const val STATE_DAY = "selected_day"
         private const val STATE_SLOT = "selected_slot"
         private const val STATE_KWH = "requested_kwh"
@@ -340,5 +436,18 @@ class BookSlotActivity : AppCompatActivity() {
         // Intent to book a slot at one station
         fun newIntent(context: Context, stationId: String): Intent =
             Intent(context, BookSlotActivity::class.java).putExtra(EXTRA_STATION_ID, stationId)
+
+        // Intent to move an existing booking; null if the booking is missing its ids
+        fun newChangeIntent(context: Context, booking: Reservation): Intent? {
+            val id = booking.id ?: return null
+            val stationId = booking.stationId ?: return null
+            return newIntent(context, stationId)
+                .putExtra(EXTRA_CHANGE_ID, id)
+                .putExtra(EXTRA_CHANGE_SLOT, booking.reservationDateTime)
+                .putExtra(EXTRA_CHANGE_KWH, booking.requestedKWh ?: 0.0)
+        }
+
+        // "Booking moved to ..." sent back after a change
+        fun resultMessage(data: Intent?): String? = data?.getStringExtra(EXTRA_RESULT_MESSAGE)
     }
 }

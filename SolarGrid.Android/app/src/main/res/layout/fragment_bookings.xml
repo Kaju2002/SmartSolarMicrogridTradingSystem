@@ -2,7 +2,8 @@
 <!--
     File: fragment_bookings.xml
     Module: Reservation Management (Kajanthan)
-    Description: Bookings tab. Empty state until the booking list is added.
+    Description: Bookings tab: title, filter chips with counts, and a pull-to-refresh list of
+                 booking cards. One message area covers loading errors and empty filters.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -10,36 +11,134 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="@dimen/screen_padding"
+    android:paddingTop="@dimen/space_sm"
     tools:context=".reservation.BookingsFragment">
 
     <TextView
         style="@style/Widget.SolarGrid.ScreenTitle"
-        android:layout_marginTop="@dimen/space_sm"
+        android:layout_marginStart="@dimen/screen_padding"
+        android:layout_marginTop="@dimen/space_xl"
         android:text="@string/bookings_title" />
 
     <TextView
         style="@style/Widget.SolarGrid.ScreenSubtitle"
+        android:layout_marginStart="@dimen/screen_padding"
         android:text="@string/bookings_subtitle" />
 
-    <!-- Empty state, centred in the space left -->
-    <LinearLayout
-        android:id="@+id/layoutBookingsEmpty"
+    <!-- Filters scroll sideways but start in line with the title -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_md"
+        android:clipToPadding="false"
+        android:paddingStart="@dimen/screen_padding"
+        android:paddingEnd="@dimen/screen_padding"
+        android:scrollbars="none">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroupFilter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:selectionRequired="true"
+            app:singleLine="true"
+            app:singleSelection="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipUpcoming"
+                style="@style/Widget.SolarGrid.FilterChip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                tools:text="Upcoming (2)" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipPending"
+                style="@style/Widget.SolarGrid.FilterChip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Pending (1)" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipApproved"
+                style="@style/Widget.SolarGrid.FilterChip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Approved (1)" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipPast"
+                style="@style/Widget.SolarGrid.FilterChip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Past (3)" />
+        </com.google.android.material.chip.ChipGroup>
+    </HorizontalScrollView>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeBookings"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:layout_marginTop="@dimen/space_sm"
+        android:layout_weight="1">
 
-        <ImageView
-            android:layout_width="@dimen/empty_icon_size"
-            android:layout_height="@dimen/empty_icon_size"
-            android:importantForAccessibility="no"
-            android:src="@drawable/ic_calendar_outlined"
-            app:tint="@color/text_hint" />
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <TextView
-            style="@style/Widget.SolarGrid.EmptyText"
-            android:text="@string/bookings_empty" />
-    </LinearLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvBookings"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingStart="@dimen/screen_padding"
+                android:paddingTop="@dimen/space_sm"
+                android:paddingEnd="@dimen/screen_padding"
+                android:paddingBottom="@dimen/space_lg"
+                tools:itemCount="3"
+                tools:listitem="@layout/item_booking_card" />
+
+            <ProgressBar
+                android:id="@+id/progressBookings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:indeterminateTint="@color/accent_gold"
+                android:visibility="gone" />
+
+            <!-- Empty filter, no bookings yet, or a loading error -->
+            <LinearLayout
+                android:id="@+id/layoutBookingsEmpty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingStart="@dimen/screen_padding"
+                android:paddingEnd="@dimen/screen_padding"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="@dimen/empty_icon_size"
+                    android:layout_height="@dimen/empty_icon_size"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_calendar_outlined"
+                    app:tint="@color/text_hint" />
+
+                <TextView
+                    android:id="@+id/tvBookingsEmpty"
+                    style="@style/Widget.SolarGrid.EmptyText"
+                    tools:text="@string/bookings_empty" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnBookingsAction"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_md"
+                    android:textColor="@color/text_primary"
+                    app:strokeColor="@color/field_border"
+                    tools:text="@string/bookings_find_station" />
+            </LinearLayout>
+        </FrameLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </LinearLayout>
