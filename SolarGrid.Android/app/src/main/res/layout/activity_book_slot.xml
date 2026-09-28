@@ -32,6 +32,7 @@
             android:src="@drawable/ic_arrow_back" />
 
         <TextView
+            android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/space_xs"
@@ -76,6 +77,26 @@
                 android:textColor="@color/text_secondary"
                 android:textSize="15sp"
                 tools:text="06:00 – 20:00 · LKR 45 per kWh" />
+
+            <!-- Change mode: the booking's current time and kWh -->
+            <TextView
+                android:id="@+id/tvChangeNote"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/screen_padding"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="@dimen/screen_padding"
+                android:background="@drawable/bg_status_pill"
+                android:backgroundTint="@color/surface_soft"
+                android:paddingStart="12dp"
+                android:paddingTop="6dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="6dp"
+                android:textColor="@color/text_primary"
+                android:textSize="@dimen/text_small"
+                android:visibility="gone"
+                tools:text="Now: Mon, 28 Sep · 07:00 – 08:00 · 5 kWh"
+                tools:visibility="visible" />
 
             <TextView
                 style="@style/Widget.SolarGrid.SectionLabel"

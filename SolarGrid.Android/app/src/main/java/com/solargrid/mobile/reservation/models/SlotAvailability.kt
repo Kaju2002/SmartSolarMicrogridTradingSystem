@@ -45,5 +45,8 @@ data class BookingSlot(
         const val STATUS_AVAILABLE = "Available"
         const val STATUS_FULL = "Full"
         const val STATUS_UNAVAILABLE = "Unavailable"
+
+        // Set on the phone (not by the API) for the slot a booking is being moved from
+        const val STATUS_CURRENT = "Current"
     }
 }

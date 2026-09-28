@@ -27,6 +27,12 @@ object ReservationTime {
     // The API takes bookings up to 7 days ahead
     const val BOOKABLE_DAYS = 7
 
+    // Every slot is one hour, like the API
+    const val SLOT_LENGTH_MS = 60 * 60 * 1000L
+
+    // Change and cancel close 12 hours before the slot (API rule)
+    const val CHANGE_CUTOFF_MS = 12 * SLOT_LENGTH_MS
+
     // API times are UTC; fractions of a second and the trailing "Z" are ignored
     fun parseUtc(text: String?): Long? {
         val value = text?.trim()?.take(DATE_TIME_LENGTH) ?: return null
@@ -64,6 +70,9 @@ object ReservationTime {
 
     // "Tue, 29 Sep"
     fun dayLabel(millis: Long): String = display("EEE, d MMM", millis)
+
+    // "09:00", 24-hour Sri Lanka time like the slot labels
+    fun clock(millis: Long): String = format("HH:mm", SRI_LANKA).format(Date(millis))
 
     // Sri Lanka date text in the phone's language
     private fun display(pattern: String, millis: Long): String =

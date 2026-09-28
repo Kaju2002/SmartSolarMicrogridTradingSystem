@@ -5,6 +5,57 @@
     <string name="bookings_subtitle">Your charging slot reservations</string>
     <string name="bookings_empty">No bookings yet. Pick a station to book a slot.</string>
 
+    <!-- Bookings list -->
+    <string name="bookings_filter_upcoming">Upcoming (%1$d)</string>
+    <string name="bookings_filter_pending">Pending (%1$d)</string>
+    <string name="bookings_filter_approved">Approved (%1$d)</string>
+    <string name="bookings_filter_past">Past (%1$d)</string>
+    <string name="bookings_empty_upcoming">No upcoming bookings.</string>
+    <string name="bookings_empty_pending">Nothing waiting for approval.</string>
+    <string name="bookings_empty_approved">No approved bookings yet.</string>
+    <string name="bookings_empty_past">No past bookings.</string>
+    <string name="bookings_find_station">Find a station</string>
+    <string name="bookings_retry">Try again</string>
+    <string name="booking_time_range">%1$s · %2$s – %3$s</string>
+    <string name="booking_energy">%1$s kWh · Estimated LKR %2$s</string>
+    <string name="booking_status_pending">Pending</string>
+    <string name="booking_status_approved">Approved</string>
+    <string name="booking_status_completed">Completed</string>
+    <string name="booking_status_cancelled">Cancelled</string>
+    <string name="booking_status_expired">Expired</string>
+
+    <!-- Booking detail sheet -->
+    <string name="booking_info_energy">Energy</string>
+    <string name="booking_info_cost">Estimated cost</string>
+    <string name="booking_kwh_unknown">Not set</string>
+    <string name="booking_cost_value">LKR %1$s</string>
+    <string name="booking_qr_hint">Show this QR at the station. The operator scans it to start charging.</string>
+    <string name="booking_qr_description">QR code for this booking</string>
+    <string name="booking_note_pending">Waiting for a Grid Operator to approve. Your QR code will appear here.</string>
+    <string name="booking_note_expired">This slot has passed.</string>
+    <string name="booking_note_completed">Charging completed.</string>
+    <string name="booking_note_cancelled">This booking was cancelled.</string>
+    <string name="booking_change_until">You can change or cancel until %1$s · %2$s.</string>
+    <string name="booking_change_closed">Changes close 12 hours before the slot, so this booking can no longer be changed or cancelled.</string>
+    <string name="booking_change_time">Change time</string>
+    <string name="booking_cancel">Cancel booking</string>
+    <string name="booking_cancelling">Cancelling…</string>
+    <string name="booking_cancel_title">Cancel this booking?</string>
+    <string name="booking_cancel_message">%1$s\n%2$s\n\nThis can\'t be undone.</string>
+    <string name="booking_cancel_confirm">Yes, cancel</string>
+    <string name="booking_cancel_keep">Keep it</string>
+    <string name="booking_cancelled_done">Booking cancelled</string>
+
+    <!-- Change time (booking screen in change mode) -->
+    <string name="booking_change_title">Change time</string>
+    <string name="booking_change_current">Now: %1$s · %2$s kWh</string>
+    <string name="booking_change_current_no_kwh">Now: %1$s</string>
+    <string name="booking_slot_current">Your booking</string>
+    <string name="booking_change_confirm">Move to this time</string>
+    <string name="booking_changing">Moving…</string>
+    <string name="booking_change_summary">%1$s · %2$s – %3$s</string>
+    <string name="booking_changed_done">Booking moved to %1$s · %2$s</string>
+
     <!-- Booking screen -->
     <string name="booking_title">Book a slot</string>
     <string name="booking_back">Back</string>

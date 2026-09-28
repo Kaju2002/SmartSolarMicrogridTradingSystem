@@ -46,6 +46,16 @@
         <item name="cornerRadius">@dimen/pill_radius</item>
     </style>
 
+    <!-- Pill filter chip without a tick; gold when picked -->
+    <style name="Widget.SolarGrid.FilterChip" parent="Widget.Material3.Chip.Filter">
+        <item name="chipBackgroundColor">@color/booking_filter_chip_bg</item>
+        <item name="chipStrokeWidth">0dp</item>
+        <item name="chipCornerRadius">100dp</item>
+        <item name="checkedIconVisible">false</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
     <!-- Round white − / + button for a number stepper -->
     <style name="Widget.SolarGrid.StepperButton" parent="Widget.Material3.Button.OutlinedButton">
         <item name="android:layout_width">48dp</item>

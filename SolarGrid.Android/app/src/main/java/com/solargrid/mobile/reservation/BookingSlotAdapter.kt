@@ -72,6 +72,7 @@ class BookingSlotAdapter(
                     R.string.booking_kwh_left, ReservationFormatter.number(slot.kWhLeft ?: 0.0)
                 )
                 slot.status == BookingSlot.STATUS_FULL -> context.getString(R.string.booking_slot_full)
+                slot.status == BookingSlot.STATUS_CURRENT -> context.getString(R.string.booking_slot_current)
                 else -> context.getString(R.string.booking_slot_unavailable)
             }
             binding.root.isEnabled = available
