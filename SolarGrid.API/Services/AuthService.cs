@@ -101,20 +101,41 @@ public class AuthService : IAuthService
         if (!NicRegex.IsMatch(nic))
             return "NIC must be 12 digits or 9 digits followed by V or X";
 
-        var phone = request.PhoneNumber?.Trim() ?? string.Empty;
+        var contactError = ValidateContact(request.PhoneNumber, request.Email);
+        if (contactError is not null)
+            return contactError;
+
+        if (string.IsNullOrEmpty(request.Password) || request.Password.Length < MinPasswordLength)
+            return $"Password must be at least {MinPasswordLength} characters";
+
+        return null;
+    }
+
+    // Check profile edit fields with the same rules as sign-up, null when valid
+    public string? ValidateProfile(UpdateProfileDto request)
+    {
+        if (string.IsNullOrWhiteSpace(request.FullName))
+            return "Full name is required";
+        if (request.FullName.Trim().Length > 100)
+            return "Full name must be 100 characters or less";
+
+        return ValidateContact(request.PhoneNumber, request.Email);
+    }
+
+    // Phone and e-mail rules shared by sign-up and profile edit
+    private static string? ValidateContact(string? phoneNumber, string? emailAddress)
+    {
+        var phone = phoneNumber?.Trim() ?? string.Empty;
         if (phone.Length == 0)
             return "Phone number is required";
         if (!PhoneRegex.IsMatch(phone))
             return "Phone number must be 9 to 15 digits";
 
-        var email = request.Email?.Trim() ?? string.Empty;
+        var email = emailAddress?.Trim() ?? string.Empty;
         if (email.Length == 0)
             return "E-mail is required";
         if (!new EmailAddressAttribute().IsValid(email) || !email.Contains('.'))
             return "E-mail is not valid";
-
-        if (string.IsNullOrEmpty(request.Password) || request.Password.Length < MinPasswordLength)
-            return $"Password must be at least {MinPasswordLength} characters";
 
         return null;
     }
@@ -300,6 +321,20 @@ public class AuthService : IAuthService
     // Update name, email and phone only
     public async Task<LoginResponseDto> UpdateProfileAsync(string userId, UpdateProfileDto request)
     {
+        var error = ValidateProfile(request);
+        if (error is not null)
+        {
+            return new LoginResponseDto
+            {
+                Success = false,
+                Message = error
+            };
+        }
+
+        var fullName = request.FullName.Trim();
+        var email = request.Email.Trim();
+        var phoneNumber = request.PhoneNumber.Trim();
+
         var filter = Builders<User>.Filter.Eq(u => u.Id, userId);
         var user = await _users.Find(filter).FirstOrDefaultAsync();
 
@@ -313,9 +348,9 @@ public class AuthService : IAuthService
         }
 
         var update = Builders<User>.Update
-            .Set(u => u.FullName, request.FullName)
-            .Set(u => u.Email, request.Email)
-            .Set(u => u.PhoneNumber, request.PhoneNumber)
+            .Set(u => u.FullName, fullName)
+            .Set(u => u.Email, email)
+            .Set(u => u.PhoneNumber, phoneNumber)
             .Set(u => u.UpdatedAt, DateTime.UtcNow);
 
         await _users.UpdateOneAsync(filter, update);
@@ -326,7 +361,7 @@ public class AuthService : IAuthService
             Message = "Profile updated",
             UserId = user.Id,
             UserType = user.UserType,
-            FullName = request.FullName
+            FullName = fullName
         };
     }
 }

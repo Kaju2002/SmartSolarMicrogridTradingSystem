@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    File: item_profile_info.xml
+    Module: Identity and Access (Vithusha)
+    Description: One read-only row in the profile details card
+                 (icon tile, small label, value). Content is set in ProfileFragment.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:minHeight="@dimen/home_row_min_height"
+    android:orientation="horizontal"
+    android:paddingStart="@dimen/space_md"
+    android:paddingTop="12dp"
+    android:paddingEnd="@dimen/space_md"
+    android:paddingBottom="12dp">
+
+    <FrameLayout
+        android:layout_width="@dimen/home_row_icon_tile"
+        android:layout_height="@dimen/home_row_icon_tile"
+        android:background="@drawable/bg_icon_tile">
+
+        <ImageView
+            android:id="@+id/ivInfoIcon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            android:importantForAccessibility="no"
+            app:tint="@color/text_primary"
+            tools:src="@drawable/ic_phone" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/space_md"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvInfoLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_hint"
+            android:textSize="@dimen/text_row_subtitle"
+            tools:text="Phone number" />
+
+        <TextView
+            android:id="@+id/tvInfoValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="@color/text_primary"
+            android:textIsSelectable="true"
+            android:textSize="@dimen/text_row_title"
+            tools:text="0771234567" />
+    </LinearLayout>
+</LinearLayout>

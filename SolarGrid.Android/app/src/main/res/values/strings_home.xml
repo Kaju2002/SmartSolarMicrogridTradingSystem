@@ -34,7 +34,7 @@
     <string name="home_row_why">Why solar charging</string>
     <string name="home_row_why_sub">Clean energy, lower cost</string>
     <string name="home_row_profile">Account and profile</string>
-    <string name="home_row_profile_sub">Your details and logout</string>
+    <string name="home_row_profile_sub">Edit your details or log out</string>
 
     <!-- Tip card -->
     <string name="home_tip_title">Booking tip</string>

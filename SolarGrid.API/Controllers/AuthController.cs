@@ -121,6 +121,11 @@ public class AuthController : ControllerBase
         if (!CanAccessProfile(userId))
             return Forbid();
 
+        // 400 for bad fields, 404 below for unknown user
+        var error = _authService.ValidateProfile(request);
+        if (error is not null)
+            return BadRequest(new LoginResponseDto { Success = false, Message = error });
+
         var result = await _authService.UpdateProfileAsync(userId, request);
 
         if (!result.Success)
