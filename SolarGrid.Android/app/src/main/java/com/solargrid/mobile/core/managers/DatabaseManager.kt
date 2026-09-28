@@ -7,18 +7,23 @@ package com.solargrid.mobile.core.managers
 import androidx.room.Room
 import com.solargrid.mobile.auth.models.UserDao
 import com.solargrid.mobile.core.database.AppDatabase
+import com.solargrid.mobile.core.database.Migrations
+import com.solargrid.mobile.reservation.models.BookingDao
 
 class DatabaseManager private constructor() {
 
-    // Local cache only, so on a version change we just rebuild the tables
+    // Known version steps keep the data; anything else is a local cache we can rebuild
     private val database: AppDatabase = Room.databaseBuilder(
         ContextManager.getInstance().getApplicationContext(),
         AppDatabase::class.java,
         DATABASE_NAME
-    ).fallbackToDestructiveMigration(true).build()
+    ).addMigrations(*Migrations.ALL).fallbackToDestructiveMigration(true).build()
 
     // Users table
     fun userDao(): UserDao = database.userDao()
+
+    // Bookings table
+    fun bookingDao(): BookingDao = database.bookingDao()
 
     companion object {
         private const val DATABASE_NAME = "solargrid.db"

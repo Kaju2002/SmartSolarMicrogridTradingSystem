@@ -74,6 +74,26 @@
         </com.google.android.material.chip.ChipGroup>
     </HorizontalScrollView>
 
+    <!-- Shown when the list comes from the phone's saved copy -->
+    <TextView
+        android:id="@+id/tvOfflineBanner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/screen_padding"
+        android:layout_marginTop="@dimen/space_sm"
+        android:layout_marginEnd="@dimen/screen_padding"
+        android:background="@drawable/bg_info_tile"
+        android:backgroundTint="@color/booking_pending_bg"
+        android:paddingStart="@dimen/space_md"
+        android:paddingTop="10dp"
+        android:paddingEnd="@dimen/space_md"
+        android:paddingBottom="10dp"
+        android:textColor="@color/booking_pending"
+        android:textSize="@dimen/text_small"
+        android:visibility="gone"
+        tools:text="You're offline. Showing bookings saved Mon, 28 Sep · 14:32. Pull down to refresh."
+        tools:visibility="visible" />
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeBookings"
         android:layout_width="match_parent"

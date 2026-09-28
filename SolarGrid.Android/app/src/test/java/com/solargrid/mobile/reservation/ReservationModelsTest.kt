@@ -8,6 +8,7 @@ package com.solargrid.mobile.reservation
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
+import com.solargrid.mobile.reservation.models.BookingEntity
 import com.solargrid.mobile.reservation.models.BookingSlot
 import com.solargrid.mobile.reservation.models.CreateReservationRequest
 import com.solargrid.mobile.reservation.models.Reservation
@@ -148,6 +149,25 @@ class ReservationModelsTest {
         assertEquals(ReservationTime.parseUtc(booking.reservationDateTime)!! - 12 * 60 * 60 * 1000L, deadline)
         assertTrue(ReservationFormatter.canChange(booking, now = deadline))
         assertFalse(ReservationFormatter.canChange(booking, now = deadline + 1))
+    }
+
+    // A saved row gives back the same booking, QR code included, for offline use
+    @Test
+    fun savedBookingRoundTrip() {
+        val booking = Reservation("r1", "s1", "2026-09-29T03:30:00Z", 10.0, 450.0, Reservation.STATUS_APPROVED, "qr-123", "2026-09-28T01:00:00Z")
+        val row = BookingEntity.from(booking, "200012345678", "Colombo Fort Solar Hub", savedAt = 1000L)!!
+
+        assertEquals("200012345678", row.ownerNic)
+        assertEquals("Colombo Fort Solar Hub", row.stationName)
+        assertEquals(booking, row.toReservation())
+    }
+
+    // Bookings without an id can't be saved (id is the primary key)
+    @Test
+    fun bookingWithoutIdIsNotSaved() {
+        val booking = Reservation(null, "s1", "2026-09-29T03:30:00Z", 10.0, 450.0, Reservation.STATUS_PENDING, null, null)
+
+        assertNull(BookingEntity.from(booking, "200012345678", null, savedAt = 1000L))
     }
 
     // Cancelled and completed bookings can't be changed, however far away

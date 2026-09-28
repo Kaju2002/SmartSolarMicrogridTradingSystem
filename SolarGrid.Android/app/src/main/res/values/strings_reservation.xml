@@ -14,6 +14,7 @@
     <string name="bookings_empty_pending">Nothing waiting for approval.</string>
     <string name="bookings_empty_approved">No approved bookings yet.</string>
     <string name="bookings_empty_past">No past bookings.</string>
+    <string name="bookings_offline">You\'re offline. Showing bookings saved %1$s · %2$s. Pull down to refresh.</string>
     <string name="bookings_find_station">Find a station</string>
     <string name="bookings_retry">Try again</string>
     <string name="booking_time_range">%1$s · %2$s – %3$s</string>
@@ -36,6 +37,7 @@
     <string name="booking_note_completed">Charging completed.</string>
     <string name="booking_note_cancelled">This booking was cancelled.</string>
     <string name="booking_change_until">You can change or cancel until %1$s · %2$s.</string>
+    <string name="booking_offline_actions">You\'re offline. Connect to the internet to change or cancel this booking.</string>
     <string name="booking_change_closed">Changes close 12 hours before the slot, so this booking can no longer be changed or cancelled.</string>
     <string name="booking_change_time">Change time</string>
     <string name="booking_cancel">Cancel booking</string>
