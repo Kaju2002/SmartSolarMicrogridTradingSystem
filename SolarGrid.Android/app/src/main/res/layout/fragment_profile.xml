@@ -2,8 +2,9 @@
 <!--
     File: fragment_profile.xml
     Module: Identity and Access (Vithusha)
-    Description: Profile tab. Avatar, name, NIC and account status, the details card
-                 (phone, e-mail, member since), edit, logout and deactivate.
+    Description: Profile tab in a settings-list style: centred avatar, name, NIC and status,
+                 a "Personal information" card (tap a row to edit) and an "Account" card
+                 with Log out and Deactivate account.
 -->
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -18,140 +19,183 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="@dimen/screen_padding">
+        android:paddingStart="@dimen/space_lg"
+        android:paddingTop="@dimen/screen_padding"
+        android:paddingEnd="@dimen/space_lg"
+        android:paddingBottom="@dimen/space_lg">
 
         <TextView
             style="@style/Widget.SolarGrid.ScreenTitle"
+            android:layout_marginStart="@dimen/space_xs"
             android:layout_marginTop="@dimen/space_sm"
             android:text="@string/profile_title" />
 
-        <!-- Initials in a gold circle, name and NIC beside it -->
-        <LinearLayout
-            android:layout_width="match_parent"
+        <!-- Initials in a gold circle with a pencil badge that opens the edit screen -->
+        <FrameLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_lg"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/space_md">
 
             <TextView
                 android:id="@+id/tvAvatar"
-                android:layout_width="@dimen/avatar_size"
-                android:layout_height="@dimen/avatar_size"
+                android:layout_width="@dimen/profile_avatar_size"
+                android:layout_height="@dimen/profile_avatar_size"
                 android:background="@drawable/bg_avatar_circle"
                 android:gravity="center"
                 android:importantForAccessibility="no"
                 android:textColor="@color/text_primary"
-                android:textSize="@dimen/text_avatar"
+                android:textSize="@dimen/text_profile_avatar"
                 android:textStyle="bold"
-                tools:text="KA" />
+                tools:text="UK" />
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/space_md"
-                android:layout_weight="1"
-                android:orientation="vertical">
+            <ImageButton
+                android:id="@+id/btnAvatarEdit"
+                android:layout_width="@dimen/profile_avatar_badge"
+                android:layout_height="@dimen/profile_avatar_badge"
+                android:layout_gravity="bottom|end"
+                android:background="@drawable/bg_avatar_badge"
+                android:contentDescription="@string/profile_edit"
+                android:elevation="2dp"
+                android:padding="7dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_edit" />
+        </FrameLayout>
 
-                <TextView
-                    android:id="@+id/tvProfileName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/text_primary"
-                    android:textSize="@dimen/text_profile_name"
-                    android:textStyle="bold"
-                    tools:text="Kajanthan" />
+        <TextView
+            android:id="@+id/tvProfileName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center"
+            android:textColor="@color/text_primary"
+            android:textSize="@dimen/text_profile_name"
+            android:textStyle="bold"
+            tools:text="U Kajanthan" />
 
-                <TextView
-                    android:id="@+id/tvProfileNic"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="@dimen/text_body"
-                    tools:text="NIC: 200012345678" />
+        <TextView
+            android:id="@+id/tvProfileRole"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:gravity="center"
+            android:text="@string/profile_role_prosumer"
+            android:textColor="@color/text_secondary"
+            android:textSize="@dimen/text_body" />
 
-                <!-- Account status; colour set in ProfileFragment -->
-                <TextView
-                    android:id="@+id/tvProfileStatus"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/space_xs"
-                    android:background="@drawable/bg_status_pill"
-                    android:backgroundTint="@color/station_open_bg"
-                    android:paddingStart="10dp"
-                    android:paddingTop="3dp"
-                    android:paddingEnd="10dp"
-                    android:paddingBottom="3dp"
-                    android:textColor="@color/station_open"
-                    android:textSize="@dimen/text_small"
-                    android:textStyle="bold"
-                    android:visibility="gone"
-                    tools:text="Active"
-                    tools:visibility="visible" />
-            </LinearLayout>
-        </LinearLayout>
+        <!-- Account status; colour set in ProfileFragment -->
+        <TextView
+            android:id="@+id/tvProfileStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/space_sm"
+            android:background="@drawable/bg_status_pill"
+            android:backgroundTint="@color/station_open_bg"
+            android:paddingStart="10dp"
+            android:paddingTop="3dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="3dp"
+            android:textColor="@color/station_open"
+            android:textSize="@dimen/text_small"
+            android:textStyle="bold"
+            android:visibility="gone"
+            tools:text="Active"
+            tools:visibility="visible" />
 
-        <!-- Details card: filled from the API, "–" until then -->
+        <!-- Personal information: filled from the API, "–" until then -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_xl"
-            android:layout_marginBottom="12dp"
+            android:layout_marginTop="@dimen/space_lg"
+            android:layout_marginBottom="@dimen/space_sm"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/space_xs"
+            android:paddingEnd="@dimen/space_xs">
 
             <TextView
                 style="@style/Widget.SolarGrid.SectionLabel"
                 android:layout_width="0dp"
                 android:layout_weight="1"
-                android:text="@string/profile_section_details" />
+                android:text="@string/profile_section_personal" />
 
             <ProgressBar
                 android:id="@+id/pbProfile"
-                android:layout_width="18dp"
-                android:layout_height="18dp"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginEnd="@dimen/space_sm"
                 android:indeterminateTint="@color/text_hint"
                 android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tvEditDetails"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:fontFamily="sans-serif-medium"
+                android:padding="@dimen/space_xs"
+                android:text="@string/profile_edit_link"
+                android:textColor="@color/booking_pending"
+                android:textSize="@dimen/text_body" />
         </LinearLayout>
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardBackgroundColor="@color/surface_soft"
-            app:cardCornerRadius="@dimen/home_card_radius"
+            app:cardCornerRadius="@dimen/profile_card_radius"
             app:cardElevation="0dp"
             app:strokeWidth="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingTop="@dimen/space_xs"
-                android:paddingBottom="@dimen/space_xs">
+                android:orientation="vertical">
 
                 <include
-                    android:id="@+id/rowPhone"
-                    layout="@layout/item_profile_info" />
+                    android:id="@+id/rowName"
+                    layout="@layout/item_profile_row" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginStart="@dimen/home_row_divider_inset"
+                    android:layout_marginStart="@dimen/space_md"
+                    android:background="@color/divider_soft" />
+
+                <include
+                    android:id="@+id/rowPhone"
+                    layout="@layout/item_profile_row" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="@dimen/space_md"
                     android:background="@color/divider_soft" />
 
                 <include
                     android:id="@+id/rowEmail"
-                    layout="@layout/item_profile_info" />
+                    layout="@layout/item_profile_row" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginStart="@dimen/home_row_divider_inset"
+                    android:layout_marginStart="@dimen/space_md"
+                    android:background="@color/divider_soft" />
+
+                <include
+                    android:id="@+id/rowNic"
+                    layout="@layout/item_profile_row" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="@dimen/space_md"
                     android:background="@color/divider_soft" />
 
                 <include
                     android:id="@+id/rowMemberSince"
-                    layout="@layout/item_profile_info" />
+                    layout="@layout/item_profile_row" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -161,49 +205,57 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_sm"
+            android:paddingStart="@dimen/space_xs"
+            android:paddingEnd="@dimen/space_xs"
             android:textColor="@color/text_secondary"
             android:textSize="@dimen/text_small"
             android:visibility="gone"
             tools:text="No internet connection. Showing the details saved on this phone."
             tools:visibility="visible" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnEditProfile"
-            style="@style/Widget.SolarGrid.Button.Primary"
+        <!-- Account actions -->
+        <TextView
+            style="@style/Widget.SolarGrid.SectionLabel"
+            android:layout_marginStart="@dimen/space_xs"
             android:layout_marginTop="@dimen/space_lg"
-            android:text="@string/profile_edit" />
+            android:layout_marginBottom="@dimen/space_sm"
+            android:text="@string/profile_section_account" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnLogout"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
-            android:layout_height="@dimen/button_height"
-            android:layout_marginTop="@dimen/space_sm"
-            android:text="@string/logout"
-            android:textColor="@color/text_primary"
-            app:cornerRadius="@dimen/pill_radius"
-            app:strokeColor="@color/accent_gold" />
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:minHeight="@dimen/space_xl" />
-
-        <!-- Kept away from the main buttons so it is not tapped by mistake -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnDeactivate"
-            style="@style/Widget.Material3.Button.TextButton"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="@string/profile_deactivate"
-            android:textColor="@color/error_red" />
+            app:cardBackgroundColor="@color/surface_soft"
+            app:cardCornerRadius="@dimen/profile_card_radius"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <include
+                    android:id="@+id/rowLogout"
+                    layout="@layout/item_profile_action" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="54dp"
+                    android:background="@color/divider_soft" />
+
+                <include
+                    android:id="@+id/rowDeactivate"
+                    layout="@layout/item_profile_action" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
+            android:layout_marginTop="@dimen/space_sm"
+            android:paddingStart="@dimen/space_xs"
+            android:paddingEnd="@dimen/space_xs"
             android:text="@string/profile_deactivate_note"
             android:textColor="@color/text_hint"
             android:textSize="@dimen/text_small" />

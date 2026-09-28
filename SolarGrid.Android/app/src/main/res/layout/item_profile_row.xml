@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    File: item_profile_row.xml
+    Module: Identity and Access (Vithusha)
+    Description: One row in a profile card: label on the left, value on the right,
+                 and an arrow when the row can be tapped. Content is set in ProfileFragment.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:minHeight="@dimen/profile_row_height"
+    android:orientation="horizontal"
+    android:paddingStart="@dimen/space_md"
+    android:paddingEnd="12dp">
+
+    <TextView
+        android:id="@+id/tvRowLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_secondary"
+        android:textSize="@dimen/text_profile_row"
+        tools:text="E-mail" />
+
+    <TextView
+        android:id="@+id/tvRowValue"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/space_md"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:gravity="end"
+        android:maxLines="1"
+        android:textColor="@color/text_primary"
+        android:textSize="@dimen/text_profile_row"
+        tools:text="kajanthan2k1@gmail.com" />
+
+    <!-- Hidden on read-only rows; the value then lines up with the arrows above -->
+    <ImageView
+        android:id="@+id/ivRowChevron"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="@dimen/space_xs"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_chevron_right"
+        app:tint="@color/text_hint" />
+</LinearLayout>

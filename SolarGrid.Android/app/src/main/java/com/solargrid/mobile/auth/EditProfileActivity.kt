@@ -19,6 +19,7 @@ import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
 import com.solargrid.mobile.R
+import com.solargrid.mobile.core.utils.initialsOf
 import com.solargrid.mobile.databinding.ActivityEditProfileBinding
 import kotlinx.coroutines.launch
 
@@ -78,6 +79,9 @@ class EditProfileActivity : AppCompatActivity() {
 
         listOf(binding.etFullName, binding.etPhone, binding.etEmail)
             .forEach { field -> field.doAfterTextChanged { hideError() } }
+
+        binding.etFullName.doAfterTextChanged { binding.tvAvatar.text = initialsOf(it?.toString().orEmpty()) }
+        binding.tvAvatar.text = initialsOf(binding.etFullName.text?.toString().orEmpty())
     }
 
     // Phone only checks "is it filled" and "did anything change".

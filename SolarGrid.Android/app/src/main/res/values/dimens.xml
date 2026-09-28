@@ -33,6 +33,14 @@
     <dimen name="text_avatar">26sp</dimen>
     <dimen name="text_profile_name">20sp</dimen>
 
+    <!-- Profile: centred avatar and settings-style rows -->
+    <dimen name="profile_avatar_size">96dp</dimen>
+    <dimen name="text_profile_avatar">34sp</dimen>
+    <dimen name="profile_avatar_badge">32dp</dimen>
+    <dimen name="profile_row_height">56dp</dimen>
+    <dimen name="profile_card_radius">20dp</dimen>
+    <dimen name="text_profile_row">15sp</dimen>
+
     <!-- Home -->
     <dimen name="home_hero_height">480dp</dimen>
     <dimen name="home_sheet_radius">28dp</dimen>
