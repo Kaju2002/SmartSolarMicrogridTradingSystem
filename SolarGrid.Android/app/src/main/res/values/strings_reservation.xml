@@ -4,4 +4,42 @@
     <string name="bookings_title">My Bookings</string>
     <string name="bookings_subtitle">Your charging slot reservations</string>
     <string name="bookings_empty">No bookings yet. Pick a station to book a slot.</string>
+
+    <!-- Booking screen -->
+    <string name="booking_title">Book a slot</string>
+    <string name="booking_back">Back</string>
+    <string name="booking_station_facts">%1$s · %2$s per kWh</string>
+    <string name="booking_station_rate">%1$s per kWh</string>
+    <string name="booking_label_date">Pick a day</string>
+    <string name="booking_label_time">Pick a time</string>
+    <string name="booking_today">Today</string>
+    <string name="booking_kwh_left">%1$s kWh left</string>
+    <string name="booking_slot_full">Full</string>
+    <string name="booking_slot_unavailable">Unavailable</string>
+    <string name="booking_no_slots">No bookable times on this day.</string>
+    <string name="booking_retry">Try again</string>
+    <string name="booking_pick_slot">Pick a time to continue</string>
+    <string name="booking_label_energy">How much energy?</string>
+    <string name="booking_minus">−</string>
+    <string name="booking_plus">+</string>
+    <string name="booking_kwh_less">Less energy</string>
+    <string name="booking_kwh_more">More energy</string>
+    <string name="booking_kwh_value">%1$s kWh</string>
+    <string name="booking_estimated_cost">Estimated LKR %1$s</string>
+    <string name="booking_kwh_range">%1$s – %2$s kWh free at %3$s</string>
+    <string name="booking_summary">%1$s · %2$s – %3$s · %4$s kWh</string>
+    <string name="booking_confirm">Confirm booking</string>
+    <string name="booking_confirming">Booking…</string>
+    <string name="booking_success_title">Booking requested</string>
+    <string name="booking_success_message">%1$s\n%2$s at %3$s\n%4$s kWh · Estimated LKR %5$s\n\nA Grid Operator will approve it, then your QR code appears in My Bookings. You can change or cancel up to 12 hours before the slot.</string>
+    <string name="booking_success_ok">View my bookings</string>
+
+    <!-- Errors when the API sends no message of its own -->
+    <string name="booking_error_session">Your session has expired. Please sign in again.</string>
+    <string name="booking_error_forbidden">Only prosumer accounts can book slots.</string>
+    <string name="booking_error_slots">Could not load time slots. Please try again.</string>
+    <string name="booking_error_book">Could not book this slot. Please try again.</string>
+    <string name="booking_error_update">Could not change this booking. Please try again.</string>
+    <string name="booking_error_cancel">Could not cancel this booking. Please try again.</string>
+    <string name="booking_error_list">Could not load your bookings. Please try again.</string>
 </resources>

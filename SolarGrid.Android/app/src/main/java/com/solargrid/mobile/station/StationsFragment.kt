@@ -8,13 +8,13 @@
 package com.solargrid.mobile.station
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
 import android.graphics.Canvas
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
@@ -40,6 +40,8 @@ import com.solargrid.mobile.R
 import com.solargrid.mobile.core.managers.DeviceLocationManager
 import com.solargrid.mobile.core.utils.distanceKm
 import com.solargrid.mobile.databinding.FragmentStationsBinding
+import com.solargrid.mobile.home.ProsumerMainActivity
+import com.solargrid.mobile.reservation.BookSlotActivity
 import com.solargrid.mobile.station.models.Station
 import kotlinx.coroutines.launch
 
@@ -85,6 +87,14 @@ class StationsFragment : Fragment(R.layout.fragment_stations) {
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
             permissionDenied = result.values.none { it }
             loadStations()
+        }
+
+    // After a successful booking, show it in the Bookings tab
+    private val bookingLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                (activity as? ProsumerMainActivity)?.openTab(R.id.nav_bookings)
+            }
         }
 
     // Bind views, then ask for location the first time the tab opens
@@ -194,10 +204,9 @@ class StationsFragment : Fragment(R.layout.fragment_stations) {
         }
     }
 
-    // Booking screen is added with the Reservation module
-    @Suppress("UNUSED_PARAMETER")
+    // Booking screen for the station picked in the detail sheet
     private fun openBooking(stationId: String) {
-        Toast.makeText(requireContext(), R.string.station_book_coming, Toast.LENGTH_SHORT).show()
+        bookingLauncher.launch(BookSlotActivity.newIntent(requireContext(), stationId))
     }
 
     // Detail sheet for one station; ignores double taps while it is already open

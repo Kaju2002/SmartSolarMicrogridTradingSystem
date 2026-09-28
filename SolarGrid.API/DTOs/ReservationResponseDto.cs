@@ -18,5 +18,10 @@ public class ReservationResponseDto
 
     public DateTime? ReservationDateTime { get; set; }
 
+    public double? RequestedKWh { get; set; }
+
+    public double? EstimatedCost { get; set; }
+    // LKR
+
     public string? QrCode { get; set; }
 }

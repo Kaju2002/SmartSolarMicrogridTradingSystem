@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    File: item_booking_slot.xml
+    Module: Reservation Management (Kajanthan)
+    Description: One hourly time chip: start time and how many kWh are left.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/booking_slot_gap"
+    android:background="@drawable/bg_booking_chip"
+    android:foreground="?attr/selectableItemBackground"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingTop="12dp"
+    android:paddingBottom="12dp">
+
+    <TextView
+        android:id="@+id/tvSlotTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:duplicateParentState="true"
+        android:textColor="@color/booking_chip_text"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        tools:text="09:00" />
+
+    <TextView
+        android:id="@+id/tvSlotSpots"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:duplicateParentState="true"
+        android:textColor="@color/booking_chip_subtext"
+        android:textSize="@dimen/text_station_label"
+        tools:text="40 kWh left" />
+</LinearLayout>

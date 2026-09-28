@@ -63,6 +63,11 @@
     <dimen name="text_section_label">13sp</dimen>
     <dimen name="text_nav_label">13sp</dimen>
 
+    <!-- Booking screen: day chips and a 3-column time grid lined up with the screen padding -->
+    <dimen name="booking_day_width">64dp</dimen>
+    <dimen name="booking_slot_gap">5dp</dimen>
+    <dimen name="booking_grid_padding">23dp</dimen>
+
     <dimen name="text_title">32sp</dimen>
     <dimen name="text_body">14sp</dimen>
     <dimen name="text_small">13sp</dimen>

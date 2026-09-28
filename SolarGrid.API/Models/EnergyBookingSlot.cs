@@ -23,6 +23,7 @@ public class EnergyBookingSlot
     // Available | Booked | Blocked
 
     public double CapacityKWh { get; set; }
+    // kWh held by the booking in this slot
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
