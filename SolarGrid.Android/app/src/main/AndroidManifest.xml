@@ -53,6 +53,10 @@
             android:exported="false" />
 
         <activity
+            android:name=".reservation.BookSlotActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".verification.operator.OperatorHomeActivity"
             android:exported="false" />
     </application>

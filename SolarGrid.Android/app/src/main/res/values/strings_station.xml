@@ -53,7 +53,6 @@
     <string name="station_info_capacity">Capacity</string>
     <string name="station_directions">Directions</string>
     <string name="station_book_slot">Book a slot</string>
-    <string name="station_book_coming">Booking opens here in the next update.</string>
     <string name="station_no_maps_app">No app found to open directions.</string>
 
     <string name="station_error_session">Your session has expired. Please sign in again.</string>

@@ -27,6 +27,12 @@ public class EnergyReservation
     public DateTime ReservationDateTime { get; set; }
     // slot time, within 7 days
 
+    public double RequestedKWh { get; set; }
+    // energy asked for; 0 on bookings made before kWh was added
+
+    public double EstimatedCost { get; set; }
+    // LKR, RequestedKWh x station rate when booked
+
     public string Status { get; set; } = "Pending";
     // Pending | Approved | Completed | Cancelled
 

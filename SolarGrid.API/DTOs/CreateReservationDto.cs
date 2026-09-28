@@ -13,4 +13,7 @@ public class CreateReservationDto
     public string StationId { get; set; } = string.Empty;
 
     public DateTime ReservationDateTime { get; set; }
+
+    public double RequestedKWh { get; set; }
+    // energy the prosumer wants in this slot
 }

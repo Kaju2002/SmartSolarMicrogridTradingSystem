@@ -4,6 +4,7 @@
  * Author: Kajanthan (Energy Reservation / Booking)
  * Date: 21/09/2026
  */
+using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SolarGrid.API.DTOs;
@@ -90,6 +91,34 @@ public class ReservationsController : ControllerBase
             return Ok(result);
 
         return BadRequest(result);
+    }
+
+    // GET hourly slots for a station on a date (yyyy-MM-dd, Sri Lanka time)
+    [Authorize(Roles = "Prosumer,Backoffice,GridOperator")]
+    [HttpGet("availability")]
+    public async Task<IActionResult> GetAvailability([FromQuery] string? stationId, [FromQuery] string? date)
+    {
+        if (string.IsNullOrWhiteSpace(stationId) ||
+            !DateOnly.TryParseExact(date, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var day))
+        {
+            return BadRequest(new ReservationResponseDto
+            {
+                Success = false,
+                Message = "stationId and date (yyyy-MM-dd) are required"
+            });
+        }
+
+        var availability = await _reservationService.GetAvailabilityAsync(stationId, day);
+        if (availability is null)
+        {
+            return NotFound(new ReservationResponseDto
+            {
+                Success = false,
+                Message = "Station not found or not taking bookings"
+            });
+        }
+
+        return Ok(availability);
     }
 
     // GET all reservations — Backoffice and Grid Operator

@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext'
 import { getStations, type Station } from '../../api/stations'
 import {
   approveReservation,
+  formatEnergy,
   getReservations,
   type Reservation,
 } from '../../api/reservations'
@@ -319,6 +320,7 @@ export default function OperatorReservationsPage() {
                   <th className="px-5 py-3.5 font-medium">Prosumer NIC</th>
                   <th className="px-5 py-3.5 font-medium">Station</th>
                   <th className="px-5 py-3.5 font-medium">Slot time</th>
+                  <th className="px-5 py-3.5 font-medium">Energy</th>
                   <th className="px-5 py-3.5 font-medium">Status</th>
                   <th className="px-5 py-3.5 font-medium">QR</th>
                   <th className="px-5 py-3.5 text-right font-medium">Actions</th>
@@ -342,6 +344,11 @@ export default function OperatorReservationsPage() {
                       <td className="px-5 py-4 text-ink">{stationName}</td>
                       <td className="px-5 py-4 text-muted">
                         {formatDate(reservation.reservationDateTime)}
+                      </td>
+                      <td className="px-5 py-4 whitespace-nowrap text-ink">
+                        {formatEnergy(reservation) ?? (
+                          <span className="text-xs text-muted">—</span>
+                        )}
                       </td>
                       <td className="px-5 py-4">
                         <span

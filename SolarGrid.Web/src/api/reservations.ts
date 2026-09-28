@@ -6,6 +6,10 @@ export type Reservation = {
   stationId: string
   bookingSlotId?: string | null
   reservationDateTime: string
+  // 0 on bookings made before kWh was added
+  requestedKWh?: number
+  // LKR, worked out by the API when booked
+  estimatedCost?: number
   status: string
   qrCode?: string | null
   approvedBy?: string | null
@@ -19,7 +23,17 @@ export type ReservationResponse = {
   reservationId?: string | null
   status?: string | null
   reservationDateTime?: string | null
+  requestedKWh?: number | null
+  estimatedCost?: number | null
   qrCode?: string | null
+}
+
+// "10 kWh · LKR 450", or null for old bookings without kWh
+export function formatEnergy(reservation: Reservation): string | null {
+  const kWh = reservation.requestedKWh ?? 0
+  if (kWh <= 0) return null
+  const cost = reservation.estimatedCost ?? 0
+  return `${kWh.toLocaleString()} kWh · LKR ${cost.toLocaleString()}`
 }
 
 export async function getReservations(): Promise<Reservation[]> {
