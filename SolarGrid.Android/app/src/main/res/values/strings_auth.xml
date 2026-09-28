@@ -53,8 +53,12 @@
 
     <!-- Profile tab -->
     <string name="profile_title">Profile</string>
-    <string name="profile_nic">NIC: %1$s</string>
-    <string name="profile_section_details">Personal details</string>
+    <string name="profile_role_prosumer">Prosumer account</string>
+    <string name="profile_section_personal">Personal information</string>
+    <string name="profile_section_account">Account</string>
+    <string name="profile_edit_link">Edit</string>
+    <string name="profile_logout">Log out</string>
+    <string name="profile_edit_unavailable">Your details have not loaded yet. Check your connection and try again.</string>
     <string name="profile_member_since">Member since</string>
     <string name="profile_value_missing">–</string>
     <string name="profile_status_active">Active</string>

@@ -15,6 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
@@ -28,7 +29,8 @@ import com.solargrid.mobile.R
 import com.solargrid.mobile.auth.models.UserProfile
 import com.solargrid.mobile.core.utils.initialsOf
 import com.solargrid.mobile.databinding.FragmentProfileBinding
-import com.solargrid.mobile.databinding.ItemProfileInfoBinding
+import com.solargrid.mobile.databinding.ItemProfileActionBinding
+import com.solargrid.mobile.databinding.ItemProfileRowBinding
 import com.solargrid.mobile.reservation.ReservationTime
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -62,17 +64,22 @@ class ProfileFragment : Fragment() {
         return binding.root
     }
 
-    // Set up the rows and buttons, then load the user
+    // Set up the rows and taps, then load the user
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        bindInfoRow(binding.rowPhone, R.drawable.ic_phone, R.string.phone_label)
-        bindInfoRow(binding.rowEmail, R.drawable.ic_email, R.string.email_label)
-        bindInfoRow(binding.rowMemberSince, R.drawable.ic_calendar_outlined, R.string.profile_member_since)
+        bindRow(binding.rowName, R.string.full_name_label, editable = true)
+        bindRow(binding.rowPhone, R.string.phone_label, editable = true)
+        bindRow(binding.rowEmail, R.string.email_label, editable = true)
+        bindRow(binding.rowNic, R.string.nic_label, editable = false)
+        bindRow(binding.rowMemberSince, R.string.profile_member_since, editable = false)
+        bindAction(binding.rowLogout, R.drawable.ic_logout, R.string.profile_logout, R.color.text_primary)
+        bindAction(binding.rowDeactivate, R.drawable.ic_block, R.string.profile_deactivate, R.color.error_red)
         showDetails(null)
 
-        binding.btnEditProfile.setOnClickListener { openEdit() }
-        binding.btnLogout.setOnClickListener { logout() }
-        binding.btnDeactivate.setOnClickListener { confirmDeactivate() }
+        binding.btnAvatarEdit.setOnClickListener { openEdit() }
+        binding.tvEditDetails.setOnClickListener { openEdit() }
+        binding.rowLogout.root.setOnClickListener { logout() }
+        binding.rowDeactivate.root.setOnClickListener { confirmDeactivate() }
         loadProfile()
     }
 
@@ -82,10 +89,30 @@ class ProfileFragment : Fragment() {
         if (!hidden && _binding != null) loadProfile()
     }
 
-    // Icon and label never change; the value is filled later
-    private fun bindInfoRow(row: ItemProfileInfoBinding, @DrawableRes icon: Int, @StringRes label: Int) {
-        row.ivInfoIcon.setImageResource(icon)
-        row.tvInfoLabel.setText(label)
+    // Label never changes; editable rows get an arrow and open the edit screen
+    private fun bindRow(row: ItemProfileRowBinding, @StringRes label: Int, editable: Boolean) {
+        row.tvRowLabel.setText(label)
+        row.ivRowChevron.visibility = if (editable) View.VISIBLE else View.INVISIBLE
+        if (editable) {
+            row.root.setOnClickListener { openEdit() }
+        } else {
+            row.root.isClickable = false
+            row.root.background = null
+        }
+    }
+
+    // Icon, title and colour of an account row
+    private fun bindAction(
+        row: ItemProfileActionBinding,
+        @DrawableRes icon: Int,
+        @StringRes title: Int,
+        @ColorRes color: Int
+    ) {
+        val tint = ContextCompat.getColor(requireContext(), color)
+        row.ivActionIcon.setImageResource(icon)
+        row.ivActionIcon.imageTintList = ColorStateList.valueOf(tint)
+        row.tvActionTitle.setText(title)
+        row.tvActionTitle.setTextColor(tint)
     }
 
     // Saved name and NIC first so the screen is never empty, then the full details from the API
@@ -116,24 +143,24 @@ class ProfileFragment : Fragment() {
                     )
                     binding.tvProfileMessage.isVisible = true
                 }
-            binding.btnEditProfile.isEnabled = profile != null
         }
     }
 
-    // Avatar initials, name and NIC
+    // Header (avatar, name) and the saved name/NIC rows, so offline still shows something
     private fun showUser(fullName: String, nic: String?) {
+        val empty = getString(R.string.profile_value_missing)
         binding.tvAvatar.text = initialsOf(fullName)
         binding.tvProfileName.text = fullName
-        binding.tvProfileNic.isVisible = !nic.isNullOrBlank()
-        binding.tvProfileNic.text = getString(R.string.profile_nic, nic.orEmpty())
+        binding.rowName.tvRowValue.text = fullName.ifBlank { empty }
+        binding.rowNic.tvRowValue.text = nic?.takeIf { it.isNotBlank() } ?: empty
     }
 
     // Phone, e-mail, member since and the status pill; dashes until the API answers
     private fun showDetails(details: UserProfile?) {
         val empty = getString(R.string.profile_value_missing)
-        binding.rowPhone.tvInfoValue.text = details?.phoneNumber?.takeIf { it.isNotBlank() } ?: empty
-        binding.rowEmail.tvInfoValue.text = details?.email?.takeIf { it.isNotBlank() } ?: empty
-        binding.rowMemberSince.tvInfoValue.text =
+        binding.rowPhone.tvRowValue.text = details?.phoneNumber?.takeIf { it.isNotBlank() } ?: empty
+        binding.rowEmail.tvRowValue.text = details?.email?.takeIf { it.isNotBlank() } ?: empty
+        binding.rowMemberSince.tvRowValue.text =
             ReservationTime.parseUtc(details?.createdAt)?.let { memberSince(it) } ?: empty
         bindStatus(details?.status)
     }
@@ -162,9 +189,13 @@ class ProfileFragment : Fragment() {
         pill.isVisible = true
     }
 
-    // Edit screen starts with the current values; NIC is not editable
+    // Edit screen starts with the current values; needs them from the API first
     private fun openEdit() {
-        val current = profile ?: return
+        val current = profile
+        if (current == null) {
+            showSnackbar(getString(R.string.profile_edit_unavailable))
+            return
+        }
         editLauncher.launch(
             EditProfileActivity.newIntent(
                 requireContext(),
@@ -213,11 +244,13 @@ class ProfileFragment : Fragment() {
         }
     }
 
-    // Lock the buttons while a request is running
+    // Lock the taps while a request is running
     private fun setBusy(busy: Boolean) {
-        binding.btnEditProfile.isEnabled = !busy && profile != null
-        binding.btnLogout.isEnabled = !busy
-        binding.btnDeactivate.isEnabled = !busy
+        listOf(
+            binding.btnAvatarEdit, binding.tvEditDetails,
+            binding.rowName.root, binding.rowPhone.root, binding.rowEmail.root,
+            binding.rowLogout.root, binding.rowDeactivate.root
+        ).forEach { it.isEnabled = !busy }
     }
 
     // Login becomes the only screen, so Back cannot return here

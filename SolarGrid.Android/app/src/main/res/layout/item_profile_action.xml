@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    File: item_profile_action.xml
+    Module: Identity and Access (Vithusha)
+    Description: Tappable account row with an icon and a title (Log out, Deactivate account).
+                 Icon, text and colour are set in ProfileFragment.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:minHeight="@dimen/profile_row_height"
+    android:orientation="horizontal"
+    android:paddingStart="@dimen/space_md"
+    android:paddingEnd="@dimen/space_md">
+
+    <ImageView
+        android:id="@+id/ivActionIcon"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:importantForAccessibility="no"
+        app:tint="@color/text_primary"
+        tools:src="@drawable/ic_logout" />
+
+    <TextView
+        android:id="@+id/tvActionTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/space_md"
+        android:layout_weight="1"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@color/text_primary"
+        android:textSize="@dimen/text_profile_row"
+        tools:text="Log out" />
+</LinearLayout>
