@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    File: activity_edit_profile.xml
+    Module: Identity and Access (Vithusha)
+    Description: Edit profile screen: full name, phone and e-mail with the same
+                 pill fields as sign-up, and a Save button. NIC is shown but not editable.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    tools:context=".auth.EditProfileActivity">
+
+    <!-- Top bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="12dp"
+        android:paddingEnd="@dimen/screen_padding">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/profile_back"
+            android:src="@drawable/ic_arrow_back" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/space_xs"
+            android:text="@string/profile_edit_title"
+            android:textColor="@color/text_primary"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="@dimen/screen_padding"
+            android:paddingEnd="@dimen/screen_padding"
+            android:paddingBottom="@dimen/space_lg">
+
+            <TextView
+                style="@style/Widget.SolarGrid.ScreenSubtitle"
+                android:text="@string/profile_edit_subtitle" />
+
+            <!-- Full name -->
+            <TextView
+                style="@style/Widget.SolarGrid.FieldLabel"
+                android:layout_marginTop="@dimen/space_lg"
+                android:labelFor="@id/etFullName"
+                android:text="@string/full_name_label" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilFullName"
+                style="@style/Widget.SolarGrid.TextInputLayout.Pill"
+                android:layout_marginTop="@dimen/space_sm"
+                app:startIconDrawable="@drawable/ic_person">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etFullName"
+                    style="@style/Widget.SolarGrid.EditText.Pill"
+                    android:hint="@string/full_name_hint"
+                    android:imeOptions="actionNext"
+                    android:inputType="textPersonName|textCapWords"
+                    android:maxLength="100" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Phone -->
+            <TextView
+                style="@style/Widget.SolarGrid.FieldLabel"
+                android:layout_marginTop="@dimen/space_md"
+                android:labelFor="@id/etPhone"
+                android:text="@string/phone_label" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilPhone"
+                style="@style/Widget.SolarGrid.TextInputLayout.Pill"
+                android:layout_marginTop="@dimen/space_sm"
+                app:startIconDrawable="@drawable/ic_phone">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etPhone"
+                    style="@style/Widget.SolarGrid.EditText.Pill"
+                    android:hint="@string/phone_hint"
+                    android:imeOptions="actionNext"
+                    android:inputType="phone"
+                    android:maxLength="16" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- E-mail -->
+            <TextView
+                style="@style/Widget.SolarGrid.FieldLabel"
+                android:layout_marginTop="@dimen/space_md"
+                android:labelFor="@id/etEmail"
+                android:text="@string/email_label" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilEmail"
+                style="@style/Widget.SolarGrid.TextInputLayout.Pill"
+                android:layout_marginTop="@dimen/space_sm"
+                app:startIconDrawable="@drawable/ic_email">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etEmail"
+                    style="@style/Widget.SolarGrid.EditText.Pill"
+                    android:hint="@string/email_hint"
+                    android:imeOptions="actionDone"
+                    android:inputType="textEmailAddress" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- NIC is the login id, so it cannot be changed here -->
+            <TextView
+                android:id="@+id/tvNicNote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_md"
+                android:text="@string/profile_nic_locked"
+                android:textColor="@color/text_hint"
+                android:textSize="@dimen/text_small" />
+
+            <!-- Shown only when saving fails; EditProfileActivity sets text and visibility -->
+            <TextView
+                android:id="@+id/tvError"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_md"
+                android:textColor="@color/error_red"
+                android:textSize="@dimen/text_small"
+                android:visibility="gone"
+                tools:text="Phone number must be 9 to 15 digits"
+                tools:visibility="visible" />
+
+            <!-- Button and spinner share one spot; spinner replaces the text while loading -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_lg">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSave"
+                    style="@style/Widget.SolarGrid.Button.Primary"
+                    android:text="@string/profile_save" />
+
+                <ProgressBar
+                    android:id="@+id/pbLoading"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:indeterminateTint="@color/text_primary"
+                    android:translationZ="8dp"
+                    android:visibility="gone" />
+            </FrameLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

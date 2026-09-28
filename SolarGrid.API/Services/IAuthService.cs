@@ -17,6 +17,8 @@ public interface IAuthService
     Task<LoginResponseDto> RegisterAsync(RegisterRequestDto request);
     // Register field rules, null when valid
     string? ValidateRegistration(RegisterRequestDto request);
+    // Profile edit field rules, null when valid
+    string? ValidateProfile(UpdateProfileDto request);
     // Backoffice-only Grid Operator create
     Task<LoginResponseDto> CreateGridOperatorAsync(RegisterRequestDto request);
     // Update status

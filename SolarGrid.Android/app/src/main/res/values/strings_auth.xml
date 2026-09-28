@@ -54,4 +54,33 @@
     <!-- Profile tab -->
     <string name="profile_title">Profile</string>
     <string name="profile_nic">NIC: %1$s</string>
+    <string name="profile_section_details">Personal details</string>
+    <string name="profile_member_since">Member since</string>
+    <string name="profile_value_missing">–</string>
+    <string name="profile_status_active">Active</string>
+    <string name="profile_status_pending">Pending approval</string>
+    <string name="profile_load_failed">%1$s Showing the details saved on this phone.</string>
+    <string name="profile_edit">Edit profile</string>
+    <string name="profile_saved">Profile updated</string>
+    <string name="profile_error_session">Your session has ended. Please sign in again.</string>
+    <string name="profile_error_load">Could not load your profile.</string>
+    <string name="profile_error_save">Could not save your profile. Check your details and try again.</string>
+    <string name="profile_error_deactivate">Could not deactivate your account. Try again.</string>
+
+    <!-- Edit profile -->
+    <string name="profile_edit_title">Edit profile</string>
+    <string name="profile_edit_subtitle">Keep your name and contact details up to date</string>
+    <string name="profile_nic_locked">Your NIC is your sign-in ID and cannot be changed. Contact Backoffice if it is wrong.</string>
+    <string name="profile_save">Save changes</string>
+    <string name="profile_back">Back</string>
+    <string name="profile_error_empty">Fill in all fields.</string>
+
+    <!-- Deactivate account -->
+    <string name="profile_deactivate">Deactivate account</string>
+    <string name="profile_deactivate_note">Only Backoffice can reactivate a deactivated account.</string>
+    <string name="profile_deactivate_title">Deactivate your account?</string>
+    <string name="profile_deactivate_message">You will be signed out and will not be able to sign in again until Backoffice reactivates your account.</string>
+    <string name="profile_deactivate_keep">Keep account</string>
+    <string name="profile_deactivate_confirm">Deactivate</string>
+    <string name="profile_deactivated">Your account has been deactivated.</string>
 </resources>

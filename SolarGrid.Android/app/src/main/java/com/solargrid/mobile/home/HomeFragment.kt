@@ -59,6 +59,12 @@ class HomeFragment : Fragment() {
         loadUser()
     }
 
+    // Tabs are hidden, not destroyed, so pick up a name changed on the Profile tab
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (!hidden && _binding != null) loadUser()
+    }
+
     // The hero runs behind the status bar, so push only its text down
     private fun applyWindowInsets() {
         val basePadding = resources.getDimensionPixelSize(R.dimen.space_md)

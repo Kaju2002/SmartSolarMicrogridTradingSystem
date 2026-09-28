@@ -21,6 +21,10 @@ interface UserDao {
     @Query("SELECT * FROM users LIMIT 1")
     suspend fun getCurrentUser(): UserEntity?
 
+    // Keep the saved name in step after a profile edit
+    @Query("UPDATE users SET fullName = :fullName WHERE userId = :userId")
+    suspend fun updateFullName(userId: String, fullName: String)
+
     // Logout
     @Query("DELETE FROM users")
     suspend fun clear()
