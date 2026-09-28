@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { login as loginApi } from '../api/auth'
+import loginHero from '../assets/login-hero.png'
 import { useAuth } from '../context/AuthContext'
 import { homePathForRole } from '../utils/roles'
 
@@ -237,30 +238,50 @@ export default function Login() {
         </div>
       </div>
 
-      {/* Right — brand panel */}
-      <div className="relative hidden h-full w-full items-center justify-center bg-brand-950 lg:flex lg:w-1/2">
-        <div className="pointer-events-none absolute inset-0 opacity-20">
-          <div className="absolute top-0 right-0 h-64 w-64 bg-[radial-gradient(circle_at_center,#f59e0b_0%,transparent_70%)]" />
-          <div className="absolute bottom-0 left-0 h-64 w-64 bg-[radial-gradient(circle_at_center,#16a34a_0%,transparent_70%)]" />
-        </div>
+      {/* Right — full-height brand panel over the smart solar home artwork */}
+      <div className="hidden h-full lg:flex lg:w-1/2">
+        <div className="relative flex h-full w-full flex-col overflow-hidden bg-brand-950">
+          <img
+            src={loginHero}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 h-full w-full object-cover object-center"
+          />
+          {/* Night sky fades to navy at the top so the white text stays readable */}
+          <div className="absolute inset-x-0 top-0 h-3/5 bg-linear-to-b from-brand-950/95 via-brand-950/60 to-transparent" />
 
-        <div className="relative z-10 flex max-w-xs flex-col items-center px-6 text-center">
-          <div className="mb-5 flex size-14 items-center justify-center rounded-2xl bg-brand-500">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="4" fill="white" />
-              <path
-                d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"
-                stroke="white"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-              />
-            </svg>
+          <div className="relative z-10 px-10 pt-10 xl:px-14 xl:pt-14">
+            <div className="mb-6 flex items-center gap-3">
+              {/* White tile so the cube's black face stands out on the navy panel */}
+              <div className="flex size-12 items-center justify-center rounded-xl bg-white p-1.5 shadow-sm">
+                <img src="/brand/logo-icon.png" alt="" className="size-full object-contain" />
+              </div>
+              <span className="text-xl font-semibold text-white">SolarGrid</span>
+            </div>
+
+            <h2 className="max-w-md text-3xl leading-tight font-semibold text-white xl:text-4xl">
+              Clean solar energy, managed in one place.
+            </h2>
+            <p className="mt-3 max-w-md text-sm leading-relaxed text-white/80 xl:text-base">
+              Backoffice and Grid Operator portal for approving prosumers,
+              running solar stations and verifying energy bookings.
+            </p>
+
+            {/* Short windows would push the pills onto the house, so drop them there */}
+            <ul className="mt-6 flex max-w-md flex-wrap gap-2 [@media(max-height:720px)]:hidden">
+              {['Prosumer approvals', 'Station management', 'QR booking check'].map(
+                (feature) => (
+                  <li
+                    key={feature}
+                    className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/15 px-3 py-1.5 text-xs font-medium text-white backdrop-blur"
+                  >
+                    <span className="size-1.5 rounded-full bg-brand-500" />
+                    {feature}
+                  </li>
+                ),
+              )}
+            </ul>
           </div>
-          <h2 className="mb-3 text-3xl font-semibold text-white">SolarGrid</h2>
-          <p className="text-sm leading-relaxed text-gray-400">
-            Backoffice and Grid Operator portal for Smart Solar Microgrid
-            Trading.
-          </p>
         </div>
       </div>
     </div>
