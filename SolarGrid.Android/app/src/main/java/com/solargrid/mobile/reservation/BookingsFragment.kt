@@ -4,7 +4,8 @@
  * Description: Bookings tab. Lists the prosumer's bookings with Upcoming / Pending / Approved /
  *              Past filters and counts. Reloads on pull-to-refresh and whenever the tab is shown,
  *              so a booking made from Stations appears straight away. Tapping a card opens its
- *              detail sheet (QR, change time, cancel).
+ *              detail sheet (QR, change time, cancel). With no connection it shows the copy saved
+ *              in SQLite under an offline banner.
  */
 package com.solargrid.mobile.reservation
 
@@ -23,11 +24,7 @@ import com.solargrid.mobile.R
 import com.solargrid.mobile.databinding.FragmentBookingsBinding
 import com.solargrid.mobile.home.ProsumerMainActivity
 import com.solargrid.mobile.reservation.models.Reservation
-import com.solargrid.mobile.station.StationManager
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 class BookingsFragment : Fragment(R.layout.fragment_bookings) {
@@ -47,8 +44,11 @@ class BookingsFragment : Fragment(R.layout.fragment_bookings) {
     private var filter = Filter.UPCOMING
     private var loadJob: Job? = null
 
-    // Station id -> name, looked up once per station
+    // Station id -> name, from the API or the saved copy
     private val stationNames = mutableMapOf<String, String>()
+
+    // Time of the saved copy while showing it offline; null when the list is live
+    private var offlineSavedAt: Long? = null
 
     private val listAdapter = BookingListAdapter(
         stationName = { stationId -> stationId?.let { stationNames[it] } },
@@ -134,7 +134,8 @@ class BookingsFragment : Fragment(R.layout.fragment_bookings) {
     private fun openDetail(booking: Reservation) {
         if (childFragmentManager.findFragmentByTag(BookingDetailSheet.TAG) != null) return
         val name = booking.stationId?.let { stationNames[it] }
-        BookingDetailSheet.newInstance(booking, name).show(childFragmentManager, BookingDetailSheet.TAG)
+        BookingDetailSheet.newInstance(booking, name, offline = offlineSavedAt != null)
+            .show(childFragmentManager, BookingDetailSheet.TAG)
     }
 
     // Above the bottom navigation, not on top of it
@@ -155,10 +156,12 @@ class BookingsFragment : Fragment(R.layout.fragment_bookings) {
         }
 
         loadJob = viewLifecycleOwner.lifecycleScope.launch {
-            reservationManager.getMyReservations()
-                .onSuccess { list ->
-                    loadStationNames(list)
-                    bookings = list
+            reservationManager.getMyBookings()
+                .onSuccess { result ->
+                    stationNames.putAll(result.stationNames)
+                    bookings = result.bookings
+                    offlineSavedAt = result.savedAt.takeIf { result.offline }
+                    showOfflineBanner()
                     showBookings()
                 }
                 .onFailure { error ->
@@ -173,21 +176,15 @@ class BookingsFragment : Fragment(R.layout.fragment_bookings) {
         }
     }
 
-    // Names from the map's cache, otherwise one API call per new station (in parallel)
-    private suspend fun loadStationNames(list: List<Reservation>) {
-        val stationManager = StationManager.getInstance()
-        val missing = list.mapNotNull { it.stationId }.distinct().filter { it !in stationNames }
-
-        val found = coroutineScope {
-            missing.map { id ->
-                async {
-                    val name = stationManager.getCachedStation(id)?.stationName
-                        ?: stationManager.getStation(id).getOrNull()?.stationName
-                    id to name
-                }
-            }.awaitAll()
+    // "You're offline. Showing bookings saved Mon, 28 Sep · 14:32." while on the saved copy
+    private fun showOfflineBanner() {
+        val savedAt = offlineSavedAt
+        binding.tvOfflineBanner.isVisible = savedAt != null
+        if (savedAt != null) {
+            binding.tvOfflineBanner.text = getString(
+                R.string.bookings_offline, ReservationTime.dayLabel(savedAt), ReservationTime.clock(savedAt)
+            )
         }
-        found.forEach { (id, name) -> if (name != null) stationNames[id] = name }
     }
 
     // Counts on the chips, then the list for the picked filter

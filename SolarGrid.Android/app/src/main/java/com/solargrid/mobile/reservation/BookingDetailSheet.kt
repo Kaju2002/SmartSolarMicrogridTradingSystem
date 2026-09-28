@@ -3,7 +3,8 @@
  * Module: Reservation Management (Kajanthan)
  * Description: Bottom sheet for one booking. Shows time, kWh and cost, the QR code once a Grid
  *              Operator has approved it, and Change time / Cancel while the slot is more than
- *              12 hours away. The API checks the same rule again.
+ *              12 hours away. The API checks the same rule again. The QR also works offline
+ *              (drawn on the phone from the saved code); change and cancel need the API.
  */
 package com.solargrid.mobile.reservation
 
@@ -134,19 +135,22 @@ class BookingDetailSheet : BottomSheetDialogFragment() {
         if (note != null) binding.tvDetailNote.setText(note)
     }
 
-    // Buttons only while changes are open; otherwise explain why they're gone
+    // Buttons only while changes are open and the API can be reached; otherwise explain why
     private fun showActions() {
         val upcoming = booking.isLive() && !ReservationFormatter.isPast(booking)
         val canChange = ReservationFormatter.canChange(booking)
+        val offline = requireArguments().getBoolean(ARG_OFFLINE)
         val deadline = ReservationFormatter.changeDeadline(booking)
 
         binding.tvDetailRule.isVisible = upcoming
-        binding.tvDetailRule.text = if (canChange && deadline != null) {
-            getString(R.string.booking_change_until, ReservationTime.dayLabel(deadline), ReservationTime.clock(deadline))
-        } else {
-            getString(R.string.booking_change_closed)
+        binding.tvDetailRule.text = when {
+            canChange && offline -> getString(R.string.booking_offline_actions)
+            canChange && deadline != null -> getString(
+                R.string.booking_change_until, ReservationTime.dayLabel(deadline), ReservationTime.clock(deadline)
+            )
+            else -> getString(R.string.booking_change_closed)
         }
-        binding.layoutActions.isVisible = upcoming && canChange
+        binding.layoutActions.isVisible = upcoming && canChange && !offline
     }
 
     private fun bindInfo(tile: ItemStationInfoBinding, @DrawableRes icon: Int, @StringRes label: Int, value: String) {
@@ -209,12 +213,15 @@ class BookingDetailSheet : BottomSheetDialogFragment() {
         const val KEY_CHANGE_BOOKING = "change_booking"
         private const val ARG_BOOKING = "booking"
         private const val ARG_STATION_NAME = "station_name"
+        private const val ARG_OFFLINE = "offline"
         private const val QR_SIZE_PX = 600
 
-        fun newInstance(booking: Reservation, stationName: String?) = BookingDetailSheet().apply {
+        // offline = the booking came from the saved copy, so change/cancel are hidden
+        fun newInstance(booking: Reservation, stationName: String?, offline: Boolean) = BookingDetailSheet().apply {
             arguments = Bundle().apply {
                 putString(ARG_BOOKING, Gson().toJson(booking))
                 putString(ARG_STATION_NAME, stationName)
+                putBoolean(ARG_OFFLINE, offline)
             }
         }
     }

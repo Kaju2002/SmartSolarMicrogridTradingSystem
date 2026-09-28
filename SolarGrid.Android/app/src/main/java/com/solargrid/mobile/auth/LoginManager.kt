@@ -74,9 +74,10 @@ class LoginManager private constructor() {
         user
     }
 
-    // Forget the user on this phone
+    // Forget the user and their saved bookings (QR codes) on this phone
     suspend fun logout() = withContext(Dispatchers.IO) {
         DatabaseManager.getInstance().userDao().clear()
+        DatabaseManager.getInstance().bookingDao().clear()
         NetworkManager.getInstance().clearAuthToken()
     }
 
