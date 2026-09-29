@@ -66,8 +66,15 @@
             android:exported="false" />
 
         <activity
-            android:name=".verification.operator.OperatorHomeActivity"
+            android:name=".verification.operator.OperatorMainActivity"
             android:exported="false" />
+
+        <!-- Portrait only: rotating would restart the camera mid-scan -->
+        <activity
+            android:name=".verification.operator.ScanQrActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            tools:ignore="DiscouragedApi,LockedOrientationActivity" />
     </application>
 
 </manifest>

@@ -18,5 +18,8 @@ data class ReservationResult(
     @SerializedName("requestedKWh") val requestedKWh: Double?,
     // LKR, worked out by the API
     @SerializedName("estimatedCost") val estimatedCost: Double?,
-    @SerializedName("qrCode") val qrCode: String?
+    @SerializedName("qrCode") val qrCode: String?,
+    // Only sent back by approve and QR scan
+    @SerializedName("prosumerNic") val prosumerNic: String? = null,
+    @SerializedName("stationName") val stationName: String? = null
 )

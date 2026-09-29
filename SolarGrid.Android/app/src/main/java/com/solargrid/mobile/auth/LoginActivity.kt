@@ -26,7 +26,7 @@ import com.solargrid.mobile.databinding.ActivityLoginBinding
 import com.solargrid.mobile.home.ProsumerMainActivity
 import com.solargrid.mobile.onboarding.OnboardingActivity
 import com.solargrid.mobile.onboarding.OnboardingManager
-import com.solargrid.mobile.verification.operator.OperatorHomeActivity
+import com.solargrid.mobile.verification.operator.OperatorMainActivity
 import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
@@ -81,7 +81,7 @@ class LoginActivity : AppCompatActivity() {
     private fun openHome(user: UserEntity) {
         val target = when (user.userType) {
             LoginManager.USER_TYPE_PROSUMER -> ProsumerMainActivity::class.java
-            LoginManager.USER_TYPE_OPERATOR -> OperatorHomeActivity::class.java
+            LoginManager.USER_TYPE_OPERATOR -> OperatorMainActivity::class.java
             else -> {
                 lifecycleScope.launch { LoginManager.getInstance().logout() }
                 binding.root.isInvisible = false
