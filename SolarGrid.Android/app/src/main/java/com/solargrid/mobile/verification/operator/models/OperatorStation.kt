@@ -7,6 +7,7 @@
 package com.solargrid.mobile.verification.operator.models
 
 import com.google.gson.annotations.SerializedName
+import com.solargrid.mobile.station.models.Station
 
 data class OperatorStation(
     @SerializedName("id") val id: String?,
@@ -23,4 +24,27 @@ data class OperatorStation(
     @SerializedName("status") val status: String?,
     // Users id of the Grid Operator in charge
     @SerializedName("assignedOperatorId") val assignedOperatorId: String?
-)
+) {
+
+    fun isActive(): Boolean = status == STATUS_ACTIVE
+
+    // Same station as the prosumer model, so the shared station formatting works (no map position)
+    fun toStation() = Station(
+        stationId = id,
+        stationName = stationName,
+        latitude = null,
+        longitude = null,
+        distanceKm = null,
+        ratePerKwh = ratePerKwh,
+        capacityKWh = capacityKWh,
+        batterySlots = batterySlots,
+        availableSlots = availableSlots,
+        openTime = openTime,
+        closeTime = closeTime,
+        status = status
+    )
+
+    companion object {
+        const val STATUS_ACTIVE = "Active"
+    }
+}

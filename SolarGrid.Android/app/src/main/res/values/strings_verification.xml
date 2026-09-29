@@ -41,6 +41,11 @@
     <string name="operator_approving">Approving…</string>
     <string name="operator_approved_done">Booking approved. The prosumer\'s QR code is ready.</string>
 
+    <!-- Grid Operator Stations tab -->
+    <string name="operator_station_label_capacity">capacity</string>
+    <string name="operator_station_deactivated">Deactivated</string>
+    <string name="operator_station_bookings">%1$d pending · %2$d approved today</string>
+
     <!-- QR scanner -->
     <string name="scan_title">Scan QR</string>
     <string name="scan_back">Back</string>

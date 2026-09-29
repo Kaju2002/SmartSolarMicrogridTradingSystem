@@ -54,6 +54,8 @@
     <!-- Profile tab -->
     <string name="profile_title">Profile</string>
     <string name="profile_role_prosumer">Prosumer account</string>
+    <string name="profile_role_operator">Grid Operator account</string>
+    <string name="username_label">Username</string>
     <string name="profile_section_personal">Personal information</string>
     <string name="profile_section_account">Account</string>
     <string name="profile_edit_link">Edit</string>
