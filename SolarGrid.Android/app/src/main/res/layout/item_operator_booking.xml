@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    File: item_operator_booking.xml
+    Module: Verification and Dashboard (Aaron)
+    Description: One booking for the Grid Operator: slot time, status pill, prosumer NIC,
+                 station and energy. Filled by OperatorBookingFormatter.
+-->
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="@dimen/home_card_radius"
+    app:cardElevation="0dp"
+    app:strokeColor="@color/divider_soft"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/space_md">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvOperatorBookingTime"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/text_primary"
+                android:textSize="@dimen/text_card_title"
+                android:textStyle="bold"
+                tools:text="14:00 – 15:00" />
+
+            <TextView
+                android:id="@+id/tvOperatorBookingStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/space_sm"
+                android:background="@drawable/bg_status_pill"
+                android:backgroundTint="@color/station_open_bg"
+                android:paddingStart="10dp"
+                android:paddingTop="3dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="3dp"
+                android:textColor="@color/station_open"
+                android:textSize="@dimen/text_small"
+                android:textStyle="bold"
+                tools:text="Approved" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvOperatorBookingNic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:drawablePadding="@dimen/space_sm"
+            android:gravity="center_vertical"
+            android:textColor="@color/text_primary"
+            android:textSize="@dimen/text_row_subtitle"
+            app:drawableStartCompat="@drawable/ic_badge"
+            app:drawableTint="@color/text_hint"
+            tools:text="NIC 200167397996" />
+
+        <TextView
+            android:id="@+id/tvOperatorBookingStation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:drawablePadding="@dimen/space_sm"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:textColor="@color/text_secondary"
+            android:textSize="@dimen/text_row_subtitle"
+            app:drawableStartCompat="@drawable/ic_location"
+            app:drawableTint="@color/text_hint"
+            tools:text="Malabe Solar Hub" />
+
+        <TextView
+            android:id="@+id/tvOperatorBookingEnergy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:drawablePadding="@dimen/space_sm"
+            android:gravity="center_vertical"
+            android:textColor="@color/text_secondary"
+            android:textSize="@dimen/text_row_subtitle"
+            app:drawableStartCompat="@drawable/ic_bolt"
+            app:drawableTint="@color/text_hint"
+            tools:text="10 kWh · Estimated LKR 450" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

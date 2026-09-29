@@ -15,6 +15,31 @@
     <string name="operator_error_forbidden">Only Grid Operator accounts can do this.</string>
     <string name="operator_error_retry">%1$s Pull down to try again.</string>
     <string name="operator_home_scan">Scan QR</string>
+    <string name="operator_home_section_overview">At your stations</string>
+    <string name="operator_home_section_today">Today\'s approved bookings</string>
+    <string name="operator_home_today_hint">Scan the prosumer\'s QR code when they arrive.</string>
+    <string name="operator_home_today_empty">No more approved bookings today</string>
+    <string name="operator_tile_pending">Pending</string>
+    <string name="operator_tile_approved_today">Approved today</string>
+    <string name="operator_tile_completed_today">Completed today</string>
+    <string name="operator_booking_hours">%1$s – %2$s</string>
+    <string name="operator_booking_nic">NIC %1$s</string>
+
+    <!-- Grid Operator Bookings tab and detail sheet -->
+    <string name="operator_filter_pending">Pending (%1$d)</string>
+    <string name="operator_filter_approved">Approved (%1$d)</string>
+    <string name="operator_filter_completed">Completed (%1$d)</string>
+    <string name="operator_bookings_empty_pending">No bookings waiting for approval</string>
+    <string name="operator_bookings_empty_approved">No upcoming approved bookings</string>
+    <string name="operator_bookings_empty_completed">No completed transfers yet</string>
+    <string name="operator_note_pending">Approve this booking to create the prosumer\'s QR code.</string>
+    <string name="operator_note_approved">Approved. Scan the prosumer\'s QR code at the station on the booking day.</string>
+    <string name="operator_note_completed">Energy transfer completed.</string>
+    <string name="operator_note_cancelled">The prosumer cancelled this booking.</string>
+    <string name="operator_note_expired">This slot has passed, so the booking can no longer be used.</string>
+    <string name="operator_approve">Approve booking</string>
+    <string name="operator_approving">Approving…</string>
+    <string name="operator_approved_done">Booking approved. The prosumer\'s QR code is ready.</string>
 
     <!-- QR scanner -->
     <string name="scan_title">Scan QR</string>

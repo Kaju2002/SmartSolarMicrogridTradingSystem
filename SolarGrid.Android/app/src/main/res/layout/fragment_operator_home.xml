@@ -2,63 +2,153 @@
 <!--
     File: fragment_operator_home.xml
     Module: Verification and Dashboard (Aaron)
-    Description: Grid Operator Home tab: greeting, assigned stations and the Scan QR button.
+    Description: Grid Operator Home tab. Greeting, assigned stations and the Scan QR button
+                 stay fixed at the top; booking counts and today's approved bookings scroll below.
 -->
-<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/swipeOperatorHome"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".verification.operator.OperatorHomeFragment">
 
-    <androidx.core.widget.NestedScrollView
+    <!-- Fixed header, so Scan QR is always one tap away -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="@dimen/screen_padding"
+        android:paddingTop="@dimen/space_sm"
+        android:paddingEnd="@dimen/screen_padding"
+        android:paddingBottom="@dimen/space_md">
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/tvOperatorGreeting"
+            style="@style/Widget.SolarGrid.ScreenTitle"
+            android:layout_marginTop="@dimen/space_xl"
+            tools:text="Hi, Nimal" />
+
+        <TextView
+            android:id="@+id/tvOperatorStations"
+            style="@style/Widget.SolarGrid.ScreenSubtitle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingStart="@dimen/screen_padding"
-            android:paddingTop="@dimen/space_sm"
-            android:paddingEnd="@dimen/screen_padding"
-            android:paddingBottom="@dimen/space_lg">
+            tools:text="Malabe Solar Station" />
 
-            <TextView
-                android:id="@+id/tvOperatorGreeting"
-                style="@style/Widget.SolarGrid.ScreenTitle"
-                android:layout_marginTop="@dimen/space_xl"
-                tools:text="Hi, Nimal" />
+        <!-- Main action: verify a prosumer at the station -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnScanQr"
+            style="@style/Widget.SolarGrid.Button.Primary"
+            android:layout_marginTop="@dimen/space_lg"
+            android:text="@string/operator_home_scan"
+            app:icon="@drawable/ic_qr_scan"
+            app:iconGravity="textStart"
+            app:iconTint="@color/text_primary" />
+    </LinearLayout>
 
-            <TextView
-                android:id="@+id/tvOperatorStations"
-                style="@style/Widget.SolarGrid.ScreenSubtitle"
-                android:layout_width="match_parent"
-                tools:text="Malabe Solar Station" />
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeOperatorHome"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
-            <!-- Main action: verify a prosumer at the station -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnScanQr"
-                style="@style/Widget.SolarGrid.Button.Primary"
-                android:layout_marginTop="@dimen/space_lg"
-                android:text="@string/operator_home_scan"
-                app:icon="@drawable/ic_qr_scan"
-                app:iconGravity="textStart"
-                app:iconTint="@color/text_primary" />
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
 
-            <!-- Loading error; pull down to retry -->
-            <TextView
-                android:id="@+id/tvOperatorHomeMessage"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_md"
-                android:textColor="@color/error_red"
-                android:textSize="@dimen/text_small"
-                android:visibility="gone"
-                tools:text="No internet connection. Pull down to try again."
-                tools:visibility="visible" />
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
-</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+                android:orientation="vertical"
+                android:paddingStart="@dimen/screen_padding"
+                android:paddingTop="@dimen/space_sm"
+                android:paddingEnd="@dimen/screen_padding"
+                android:paddingBottom="@dimen/space_lg">
+
+                <!-- Loading error; pull down to retry -->
+                <TextView
+                    android:id="@+id/tvOperatorHomeMessage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/space_md"
+                    android:textColor="@color/error_red"
+                    android:textSize="@dimen/text_small"
+                    android:visibility="gone"
+                    tools:text="No internet connection. Pull down to try again."
+                    tools:visibility="visible" />
+
+                <TextView
+                    style="@style/Widget.SolarGrid.SectionLabel"
+                    android:text="@string/operator_home_section_overview" />
+
+                <!-- Counts at the operator's stations; each tile opens the Bookings tab -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal">
+
+                    <include
+                        android:id="@+id/tileOperatorPending"
+                        layout="@layout/item_dashboard_count"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <Space
+                        android:layout_width="10dp"
+                        android:layout_height="0dp" />
+
+                    <include
+                        android:id="@+id/tileOperatorApproved"
+                        layout="@layout/item_dashboard_count"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <Space
+                        android:layout_width="10dp"
+                        android:layout_height="0dp" />
+
+                    <include
+                        android:id="@+id/tileOperatorCompleted"
+                        layout="@layout/item_dashboard_count"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+                </LinearLayout>
+
+                <TextView
+                    style="@style/Widget.SolarGrid.SectionLabel"
+                    android:layout_marginTop="@dimen/space_xl"
+                    android:text="@string/operator_home_section_today" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/operator_home_today_hint"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="@dimen/text_small" />
+
+                <!-- Filled with item_operator_booking cards in code -->
+                <LinearLayout
+                    android:id="@+id/layoutTodayBookings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="vertical" />
+
+                <TextView
+                    android:id="@+id/tvTodayEmpty"
+                    style="@style/Widget.SolarGrid.EmptyText"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="@dimen/space_lg"
+                    android:text="@string/operator_home_today_empty"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+</LinearLayout>

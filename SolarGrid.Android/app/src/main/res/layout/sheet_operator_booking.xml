@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    File: sheet_operator_booking.xml
+    Module: Verification and Dashboard (Aaron)
+    Description: Grid Operator booking detail sheet: station, status, time, prosumer NIC,
+                 kWh and cost tiles, a status note and the Approve button for Pending bookings.
+-->
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="@dimen/space_lg"
+        android:paddingEnd="@dimen/space_lg"
+        android:paddingBottom="@dimen/space_lg">
+
+        <com.google.android.material.bottomsheet.BottomSheetDragHandleView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvSheetStation"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textColor="@color/text_primary"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                tools:text="Colombo Fort Solar Hub" />
+
+            <TextView
+                android:id="@+id/tvSheetStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/space_sm"
+                android:background="@drawable/bg_status_pill"
+                android:paddingStart="10dp"
+                android:paddingTop="3dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="3dp"
+                android:textSize="@dimen/text_small"
+                android:textStyle="bold"
+                tools:text="@string/booking_status_pending" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvSheetTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xs"
+            android:textColor="@color/text_secondary"
+            android:textSize="15sp"
+            tools:text="Wed, 30 Sep · 14:00 – 15:00" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_lg"
+            android:orientation="horizontal">
+
+            <include
+                android:id="@+id/infoSheetNic"
+                layout="@layout/item_station_info" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:baselineAligned="false"
+            android:orientation="horizontal">
+
+            <include
+                android:id="@+id/infoSheetEnergy"
+                layout="@layout/item_station_info" />
+
+            <Space
+                android:layout_width="12dp"
+                android:layout_height="0dp" />
+
+            <include
+                android:id="@+id/infoSheetCost"
+                layout="@layout/item_station_info" />
+        </LinearLayout>
+
+        <!-- Where the booking stands, e.g. "Approve to create the prosumer's QR code." -->
+        <TextView
+            android:id="@+id/tvSheetNote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_lg"
+            android:textColor="@color/text_primary"
+            android:textSize="15sp"
+            tools:text="@string/operator_note_pending" />
+
+        <!-- API message when approval fails -->
+        <TextView
+            android:id="@+id/tvSheetError"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_sm"
+            android:textColor="@color/error_red"
+            android:textSize="@dimen/text_small"
+            android:visibility="gone"
+            tools:text="This slot has already passed"
+            tools:visibility="visible" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSheetApprove"
+            style="@style/Widget.SolarGrid.Button.Primary"
+            android:layout_marginTop="@dimen/space_md"
+            android:text="@string/operator_approve"
+            android:visibility="gone"
+            tools:visibility="visible" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

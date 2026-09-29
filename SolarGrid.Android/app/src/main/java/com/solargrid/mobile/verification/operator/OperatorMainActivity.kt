@@ -75,8 +75,21 @@ class OperatorMainActivity : AppCompatActivity() {
         })
     }
 
+    // Lets the Home tiles switch tabs; the nav listener shows the fragment
+    fun openTab(itemId: Int) {
+        binding.bottomNav.selectedItemId = itemId
+    }
+
+    // Bookings tab on a given filter, e.g. the Pending tile opens Pending
+    fun openBookings(filter: OperatorBookingsFragment.Filter) {
+        openTab(R.id.nav_operator_bookings)
+        (supportFragmentManager.findFragmentByTag(TAG_BOOKINGS) as? OperatorBookingsFragment)
+            ?.selectFilter(filter)
+    }
+
     // Hide the other tabs and show this one, creating it the first time.
     // Hide/show (not replace) keeps each tab's scroll and loaded data.
+    // commitNow so openBookings can find a tab created a moment ago.
     private fun showTab(itemId: Int) {
         val tag = tagFor(itemId)
         val fragmentManager = supportFragmentManager
@@ -92,7 +105,7 @@ class OperatorMainActivity : AppCompatActivity() {
         } else {
             transaction.show(existing)
         }
-        transaction.commit()
+        transaction.commitNow()
     }
 
     // Fragment tag for each nav item
