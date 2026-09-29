@@ -1,8 +1,9 @@
 /*
  * File: ProfileFragment.kt
  * Module: Identity and Access (Vithusha)
- * Description: Profile tab. Shows the logged-in user's details from the API,
- *              opens the edit screen, and handles logout and account deactivation.
+ * Description: Profile tab for prosumers and Grid Operators. Shows the logged-in user's details
+ *              from the API, opens the edit screen, and handles logout and (prosumers only)
+ *              account deactivation.
  */
 package com.solargrid.mobile.auth
 
@@ -70,7 +71,7 @@ class ProfileFragment : Fragment() {
         bindRow(binding.rowName, R.string.full_name_label, editable = true)
         bindRow(binding.rowPhone, R.string.phone_label, editable = true)
         bindRow(binding.rowEmail, R.string.email_label, editable = true)
-        bindRow(binding.rowNic, R.string.nic_label, editable = false)
+        bindRow(binding.rowLoginId, R.string.nic_label, editable = false)
         bindRow(binding.rowMemberSince, R.string.profile_member_since, editable = false)
         bindAction(binding.rowLogout, R.drawable.ic_logout, R.string.profile_logout, R.color.text_primary)
         bindAction(binding.rowDeactivate, R.drawable.ic_block, R.string.profile_deactivate, R.color.error_red)
@@ -115,7 +116,7 @@ class ProfileFragment : Fragment() {
         row.tvActionTitle.setTextColor(tint)
     }
 
-    // Saved name and NIC first so the screen is never empty, then the full details from the API
+    // Saved name and NIC/username first so the screen is never empty, then the full details from the API
     private fun loadProfile() {
         viewLifecycleOwner.lifecycleScope.launch {
             val user = LoginManager.getInstance().restoreSession()
@@ -123,7 +124,10 @@ class ProfileFragment : Fragment() {
                 openLogin()
                 return@launch
             }
-            if (profile == null) showUser(user.fullName, user.nic)
+            val isOperator = user.userType == LoginManager.USER_TYPE_OPERATOR
+            applyRole(isOperator)
+            val savedLoginId = if (isOperator) user.username else user.nic
+            if (profile == null) showUser(user.fullName, savedLoginId)
 
             binding.pbProfile.isVisible = true
             val result = ProfileManager.getInstance().getProfile()
@@ -132,7 +136,8 @@ class ProfileFragment : Fragment() {
             result
                 .onSuccess { loaded ->
                     profile = loaded
-                    showUser(loaded.fullName ?: user.fullName, loaded.nic ?: user.nic)
+                    val loginId = if (isOperator) loaded.username else loaded.nic
+                    showUser(loaded.fullName ?: user.fullName, loginId ?: savedLoginId)
                     showDetails(loaded)
                     binding.tvProfileMessage.isVisible = false
                 }
@@ -146,13 +151,22 @@ class ProfileFragment : Fragment() {
         }
     }
 
-    // Header (avatar, name) and the saved name/NIC rows, so offline still shows something
-    private fun showUser(fullName: String, nic: String?) {
+    // Prosumers sign in with NIC and may deactivate; Grid Operators sign in with a username
+    // and are managed by Backoffice, so they get no Deactivate row
+    private fun applyRole(isOperator: Boolean) {
+        binding.tvProfileRole.setText(if (isOperator) R.string.profile_role_operator else R.string.profile_role_prosumer)
+        binding.rowLoginId.tvRowLabel.setText(if (isOperator) R.string.username_label else R.string.nic_label)
+        listOf(binding.dividerDeactivate, binding.rowDeactivate.root, binding.tvDeactivateNote)
+            .forEach { it.isVisible = !isOperator }
+    }
+
+    // Header (avatar, name) and the saved name/NIC/username rows, so offline still shows something
+    private fun showUser(fullName: String, loginId: String?) {
         val empty = getString(R.string.profile_value_missing)
         binding.tvAvatar.text = initialsOf(fullName)
         binding.tvProfileName.text = fullName
         binding.rowName.tvRowValue.text = fullName.ifBlank { empty }
-        binding.rowNic.tvRowValue.text = nic?.takeIf { it.isNotBlank() } ?: empty
+        binding.rowLoginId.tvRowValue.text = loginId?.takeIf { it.isNotBlank() } ?: empty
     }
 
     // Phone, e-mail, member since and the status pill; dashes until the API answers

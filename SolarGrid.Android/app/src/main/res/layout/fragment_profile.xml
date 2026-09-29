@@ -2,9 +2,9 @@
 <!--
     File: fragment_profile.xml
     Module: Identity and Access (Vithusha)
-    Description: Profile tab in a settings-list style: centred avatar, name, NIC and status,
+    Description: Profile tab in a settings-list style: centred avatar, name, role and status,
                  a "Personal information" card (tap a row to edit) and an "Account" card
-                 with Log out and Deactivate account.
+                 with Log out and, for prosumers, Deactivate account.
 -->
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -79,9 +79,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:gravity="center"
-            android:text="@string/profile_role_prosumer"
             android:textColor="@color/text_secondary"
-            android:textSize="@dimen/text_body" />
+            android:textSize="@dimen/text_body"
+            tools:text="@string/profile_role_prosumer" />
 
         <!-- Account status; colour set in ProfileFragment -->
         <TextView
@@ -184,7 +184,7 @@
                     android:background="@color/divider_soft" />
 
                 <include
-                    android:id="@+id/rowNic"
+                    android:id="@+id/rowLoginId"
                     layout="@layout/item_profile_row" />
 
                 <View
@@ -239,6 +239,7 @@
                     layout="@layout/item_profile_action" />
 
                 <View
+                    android:id="@+id/dividerDeactivate"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginStart="54dp"
@@ -251,6 +252,7 @@
         </com.google.android.material.card.MaterialCardView>
 
         <TextView
+            android:id="@+id/tvDeactivateNote"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_sm"

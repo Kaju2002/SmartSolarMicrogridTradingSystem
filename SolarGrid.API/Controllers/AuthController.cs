@@ -134,12 +134,20 @@ public class AuthController : ControllerBase
         return Ok(result);
     }
 
-    // PUT request account deactivation — self or Backoffice
+    // PUT request account deactivation — prosumer self or Backoffice
     [HttpPut("request-deactivation/{userId}")]
     public async Task<IActionResult> RequestDeactivation(string userId)
     {
         if (!CanAccessProfile(userId))
             return Forbid();
+
+        // Grid Operator accounts are managed by Backoffice only
+        if (!User.IsBackoffice() && !User.IsInRole("Prosumer"))
+            return BadRequest(new LoginResponseDto
+            {
+                Success = false,
+                Message = "Only prosumer accounts can be deactivated from the app"
+            });
 
         var request = new UpdateUserStatusDto
         {
