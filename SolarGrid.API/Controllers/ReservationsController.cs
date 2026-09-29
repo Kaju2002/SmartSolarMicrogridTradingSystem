@@ -130,6 +130,19 @@ public class ReservationsController : ControllerBase
         return Ok(list);
     }
 
+    // GET bookings at the signed-in Grid Operator's stations
+    [Authorize(Roles = "GridOperator")]
+    [HttpGet("operator")]
+    public async Task<IActionResult> GetForOperator()
+    {
+        var operatorId = User.GetUserId();
+        if (string.IsNullOrEmpty(operatorId))
+            return Unauthorized();
+
+        var list = await _reservationService.GetOperatorReservationsAsync(operatorId);
+        return Ok(list);
+    }
+
     // GET reservations by prosumer NIC — Prosumer (own) or staff
     [Authorize(Roles = "Prosumer,Backoffice,GridOperator")]
     [HttpGet("prosumer/{nic}")]
@@ -147,7 +160,7 @@ public class ReservationsController : ControllerBase
         return Ok(list);
     }
 
-    // PUT approve reservation — Backoffice or Grid Operator; actor from JWT
+    // PUT approve reservation — Backoffice (any) or Grid Operator (own stations); actor from JWT
     [Authorize(Roles = "Backoffice,GridOperator")]
     [HttpPut("{id}/approve")]
     public async Task<IActionResult> Approve(string id)
@@ -156,12 +169,13 @@ public class ReservationsController : ControllerBase
         if (string.IsNullOrEmpty(approvedByUserId))
             return Unauthorized();
 
-        var result = await _reservationService.ApproveReservationAsync(id, approvedByUserId);
+        var operatorId = User.IsBackoffice() ? null : approvedByUserId;
+        var result = await _reservationService.ApproveReservationAsync(id, approvedByUserId, operatorId);
 
         if (result.Success)
             return Ok(result);
 
-        return NotFound(result);
+        return BadRequest(result);
     }
 }
 

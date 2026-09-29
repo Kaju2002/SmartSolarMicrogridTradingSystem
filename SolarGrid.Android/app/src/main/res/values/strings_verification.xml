@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Verification and Dashboard (Aaron): Grid Operator texts -->
+<!-- Verification and Dashboard (Aaron): Grid Operator and prosumer dashboard texts -->
 <resources>
     <string name="operator_home_subtitle">Grid Operator tools</string>
+
+    <!-- Prosumer dashboard -->
+    <string name="dashboard_title">My dashboard</string>
+    <string name="dashboard_subtitle">Your bookings at a glance</string>
+    <string name="dashboard_back">Back</string>
+    <string name="dashboard_count_pending">Pending</string>
+    <string name="dashboard_count_approved">Approved</string>
+    <string name="dashboard_count_completed">Completed</string>
+    <string name="dashboard_count_unknown">–</string>
+    <string name="dashboard_section_search">Search by status</string>
+    <string name="dashboard_section_history">Completed history</string>
+    <string name="dashboard_filter_all">All</string>
+    <string name="dashboard_search_empty">No bookings with this status</string>
+    <string name="dashboard_history_empty">No completed transfers yet</string>
+    <string name="dashboard_error_load">Couldn\'t load your dashboard.</string>
+    <string name="dashboard_error_forbidden">You can only view your own dashboard.</string>
+    <string name="dashboard_error_retry">%1$s Pull down to try again.</string>
+
+    <!-- Home card -->
+    <string name="home_dashboard_open">View</string>
 </resources>

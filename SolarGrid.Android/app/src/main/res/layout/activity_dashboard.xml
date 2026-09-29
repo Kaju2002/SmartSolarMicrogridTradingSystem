@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    File: activity_dashboard.xml
+    Module: Verification and Dashboard (Aaron)
+    Description: Prosumer dashboard: booking counts, bookings by status and the
+                 completed history, with pull-to-refresh.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    tools:context=".verification.dashboard.DashboardActivity">
+
+    <!-- Top bar: back on the left, title centred -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="start|center_vertical"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/dashboard_back"
+            android:src="@drawable/ic_arrow_back" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/dashboard_title"
+            android:textColor="@color/text_primary"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+    </FrameLayout>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeDashboard"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scrollDashboard"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingStart="@dimen/space_lg"
+                android:paddingEnd="@dimen/space_lg"
+                android:paddingBottom="@dimen/space_lg">
+
+                <TextView
+                    style="@style/Widget.SolarGrid.ScreenSubtitle"
+                    android:layout_marginTop="0dp"
+                    android:text="@string/dashboard_subtitle" />
+
+                <!-- Counts; tapping one jumps to that status below -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_md"
+                    android:orientation="horizontal">
+
+                    <include
+                        android:id="@+id/tilePending"
+                        layout="@layout/item_dashboard_count" />
+
+                    <Space
+                        android:layout_width="10dp"
+                        android:layout_height="0dp" />
+
+                    <include
+                        android:id="@+id/tileApproved"
+                        layout="@layout/item_dashboard_count" />
+
+                    <Space
+                        android:layout_width="10dp"
+                        android:layout_height="0dp" />
+
+                    <include
+                        android:id="@+id/tileCompleted"
+                        layout="@layout/item_dashboard_count" />
+                </LinearLayout>
+
+                <!-- Loading error for the whole screen -->
+                <TextView
+                    android:id="@+id/tvDashboardError"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_md"
+                    android:background="@drawable/bg_info_tile"
+                    android:backgroundTint="@color/booking_pending_bg"
+                    android:paddingStart="@dimen/space_md"
+                    android:paddingTop="10dp"
+                    android:paddingEnd="@dimen/space_md"
+                    android:paddingBottom="10dp"
+                    android:textColor="@color/booking_pending"
+                    android:textSize="@dimen/text_small"
+                    android:visibility="gone"
+                    tools:text="You're offline. Pull down to try again."
+                    tools:visibility="visible" />
+
+                <!-- Search by status -->
+                <TextView
+                    style="@style/Widget.SolarGrid.SectionLabel"
+                    android:layout_marginTop="@dimen/space_lg"
+                    android:text="@string/dashboard_section_search" />
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_sm"
+                    android:scrollbars="none">
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chipGroupStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:selectionRequired="true"
+                        app:singleLine="true"
+                        app:singleSelection="true">
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipAll"
+                            style="@style/Widget.SolarGrid.FilterChip"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:text="@string/dashboard_filter_all" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipPending"
+                            style="@style/Widget.SolarGrid.FilterChip"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/booking_status_pending" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipApproved"
+                            style="@style/Widget.SolarGrid.FilterChip"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/booking_status_approved" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipCancelled"
+                            style="@style/Widget.SolarGrid.FilterChip"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/booking_status_cancelled" />
+                    </com.google.android.material.chip.ChipGroup>
+                </HorizontalScrollView>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:minHeight="@dimen/dashboard_list_min_height">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvSearch"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false"
+                        tools:itemCount="2"
+                        tools:listitem="@layout/item_booking_card" />
+
+                    <ProgressBar
+                        android:id="@+id/progressSearch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:indeterminateTint="@color/accent_gold"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/tvSearchEmpty"
+                        style="@style/Widget.SolarGrid.EmptyText"
+                        android:layout_width="match_parent"
+                        android:layout_gravity="center"
+                        android:text="@string/dashboard_search_empty"
+                        android:visibility="gone" />
+                </FrameLayout>
+
+                <!-- Completed history -->
+                <TextView
+                    android:id="@+id/tvHistoryLabel"
+                    style="@style/Widget.SolarGrid.SectionLabel"
+                    android:layout_marginTop="@dimen/space_md"
+                    android:text="@string/dashboard_section_history" />
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:minHeight="@dimen/dashboard_list_min_height">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvHistory"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false"
+                        tools:itemCount="2"
+                        tools:listitem="@layout/item_booking_card" />
+
+                    <TextView
+                        android:id="@+id/tvHistoryEmpty"
+                        style="@style/Widget.SolarGrid.EmptyText"
+                        android:layout_width="match_parent"
+                        android:layout_gravity="center"
+                        android:text="@string/dashboard_history_empty"
+                        android:visibility="gone" />
+                </FrameLayout>
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+</LinearLayout>

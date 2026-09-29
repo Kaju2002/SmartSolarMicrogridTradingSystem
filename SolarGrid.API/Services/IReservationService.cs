@@ -25,6 +25,8 @@ public interface IReservationService
     Task<List<EnergyReservation>> GetAllReservationsAsync();
     // List by NIC
     Task<List<EnergyReservation>> GetReservationsByProsumerAsync(string nic);
-    // Approve booking
-    Task<ReservationResponseDto> ApproveReservationAsync(string reservationId, string approvedByUserId);
+    // Bookings at one Grid Operator's assigned stations
+    Task<List<OperatorReservationDto>> GetOperatorReservationsAsync(string operatorId);
+    // Approve a Pending booking; operatorId null = Backoffice (any station)
+    Task<ReservationResponseDto> ApproveReservationAsync(string reservationId, string approvedByUserId, string? operatorId);
 }

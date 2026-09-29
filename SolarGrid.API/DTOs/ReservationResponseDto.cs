@@ -24,4 +24,8 @@ public class ReservationResponseDto
     // LKR
 
     public string? QrCode { get; set; }
+
+    public string? ProsumerNic { get; set; }
+
+    public string? StationName { get; set; }
 }

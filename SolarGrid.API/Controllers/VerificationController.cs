@@ -7,6 +7,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SolarGrid.API.DTOs;
+using SolarGrid.API.Helpers;
 using SolarGrid.API.Services;
 
 namespace SolarGrid.API.Controllers;
@@ -24,11 +25,16 @@ public class VerificationController : ControllerBase
         _verificationService = verificationService;
     }
 
-    // POST scan QR and finalize transfer
+    // POST scan QR and finalize transfer — Backoffice (any) or Grid Operator (own stations)
     [HttpPost("scan-qr")]
     public async Task<IActionResult> ScanQr([FromBody] VerifyQrDto request)
     {
-        var result = await _verificationService.VerifyAndFinalizeAsync(request);
+        var userId = User.GetUserId();
+        if (string.IsNullOrEmpty(userId))
+            return Unauthorized();
+
+        var operatorId = User.IsBackoffice() ? null : userId;
+        var result = await _verificationService.VerifyAndFinalizeAsync(request, operatorId);
         if (result.Success) return Ok(result);
         return BadRequest(result);
     }

@@ -413,20 +413,63 @@ public class ReservationService : IReservationService
         return await _reservations.Find(filter).ToListAsync();
     }
 
-    // Approve booking and create QR code string
-    public async Task<ReservationResponseDto> ApproveReservationAsync(string reservationId, string approvedByUserId)
+    // Bookings at the stations assigned to one Grid Operator, soonest slot first
+    public async Task<List<OperatorReservationDto>> GetOperatorReservationsAsync(string operatorId)
     {
+        var stations = await _stations.Find(s => s.AssignedOperatorId == operatorId).ToListAsync();
+        if (stations.Count == 0)
+            return new List<OperatorReservationDto>();
+
+        var stationNames = stations.ToDictionary(s => s.Id!, s => s.StationName);
+        var reservations = await _reservations
+            .Find(Builders<EnergyReservation>.Filter.In(r => r.StationId, stationNames.Keys))
+            .SortBy(r => r.ReservationDateTime)
+            .ToListAsync();
+
+        return reservations.Select(r => new OperatorReservationDto
+        {
+            Id = r.Id!,
+            ProsumerNic = r.ProsumerNic,
+            StationId = r.StationId,
+            StationName = stationNames.GetValueOrDefault(r.StationId, string.Empty),
+            ReservationDateTime = r.ReservationDateTime,
+            RequestedKWh = r.RequestedKWh,
+            EstimatedCost = r.EstimatedCost,
+            Status = r.Status,
+            QrCode = r.QrCode,
+            CreatedAt = r.CreatedAt,
+            LastModifiedAt = r.LastModifiedAt
+        }).ToList();
+    }
+
+    // Approve a Pending booking and create its QR code; operatorId null = Backoffice (any station)
+    public async Task<ReservationResponseDto> ApproveReservationAsync(
+        string reservationId, string approvedByUserId, string? operatorId)
+    {
+        if (!ObjectId.TryParse(reservationId, out _))
+            return Fail("Reservation not found");
+
         var filter = Builders<EnergyReservation>.Filter.Eq(r => r.Id, reservationId);
         var existingReservation = await _reservations.Find(filter).FirstOrDefaultAsync();
-
         if (existingReservation is null)
-        {
-            return new ReservationResponseDto
-            {
-                Success = false,
-                Message = "Reservation not found"
-            };
-        }
+            return Fail("Reservation not found");
+
+        if (existingReservation.Status != "Pending")
+            return Fail($"{existingReservation.Status} bookings cannot be approved");
+
+        var station = ObjectId.TryParse(existingReservation.StationId, out _)
+            ? await _stations.Find(s => s.Id == existingReservation.StationId).FirstOrDefaultAsync()
+            : null;
+
+        if (operatorId is not null && station?.AssignedOperatorId != operatorId)
+            return Fail("This booking is not at your station");
+
+        if (station is null || station.Status != "Active")
+            return Fail("Station is not taking bookings");
+
+        var slotEndUtc = BookingTime.ToUtc(existingReservation.ReservationDateTime) + BookingTime.SlotLength;
+        if (slotEndUtc <= DateTime.UtcNow)
+            return Fail("This slot has already passed");
 
         var qrCode = Guid.NewGuid().ToString();
 
@@ -436,7 +479,11 @@ public class ReservationService : IReservationService
             .Set(r => r.QrCode, qrCode)
             .Set(r => r.LastModifiedAt, DateTime.UtcNow);
 
-        await _reservations.UpdateOneAsync(filter, update);
+        // Still-Pending filter stops a second approve from replacing the prosumer's QR
+        var stillPending = filter & Builders<EnergyReservation>.Filter.Eq(r => r.Status, "Pending");
+        var result = await _reservations.UpdateOneAsync(stillPending, update);
+        if (result.ModifiedCount == 0)
+            return Fail("Reservation is no longer pending");
 
         return new ReservationResponseDto
         {
@@ -444,7 +491,12 @@ public class ReservationService : IReservationService
             Message = "Reservation approved",
             ReservationId = existingReservation.Id,
             Status = "Approved",
-            QrCode = qrCode
+            ReservationDateTime = existingReservation.ReservationDateTime,
+            RequestedKWh = existingReservation.RequestedKWh,
+            EstimatedCost = existingReservation.EstimatedCost,
+            QrCode = qrCode,
+            ProsumerNic = existingReservation.ProsumerNic,
+            StationName = station.StationName
         };
     }
 }

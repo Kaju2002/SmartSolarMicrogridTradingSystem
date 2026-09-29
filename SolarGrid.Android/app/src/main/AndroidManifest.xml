@@ -62,6 +62,10 @@
             android:exported="false" />
 
         <activity
+            android:name=".verification.dashboard.DashboardActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".verification.operator.OperatorHomeActivity"
             android:exported="false" />
     </application>

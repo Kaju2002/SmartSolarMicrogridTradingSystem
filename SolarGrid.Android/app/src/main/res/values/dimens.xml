@@ -49,6 +49,11 @@
     <dimen name="home_card_image">84dp</dimen>
     <dimen name="home_card_radius">24dp</dimen>
 
+    <!-- Dashboard: count tiles and list areas -->
+    <dimen name="dashboard_tile_radius">16dp</dimen>
+    <dimen name="text_dashboard_count">24sp</dimen>
+    <dimen name="dashboard_list_min_height">72dp</dimen>
+
     <!-- Stations map: card carousel over the map -->
     <dimen name="station_card_gap">6dp</dimen>
     <dimen name="station_card_stroke">2dp</dimen>

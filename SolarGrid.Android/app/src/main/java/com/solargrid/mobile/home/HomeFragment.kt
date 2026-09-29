@@ -1,12 +1,13 @@
 /*
  * File: HomeFragment.kt
  * Module: Team
- * Description: Home tab. Illustrated hero with a greeting, feature cards,
- *              "Your SolarGrid" shortcuts and a booking tip. All content is static;
- *              taps move to the other tabs or open a short info sheet.
+ * Description: Home tab. Illustrated hero with a greeting, live booking counts that open
+ *              the dashboard, feature cards, "Your SolarGrid" shortcuts and a booking tip.
+ *              Other taps move to the other tabs or open a short info sheet.
  */
 package com.solargrid.mobile.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -30,6 +31,9 @@ import com.solargrid.mobile.databinding.FragmentHomeBinding
 import com.solargrid.mobile.databinding.ItemHomeCardBinding
 import com.solargrid.mobile.databinding.ItemHomeRowBinding
 import com.solargrid.mobile.databinding.SheetHomeInfoBinding
+import com.solargrid.mobile.verification.dashboard.DashboardActivity
+import com.solargrid.mobile.verification.dashboard.DashboardManager
+import com.solargrid.mobile.verification.dashboard.DashboardTiles
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -60,9 +64,19 @@ class HomeFragment : Fragment() {
     }
 
     // Tabs are hidden, not destroyed, so pick up a name changed on the Profile tab
+    // and counts changed on the Bookings tab
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
-        if (!hidden && _binding != null) loadUser()
+        if (!hidden && _binding != null) {
+            loadUser()
+            loadSummary()
+        }
+    }
+
+    // Also covers coming back from the dashboard or a booking screen
+    override fun onResume() {
+        super.onResume()
+        if (!isHidden) loadSummary()
     }
 
     // The hero runs behind the status bar, so push only its text down
@@ -92,6 +106,8 @@ class HomeFragment : Fragment() {
 
     // Images, tints and texts for the cards and rows
     private fun setupContent() {
+        DashboardTiles.setup(binding.tileHomePending, binding.tileHomeApproved, binding.tileHomeCompleted)
+
         bindCard(binding.cardFind, R.color.home_card_teal, R.drawable.img_home_find,
             R.string.home_card_find_title, R.string.home_card_find_subtitle)
         bindCard(binding.cardBook, R.color.home_card_gold, R.drawable.img_home_book,
@@ -112,6 +128,11 @@ class HomeFragment : Fragment() {
     // Where each tap goes. Booking starts from a station; QR codes live on approved bookings.
     private fun setupListeners() {
         binding.tvAvatar.setOnClickListener { openTab(R.id.nav_profile) }
+
+        // Tiles are clickable on their own, so each one opens the dashboard too
+        listOf(binding.cardDashboard, binding.tileHomePending.root,
+            binding.tileHomeApproved.root, binding.tileHomeCompleted.root)
+            .forEach { it.setOnClickListener { openDashboard() } }
 
         binding.cardFind.root.setOnClickListener { openTab(R.id.nav_stations) }
         binding.cardBook.root.setOnClickListener { openTab(R.id.nav_stations) }
@@ -136,6 +157,20 @@ class HomeFragment : Fragment() {
             }
             binding.tvAvatar.text = initialsOf(name)
         }
+    }
+
+    // Live counts; on failure the last numbers (or dashes) stay so Home still works offline
+    private fun loadSummary() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            DashboardManager.getInstance().getSummary().onSuccess { summary ->
+                val view = _binding ?: return@onSuccess
+                DashboardTiles.show(view.tileHomePending, view.tileHomeApproved, view.tileHomeCompleted, summary)
+            }
+        }
+    }
+
+    private fun openDashboard() {
+        startActivity(Intent(requireContext(), DashboardActivity::class.java))
     }
 
     // Morning before 12, afternoon before 5 pm, evening after

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    File: item_dashboard_count.xml
+    Module: Verification and Dashboard (Aaron)
+    Description: One count tile on the dashboard (big number and a label).
+                 Colours and text are set in DashboardActivity.
+-->
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:clickable="true"
+    android:focusable="true"
+    app:cardCornerRadius="@dimen/dashboard_tile_radius"
+    app:cardElevation="0dp"
+    app:strokeWidth="0dp"
+    tools:cardBackgroundColor="@color/booking_pending_bg">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="14dp"
+        android:paddingTop="@dimen/space_md"
+        android:paddingEnd="14dp"
+        android:paddingBottom="@dimen/space_md">
+
+        <TextView
+            android:id="@+id/tvCountValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_dashboard_count"
+            android:textStyle="bold"
+            tools:text="2"
+            tools:textColor="@color/booking_pending" />
+
+        <TextView
+            android:id="@+id/tvCountLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="@color/text_secondary"
+            android:textSize="@dimen/text_small"
+            tools:text="Pending" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>
