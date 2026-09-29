@@ -114,6 +114,83 @@
                 android:paddingTop="@dimen/space_lg"
                 android:paddingBottom="@dimen/space_lg">
 
+                <!-- Live booking counts from the dashboard API; the whole card opens the dashboard -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardDashboard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/space_lg"
+                    android:layout_marginEnd="@dimen/space_lg"
+                    android:layout_marginBottom="@dimen/space_xl"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="@dimen/home_card_radius"
+                    app:cardElevation="0dp"
+                    app:strokeColor="@color/divider_soft"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/space_md">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:fontFamily="sans-serif-medium"
+                                android:text="@string/dashboard_title"
+                                android:textColor="@color/text_primary"
+                                android:textSize="@dimen/text_card_title" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:drawableEnd="@drawable/ic_chevron_right"
+                                android:drawablePadding="2dp"
+                                android:gravity="center_vertical"
+                                android:text="@string/home_dashboard_open"
+                                android:textColor="@color/text_hint"
+                                android:textSize="@dimen/text_row_subtitle" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:orientation="horizontal">
+
+                            <include
+                                android:id="@+id/tileHomePending"
+                                layout="@layout/item_dashboard_count" />
+
+                            <Space
+                                android:layout_width="10dp"
+                                android:layout_height="0dp" />
+
+                            <include
+                                android:id="@+id/tileHomeApproved"
+                                layout="@layout/item_dashboard_count" />
+
+                            <Space
+                                android:layout_width="10dp"
+                                android:layout_height="0dp" />
+
+                            <include
+                                android:id="@+id/tileHomeCompleted"
+                                layout="@layout/item_dashboard_count" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
                 <TextView
                     style="@style/Widget.SolarGrid.SectionLabel"
                     android:layout_marginStart="@dimen/space_lg"

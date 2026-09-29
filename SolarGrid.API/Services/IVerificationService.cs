@@ -11,8 +11,8 @@ namespace SolarGrid.API.Services;
 
 public interface IVerificationService
 {
-    // Finalize by QR
-    Task<ReservationResponseDto> VerifyAndFinalizeAsync(VerifyQrDto request);
+    // Finalize by QR; operatorId null = Backoffice (any station)
+    Task<ReservationResponseDto> VerifyAndFinalizeAsync(VerifyQrDto request, string? operatorId);
     // Dashboard counts
     Task<DashboardSummaryDto> GetDashboardSummaryAsync(string prosumerNic);
     // Booking history
