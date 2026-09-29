@@ -7,6 +7,7 @@
 package com.solargrid.mobile.verification.operator.models
 
 import com.google.gson.annotations.SerializedName
+import com.solargrid.mobile.reservation.models.Reservation
 
 data class OperatorBooking(
     @SerializedName("id") val id: String?,
@@ -23,4 +24,17 @@ data class OperatorBooking(
     @SerializedName("qrCode") val qrCode: String?,
     @SerializedName("createdAt") val createdAt: String?,
     @SerializedName("lastModifiedAt") val lastModifiedAt: String?
-)
+) {
+
+    // Same booking as the prosumer model, so the shared time and status formatting works
+    fun toReservation() = Reservation(
+        id = id,
+        stationId = stationId,
+        reservationDateTime = reservationDateTime,
+        requestedKWh = requestedKWh,
+        estimatedCost = estimatedCost,
+        status = status,
+        qrCode = qrCode,
+        createdAt = createdAt
+    )
+}

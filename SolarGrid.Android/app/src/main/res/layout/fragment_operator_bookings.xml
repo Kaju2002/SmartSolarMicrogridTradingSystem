@@ -2,24 +2,138 @@
 <!--
     File: fragment_operator_bookings.xml
     Module: Verification and Dashboard (Aaron)
-    Description: Grid Operator Bookings tab: bookings at the operator's stations.
+    Description: Grid Operator Bookings tab: title, Pending / Approved / Completed chips with
+                 counts and a pull-to-refresh list of booking cards. One message area covers
+                 loading errors and empty filters.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingStart="@dimen/screen_padding"
     android:paddingTop="@dimen/space_sm"
-    android:paddingEnd="@dimen/screen_padding"
     tools:context=".verification.operator.OperatorBookingsFragment">
 
     <TextView
         style="@style/Widget.SolarGrid.ScreenTitle"
+        android:layout_marginStart="@dimen/screen_padding"
         android:layout_marginTop="@dimen/space_xl"
         android:text="@string/operator_bookings_title" />
 
     <TextView
         style="@style/Widget.SolarGrid.ScreenSubtitle"
+        android:layout_marginStart="@dimen/screen_padding"
         android:text="@string/operator_bookings_subtitle" />
+
+    <!-- Filters scroll sideways but start in line with the title -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_md"
+        android:clipToPadding="false"
+        android:paddingStart="@dimen/screen_padding"
+        android:paddingEnd="@dimen/screen_padding"
+        android:scrollbars="none">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroupOperatorFilter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:selectionRequired="true"
+            app:singleLine="true"
+            app:singleSelection="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipOperatorPending"
+                style="@style/Widget.SolarGrid.FilterChip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                tools:text="Pending (2)" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipOperatorApproved"
+                style="@style/Widget.SolarGrid.FilterChip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Approved (3)" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipOperatorCompleted"
+                style="@style/Widget.SolarGrid.FilterChip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Completed (5)" />
+        </com.google.android.material.chip.ChipGroup>
+    </HorizontalScrollView>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeOperatorBookings"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/space_sm"
+        android:layout_weight="1">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvOperatorBookings"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingStart="@dimen/screen_padding"
+                android:paddingTop="@dimen/space_sm"
+                android:paddingEnd="@dimen/screen_padding"
+                android:paddingBottom="@dimen/space_lg"
+                tools:itemCount="3"
+                tools:listitem="@layout/item_operator_booking" />
+
+            <ProgressBar
+                android:id="@+id/progressOperatorBookings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:indeterminateTint="@color/accent_gold"
+                android:visibility="gone" />
+
+            <!-- Empty filter or a loading error -->
+            <LinearLayout
+                android:id="@+id/layoutOperatorBookingsEmpty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingStart="@dimen/screen_padding"
+                android:paddingEnd="@dimen/screen_padding"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="@dimen/empty_icon_size"
+                    android:layout_height="@dimen/empty_icon_size"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_calendar_outlined"
+                    app:tint="@color/text_hint" />
+
+                <TextView
+                    android:id="@+id/tvOperatorBookingsEmpty"
+                    style="@style/Widget.SolarGrid.EmptyText"
+                    tools:text="@string/operator_bookings_empty_pending" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnOperatorBookingsRetry"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_md"
+                    android:text="@string/bookings_retry"
+                    android:textColor="@color/text_primary"
+                    android:visibility="gone"
+                    app:strokeColor="@color/field_border" />
+            </LinearLayout>
+        </FrameLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </LinearLayout>

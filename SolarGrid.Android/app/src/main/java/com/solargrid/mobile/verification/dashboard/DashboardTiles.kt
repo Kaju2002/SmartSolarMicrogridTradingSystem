@@ -2,7 +2,7 @@
  * File: DashboardTiles.kt
  * Module: Verification and Dashboard (Aaron)
  * Description: Pending / Approved / Completed count tiles, shared by the dashboard
- *              screen and the Home card so both look the same.
+ *              screen, the Home card and the Grid Operator Home so all look the same.
  */
 package com.solargrid.mobile.verification.dashboard
 
@@ -39,12 +39,14 @@ object DashboardTiles {
         setCount(completed, summary?.completedCount)
     }
 
-    private fun setCount(tile: ItemDashboardCountBinding, count: Int?) {
+    // One number, or a dash when unknown
+    fun setCount(tile: ItemDashboardCountBinding, count: Int?) {
         tile.tvCountValue.text = count?.toString()
             ?: tile.root.context.getString(R.string.dashboard_count_unknown)
     }
 
-    private fun paint(
+    // Label and colours of one tile
+    fun paint(
         tile: ItemDashboardCountBinding,
         @StringRes label: Int,
         @ColorRes text: Int,
