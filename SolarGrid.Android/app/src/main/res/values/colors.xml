@@ -43,4 +43,8 @@
 
     <!-- Feedback -->
     <color name="error_red">#FFD32F2F</color>
+    <color name="error_red_bg">#FFFDECEC</color>
+
+    <!-- Dark band over the camera so white text stays readable -->
+    <color name="scan_scrim">#99000000</color>
 </resources>

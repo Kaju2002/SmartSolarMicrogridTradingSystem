@@ -1,7 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Verification and Dashboard (Aaron): Grid Operator and prosumer dashboard texts -->
 <resources>
-    <string name="operator_home_subtitle">Grid Operator tools</string>
+    <!-- Grid Operator -->
+    <string name="operator_home_greeting">Hi, %1$s</string>
+    <string name="operator_home_no_station">No station assigned yet. Ask Backoffice to assign you.</string>
+    <string name="operator_bookings_title">Bookings</string>
+    <string name="operator_bookings_subtitle">Approve and track bookings at your stations</string>
+    <string name="operator_stations_title">My stations</string>
+    <string name="operator_stations_subtitle">Stations assigned to you</string>
+    <string name="operator_error_bookings">Couldn\'t load bookings.</string>
+    <string name="operator_error_stations">Couldn\'t load your stations.</string>
+    <string name="operator_error_approve">Couldn\'t approve this booking.</string>
+    <string name="operator_error_scan">Couldn\'t verify this QR code.</string>
+    <string name="operator_error_forbidden">Only Grid Operator accounts can do this.</string>
+    <string name="operator_error_retry">%1$s Pull down to try again.</string>
+    <string name="operator_home_scan">Scan QR</string>
+
+    <!-- QR scanner -->
+    <string name="scan_title">Scan QR</string>
+    <string name="scan_back">Back</string>
+    <string name="scan_hint">Point the camera at the prosumer\'s booking QR code</string>
+    <string name="scan_manual">Enter code manually</string>
+    <string name="scan_torch_on">Turn on flash</string>
+    <string name="scan_torch_off">Turn off flash</string>
+    <string name="scan_verifying">Checking booking…</string>
+    <string name="scan_permission_title">Camera access needed</string>
+    <string name="scan_permission_message">Allow camera access to scan booking QR codes, or type the code instead.</string>
+    <string name="scan_permission_allow">Allow camera</string>
+    <string name="scan_permission_settings">Open settings</string>
+    <string name="scan_manual_title">Enter QR code</string>
+    <string name="scan_manual_hint">QR code</string>
+    <string name="scan_manual_verify">Verify</string>
+    <string name="scan_manual_cancel">Cancel</string>
+    <string name="scan_manual_empty">Enter the QR code first.</string>
+
+    <!-- Scan result sheet -->
+    <string name="scan_success_title">Energy transfer completed</string>
+    <string name="scan_success_message">The booking is now marked as completed.</string>
+    <string name="scan_error_title">Couldn\'t verify this QR</string>
+    <string name="scan_detail_nic">Prosumer NIC</string>
+    <string name="scan_next">Scan next</string>
+    <string name="scan_again">Scan again</string>
 
     <!-- Prosumer dashboard -->
     <string name="dashboard_title">My dashboard</string>
