@@ -93,6 +93,10 @@ builder.Services.AddSingleton<JwtTokenHelper>();
 // Auth service DI
 builder.Services.AddScoped<IAuthService, AuthService>();
 
+// Forgot password: SMTP sender and reset service DI
+builder.Services.AddSingleton<IEmailSender, SmtpEmailSender>();
+builder.Services.AddScoped<IPasswordResetService, PasswordResetService>();
+
 // Reservation service DI
 builder.Services.AddScoped<IReservationService, ReservationService>();
 
