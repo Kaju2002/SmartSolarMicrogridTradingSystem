@@ -13,6 +13,10 @@
     <dimen name="login_hero_height">270dp</dimen>
     <dimen name="login_hero_edge_height">26dp</dimen>
     <dimen name="register_hero_height">170dp</dimen>
+    <dimen name="otp_box_height">60dp</dimen>
+    <dimen name="otp_box_radius">16dp</dimen>
+    <dimen name="otp_box_gap">12dp</dimen>
+    <dimen name="hero_back_button_size">40dp</dimen>
     <dimen name="social_button_size">56dp</dimen>
 
     <!-- Onboarding card (Figma: 345 x 250 step shape, 24dp from the screen edges) -->
@@ -42,11 +46,11 @@
     <dimen name="text_profile_row">15sp</dimen>
 
     <!-- Home -->
-    <dimen name="home_hero_height">480dp</dimen>
+    <dimen name="home_hero_image_top">256dp</dimen>
     <dimen name="home_sheet_radius">28dp</dimen>
     <dimen name="home_avatar_size">48dp</dimen>
     <dimen name="home_card_width">168dp</dimen>
-    <dimen name="home_card_image">84dp</dimen>
+    <dimen name="home_card_image">126dp</dimen>
     <dimen name="home_card_radius">24dp</dimen>
 
     <!-- Dashboard: count tiles and list areas -->
@@ -64,6 +68,8 @@
     <dimen name="home_row_icon_tile">46dp</dimen>
     <dimen name="home_row_divider_inset">78dp</dimen>
     <dimen name="home_tip_image">96dp</dimen>
+    <dimen name="home_tip_image_radius">18dp</dimen>
+    <dimen name="home_entrance_offset">24dp</dimen>
     <dimen name="home_scrim_fade">80dp</dimen>
 
     <dimen name="text_home_greeting">17sp</dimen>

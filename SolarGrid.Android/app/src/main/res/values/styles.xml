@@ -35,6 +35,22 @@
         <item name="android:textSize">@dimen/text_body</item>
     </style>
 
+    <!-- One digit box of the forgot password code; boxes share the row equally -->
+    <style name="Widget.SolarGrid.OtpBox" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">@dimen/otp_box_height</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:background">@drawable/bg_otp_box</item>
+        <item name="android:gravity">center</item>
+        <item name="android:imeOptions">actionNext</item>
+        <item name="android:importantForAutofill">yes</item>
+        <item name="android:inputType">number</item>
+        <item name="android:maxLength">1</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <!-- Gold pill button (Sign In, Create Account); greys out when disabled -->
     <style name="Widget.SolarGrid.Button.Primary" parent="Widget.Material3.Button">
         <item name="android:layout_width">match_parent</item>

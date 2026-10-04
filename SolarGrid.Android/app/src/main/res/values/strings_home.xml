@@ -14,6 +14,7 @@
     <string name="home_greeting_with_name">%1$s, %2$s</string>
     <string name="home_hero_title">Welcome to\nSolarGrid</string>
     <string name="home_hero_subtitle">Clean solar charging, booked in seconds</string>
+    <string name="home_hero_chip">Solar-powered EV charging</string>
     <string name="home_avatar_description">Open profile</string>
 
     <!-- Feature cards -->
