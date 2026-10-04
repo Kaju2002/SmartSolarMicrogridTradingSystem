@@ -1,9 +1,9 @@
 /*
  * File: ForgotPasswordActivity.kt
- * Module: Identity and Access
+ * Module: Identity and Access (Vithusha)
  * Description: Forgot password screen in three steps: e-mail, 4-digit code, new password.
- *              UI only for now. The API has no reset endpoint, so the last step tells the
- *              user it is not live yet instead of pretending the password changed.
+ *              Each step calls the API through PasswordResetManager. The reset token from
+ *              the code step is kept in memory only.
  */
 package com.solargrid.mobile.auth
 
@@ -24,8 +24,10 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.core.widget.doAfterTextChanged
+import androidx.lifecycle.lifecycleScope
 import com.solargrid.mobile.R
 import com.solargrid.mobile.databinding.ActivityForgotPasswordBinding
+import kotlinx.coroutines.launch
 
 class ForgotPasswordActivity : AppCompatActivity() {
 
@@ -35,6 +37,8 @@ class ForgotPasswordActivity : AppCompatActivity() {
     private lateinit var codeBoxes: List<EditText>
     private var step = Step.EMAIL
     private var resendTimer: CountDownTimer? = null
+    private var resetToken: String? = null
+    private var canResend = false
 
     // Inflate, wire the steps and start on the e-mail step
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -122,6 +126,7 @@ class ForgotPasswordActivity : AppCompatActivity() {
                 binding.tvSubtitle.setText(R.string.forgot_email_subtitle)
                 binding.btnPrimary.setText(R.string.forgot_send_email)
                 resendTimer?.cancel()
+                resetToken = null
             }
             Step.CODE -> {
                 binding.tvSubtitle.text = getString(R.string.forgot_code_subtitle, maskEmail(enteredEmail()))
@@ -139,31 +144,58 @@ class ForgotPasswordActivity : AppCompatActivity() {
         }
     }
 
-    // Check the current step, then move on
+    // Run the current step
     private fun onPrimaryClick() {
         when (step) {
-            Step.EMAIL -> {
-                if (!Patterns.EMAIL_ADDRESS.matcher(enteredEmail()).matches()) {
-                    showError(getString(R.string.forgot_error_email))
-                } else {
-                    showStep(Step.CODE)
-                }
-            }
-            Step.CODE -> {
-                if (codeBoxes.any { it.text.length != 1 }) {
-                    showError(getString(R.string.forgot_error_code))
-                } else {
-                    showStep(Step.RESET)
-                }
-            }
+            Step.EMAIL -> sendCode()
+            Step.CODE -> verifyCode()
             Step.RESET -> savePassword()
         }
     }
 
-    // Same rules as sign-up: both filled, long enough, matching
+    // Step 1: the API e-mails a code, then the code boxes show
+    private fun sendCode() {
+        if (!Patterns.EMAIL_ADDRESS.matcher(enteredEmail()).matches()) {
+            showError(getString(R.string.forgot_error_email))
+            return
+        }
+        hideKeyboard()
+        lifecycleScope.launch {
+            setLoading(true)
+            val result = PasswordResetManager.getInstance().sendCode(enteredEmail())
+            setLoading(false)
+            result
+                .onSuccess { showStep(Step.CODE) }
+                .onFailure { showError(it.message ?: getString(R.string.login_error_server)) }
+        }
+    }
+
+    // Step 2: a correct code gives the reset token for the last step
+    private fun verifyCode() {
+        val code = codeBoxes.joinToString("") { it.text.toString() }
+        if (code.length != codeBoxes.size) {
+            showError(getString(R.string.forgot_error_code))
+            return
+        }
+        hideKeyboard()
+        lifecycleScope.launch {
+            setLoading(true)
+            val result = PasswordResetManager.getInstance().verifyCode(enteredEmail(), code)
+            setLoading(false)
+            result
+                .onSuccess { token ->
+                    resetToken = token
+                    showStep(Step.RESET)
+                }
+                .onFailure { showError(it.message ?: getString(R.string.login_error_server)) }
+        }
+    }
+
+    // Step 3: same rules as sign-up (filled, long enough, matching), then the API saves it
     private fun savePassword() {
         val password = binding.etNewPassword.text?.toString().orEmpty()
         val confirm = binding.etConfirmPassword.text?.toString().orEmpty()
+        val token = resetToken
         when {
             password.isEmpty() || confirm.isEmpty() ->
                 showError(getString(R.string.forgot_error_password_empty))
@@ -171,17 +203,46 @@ class ForgotPasswordActivity : AppCompatActivity() {
                 showError(getString(R.string.forgot_error_password_short, MIN_PASSWORD_LENGTH))
             password != confirm ->
                 showError(getString(R.string.register_error_password_mismatch))
+            token == null -> showStep(Step.EMAIL)
             else -> {
                 hideKeyboard()
-                Toast.makeText(this, R.string.forgot_not_live, Toast.LENGTH_LONG).show()
-                finish()
+                lifecycleScope.launch {
+                    setLoading(true)
+                    val result = PasswordResetManager.getInstance()
+                        .resetPassword(enteredEmail(), token, password)
+                    setLoading(false)
+                    result
+                        .onSuccess { message ->
+                            Toast.makeText(this@ForgotPasswordActivity, message, Toast.LENGTH_LONG).show()
+                            finish()
+                        }
+                        .onFailure { showError(it.message ?: getString(R.string.login_error_server)) }
+                }
             }
         }
+    }
+
+    // Spinner on the button, inputs locked while waiting for the API
+    private fun setLoading(loading: Boolean) {
+        binding.pbLoading.isVisible = loading
+        binding.btnPrimary.isEnabled = !loading
+        binding.btnPrimary.text = if (loading) "" else getString(buttonTextRes())
+        binding.btnBack.isEnabled = !loading
+        (listOf(binding.etEmail, binding.etNewPassword, binding.etConfirmPassword) + codeBoxes)
+            .forEach { it.isEnabled = !loading }
+        binding.tvResend.isEnabled = !loading && canResend
+    }
+
+    private fun buttonTextRes(): Int = when (step) {
+        Step.EMAIL -> R.string.forgot_send_email
+        Step.CODE -> R.string.forgot_verify
+        Step.RESET -> R.string.forgot_save_password
     }
 
     // 30 second wait before the code can be asked for again
     private fun startResendTimer() {
         resendTimer?.cancel()
+        canResend = false
         binding.tvResend.isEnabled = false
         binding.tvResend.setTextColor(getColor(R.color.text_hint))
         resendTimer = object : CountDownTimer(RESEND_WAIT_MS, 1_000L) {
@@ -191,6 +252,7 @@ class ForgotPasswordActivity : AppCompatActivity() {
             }
 
             override fun onFinish() {
+                canResend = true
                 binding.tvResend.isEnabled = true
                 binding.tvResend.setText(R.string.forgot_resend)
                 binding.tvResend.setTextColor(getColor(R.color.text_primary))
@@ -198,18 +260,30 @@ class ForgotPasswordActivity : AppCompatActivity() {
         }.start()
     }
 
+    // Ask the API for a fresh code; the old one stops working
     private fun resendCode() {
-        codeBoxes.forEach { it.text.clear() }
-        codeBoxes.first().requestFocus()
-        startResendTimer()
+        lifecycleScope.launch {
+            setLoading(true)
+            val result = PasswordResetManager.getInstance().sendCode(enteredEmail())
+            setLoading(false)
+            result
+                .onSuccess {
+                    codeBoxes.forEach { it.text.clear() }
+                    codeBoxes.first().requestFocus()
+                    startResendTimer()
+                    Toast.makeText(this@ForgotPasswordActivity, R.string.forgot_code_resent, Toast.LENGTH_SHORT).show()
+                }
+                .onFailure { showError(it.message ?: getString(R.string.login_error_server)) }
+        }
     }
 
-    // Back walks to the previous step, and leaves from the first one
+    // Back walks to the previous step and leaves from the first one.
+    // The code is used up once verified, so Back from the password step starts over.
     private fun goBack() {
         when (step) {
             Step.EMAIL -> finish()
             Step.CODE -> showStep(Step.EMAIL)
-            Step.RESET -> showStep(Step.CODE)
+            Step.RESET -> showStep(Step.EMAIL)
         }
     }
 
