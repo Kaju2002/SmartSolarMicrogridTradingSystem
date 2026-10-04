@@ -83,7 +83,7 @@ class NetworkManager private constructor() {
 
     companion object {
         // Emulator alias for the PC running the API; physical phones need the PC LAN IP
-        const val BASE_URL = "http://10.0.2.2:5204/"
+        const val BASE_URL = "http://10.0.2.2:8081/"
 
         @Volatile
         private var instance: NetworkManager? = null
