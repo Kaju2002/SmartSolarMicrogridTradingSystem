@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Soft sky behind the home hero; same colours as the top edge of the render so they join seamlessly -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <gradient
+        android:angle="0"
+        android:centerColor="@color/home_sky_mid"
+        android:endColor="@color/home_sky_right"
+        android:startColor="@color/home_sky_left" />
+</shape>

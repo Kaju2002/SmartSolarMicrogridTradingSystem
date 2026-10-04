@@ -19,12 +19,15 @@
     <color name="surface_disabled">#FFE8E8E8</color>
     <color name="ripple_dark">#1F000000</color>
 
-    <!-- Home: sky colour of the hero illustration, card tints, grouped list -->
-    <color name="home_sky">#FFFDECC1</color>
+    <!-- Home: hero sky (matches the top edge of the render, warm left to blue right), chip,
+         tip card, grouped list -->
+    <color name="home_sky_left">#FFF2F1EC</color>
+    <color name="home_sky_mid">#FFDCE5EC</color>
+    <color name="home_sky_right">#FFCADCE8</color>
+    <color name="home_hero_chip_bg">#B3FFFFFF</color>
+    <color name="home_hero_chip_stroke">#14000000</color>
+    <color name="home_hero_chip_icon">#FFE0A100</color>
     <color name="home_tip_bg">#FFFFF1C4</color>
-    <color name="home_card_teal">#FFE4F3EF</color>
-    <color name="home_card_gold">#FFFFF4D4</color>
-    <color name="home_card_blue">#FFE7EDFA</color>
     <color name="surface_soft">#FFF6F6F4</color>
     <color name="divider_soft">#FFE6E6E3</color>
 

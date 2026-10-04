@@ -125,6 +125,10 @@ class LoginActivity : AppCompatActivity() {
             registerLauncher.launch(Intent(this, RegisterActivity::class.java))
         }
 
+        binding.tvForgotPassword.setOnClickListener {
+            startActivity(Intent(this, ForgotPasswordActivity::class.java))
+        }
+
         // Social buttons are design only; the API has no social login
         val socialClick = View.OnClickListener {
             Toast.makeText(this, R.string.social_coming_soon, Toast.LENGTH_SHORT).show()
@@ -168,6 +172,7 @@ class LoginActivity : AppCompatActivity() {
         binding.etIdentifier.isEnabled = !loading
         binding.etPassword.isEnabled = !loading
         binding.tvRegister.isEnabled = !loading
+        binding.tvForgotPassword.isEnabled = !loading
         binding.btnGoogle.isEnabled = !loading
         binding.btnMicrosoft.isEnabled = !loading
         binding.btnApple.isEnabled = !loading

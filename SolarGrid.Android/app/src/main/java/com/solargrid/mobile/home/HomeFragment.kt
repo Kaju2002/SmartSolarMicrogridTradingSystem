@@ -1,7 +1,7 @@
 /*
  * File: HomeFragment.kt
  * Module: Team
- * Description: Home tab. Illustrated hero with a greeting, live booking counts that open
+ * Description: Home tab. Product-render hero with a greeting, live booking counts that open
  *              the dashboard, feature cards, "Your SolarGrid" shortcuts and a booking tip.
  *              Other taps move to the other tabs or open a short info sheet.
  */
@@ -12,10 +12,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.ColorRes
+import android.view.animation.DecelerateInterpolator
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
@@ -61,6 +60,25 @@ class HomeFragment : Fragment() {
         setupListeners()
         binding.tvGreeting.text = getString(greetingRes())
         loadUser()
+        if (savedInstanceState == null) playEntrance()
+    }
+
+    // Hero text, then each section of the sheet, slides up and fades in one after another
+    private fun playEntrance() {
+        val offset = resources.getDimension(R.dimen.home_entrance_offset)
+        val sections = listOf<View>(binding.layoutHeroText, binding.ivHero) +
+            (0 until binding.layoutSheet.childCount).map { binding.layoutSheet.getChildAt(it) }
+        sections.forEachIndexed { index, section ->
+            section.alpha = 0f
+            section.translationY = offset
+            section.animate()
+                .alpha(1f)
+                .translationY(0f)
+                .setStartDelay(ENTRANCE_STAGGER_MS * index)
+                .setDuration(ENTRANCE_DURATION_MS)
+                .setInterpolator(DecelerateInterpolator())
+                .start()
+        }
     }
 
     // Tabs are hidden, not destroyed, so pick up a name changed on the Profile tab
@@ -79,12 +97,16 @@ class HomeFragment : Fragment() {
         if (!isHidden) loadSummary()
     }
 
-    // The hero runs behind the status bar, so push only its text down
+    // The hero runs behind the status bar, so push its text and render down
     private fun applyWindowInsets() {
         val basePadding = resources.getDimensionPixelSize(R.dimen.space_md)
+        val imageTop = resources.getDimensionPixelSize(R.dimen.home_hero_image_top)
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
             val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             binding.layoutHeroText.updatePadding(top = basePadding + bars.top)
+            binding.ivHero.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                topMargin = imageTop + bars.top
+            }
             binding.viewStatusScrim.updateLayoutParams { height = bars.top }
             insets
         }
@@ -108,11 +130,11 @@ class HomeFragment : Fragment() {
     private fun setupContent() {
         DashboardTiles.setup(binding.tileHomePending, binding.tileHomeApproved, binding.tileHomeCompleted)
 
-        bindCard(binding.cardFind, R.color.home_card_teal, R.drawable.img_home_find,
+        bindCard(binding.cardFind, R.drawable.img_home_find,
             R.string.home_card_find_title, R.string.home_card_find_subtitle)
-        bindCard(binding.cardBook, R.color.home_card_gold, R.drawable.img_home_book,
+        bindCard(binding.cardBook, R.drawable.img_home_book,
             R.string.home_card_book_title, R.string.home_card_book_subtitle)
-        bindCard(binding.cardQr, R.color.home_card_blue, R.drawable.img_home_qr,
+        bindCard(binding.cardQr, R.drawable.img_home_qr,
             R.string.home_card_qr_title, R.string.home_card_qr_subtitle)
 
         bindRow(binding.rowBookings, R.drawable.ic_calendar_outlined,
@@ -187,12 +209,10 @@ class HomeFragment : Fragment() {
     // Fill one feature card
     private fun bindCard(
         card: ItemHomeCardBinding,
-        @ColorRes tint: Int,
         @DrawableRes image: Int,
         @StringRes title: Int,
         @StringRes subtitle: Int
     ) {
-        card.root.setCardBackgroundColor(ContextCompat.getColor(requireContext(), tint))
         card.ivCardImage.setImageResource(image)
         card.tvCardTitle.setText(title)
         card.tvCardSubtitle.setText(subtitle)
@@ -229,5 +249,10 @@ class HomeFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private companion object {
+        const val ENTRANCE_STAGGER_MS = 60L
+        const val ENTRANCE_DURATION_MS = 420L
     }
 }

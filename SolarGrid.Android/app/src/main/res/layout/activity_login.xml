@@ -111,6 +111,19 @@
                     android:inputType="textPassword" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <TextView
+                android:id="@+id/tvForgotPassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginTop="@dimen/space_sm"
+                android:background="?attr/selectableItemBackground"
+                android:padding="@dimen/space_xs"
+                android:text="@string/forgot_link"
+                android:textColor="@color/text_secondary"
+                android:textSize="@dimen/text_small"
+                android:textStyle="bold" />
+
             <!-- Shown only when login fails; LoginActivity sets text and visibility -->
             <TextView
                 android:id="@+id/tvError"
