@@ -62,6 +62,21 @@ public class StationsController : ControllerBase
         return NotFound(result);
     }
 
+    // PUT free battery slots — Grid Operator (own stations) or Backoffice (any)
+    [Authorize(Roles = "Backoffice,GridOperator")]
+    [HttpPut("{id}/available-slots")]
+    public async Task<IActionResult> UpdateAvailableSlots(string id, [FromBody] UpdateAvailableSlotsDto request)
+    {
+        var userId = User.GetUserId();
+        if (string.IsNullOrEmpty(userId))
+            return Unauthorized();
+
+        var operatorId = User.IsBackoffice() ? null : userId;
+        var result = await _stationService.UpdateAvailableSlotsAsync(id, request.AvailableSlots, operatorId);
+        if (result.Success) return Ok(result);
+        return BadRequest(result);
+    }
+
     // PUT deactivate station — Backoffice only
     [Authorize(Roles = "Backoffice")]
     [HttpPut("{id}/deactivate")]
@@ -74,7 +89,7 @@ public class StationsController : ControllerBase
 
     // GET nearby stations — any authenticated role (Prosumer booking UX)
     [HttpGet("nearby")]
-    public async Task<IActionResult> GetNearby([FromQuery] double lat, [FromQuery] double lng, [FromQuery] double radiusKm = 10)
+    public async Task<IActionResult> GetNearby([FromQuery] double lat, [FromQuery] double lng, [FromQuery] double radiusKm = 50)
     {
         var stations = await _stationService.GetNearbyStationsAsync(lat, lng, radiusKm);
         return Ok(stations);
@@ -91,4 +106,4 @@ public class StationsController : ControllerBase
         return Ok(station);
     }
 }
-
+

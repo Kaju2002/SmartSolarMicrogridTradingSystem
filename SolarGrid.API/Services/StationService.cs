@@ -1,6 +1,6 @@
 /*
  * File: StationService.cs
- * Description: Station create, update, deactivate and nearby search
+ * Description: Station create, update, free slots, deactivate and nearby search
  * Author: Gabilan (Station Management)
  * Date: 21/09/2026
  */
@@ -135,6 +135,51 @@ public class StationService : IStationService
             Latitude = station.Latitude,
             Longitude = station.Longitude
         };
+    }
+
+    // Set free battery slots on an Active station; operatorId null = Backoffice (any station)
+    public async Task<StationResponseDto> UpdateAvailableSlotsAsync(string stationId, int availableSlots, string? operatorId)
+    {
+        var station = ObjectId.TryParse(stationId, out _)
+            ? await _stations.Find(s => s.Id == stationId).FirstOrDefaultAsync()
+            : null;
+
+        // Another operator's station looks the same as a missing one
+        if (station is null || (operatorId is not null && station.AssignedOperatorId != operatorId))
+        {
+            return new StationResponseDto
+            {
+                Success = false,
+                Message = "Station not found"
+            };
+        }
+
+        if (station.Status != "Active")
+        {
+            return new StationResponseDto
+            {
+                Success = false,
+                Message = "Station is deactivated"
+            };
+        }
+
+        if (availableSlots < 0 || availableSlots > station.BatterySlots)
+        {
+            return new StationResponseDto
+            {
+                Success = false,
+                Message = $"Free slots must be between 0 and {station.BatterySlots}"
+            };
+        }
+
+        var update = Builders<SolarStationInfo>.Update
+            .Set(s => s.AvailableSlots, availableSlots)
+            .Set(s => s.UpdatedAt, DateTime.UtcNow);
+
+        await _stations.UpdateOneAsync(s => s.Id == station.Id, update);
+
+        station.AvailableSlots = availableSlots;
+        return ToPublicDto(station, "Free slots updated");
     }
 
     // Ensure assigned user is an Active Grid Operator (or clear)

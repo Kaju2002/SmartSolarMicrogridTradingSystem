@@ -114,12 +114,12 @@ class StationManager private constructor() {
 
     companion object {
         // Same default as the API
-        const val DEFAULT_RADIUS_KM = 10.0
+        const val DEFAULT_RADIUS_KM = 50.0
 
         // Colombo city centre, searched with a wider radius when the phone's location is unknown
         const val CITY_LATITUDE = 6.9271
         const val CITY_LONGITUDE = 79.8612
-        const val CITY_RADIUS_KM = 25.0
+        const val CITY_RADIUS_KM = 50.0
 
         @Volatile
         private var instance: StationManager? = null

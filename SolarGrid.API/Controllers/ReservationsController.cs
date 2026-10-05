@@ -72,8 +72,8 @@ public class ReservationsController : ControllerBase
         return BadRequest(result);
     }
 
-    // DELETE cancel reservation — Prosumer (own) or Backoffice (any)
-    [Authorize(Roles = "Prosumer,Backoffice")]
+    // DELETE cancel reservation — Prosumer (own), Grid Operator (own stations) or Backoffice (any)
+    [Authorize(Roles = "Prosumer,Backoffice,GridOperator")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Cancel(string id)
     {
@@ -85,7 +85,15 @@ public class ReservationsController : ControllerBase
                 return Forbid();
         }
 
-        var result = await _reservationService.CancelReservationAsync(id, ownerNic);
+        string? operatorId = null;
+        if (User.IsInRole("GridOperator"))
+        {
+            operatorId = User.GetUserId();
+            if (string.IsNullOrEmpty(operatorId))
+                return Unauthorized();
+        }
+
+        var result = await _reservationService.CancelReservationAsync(id, ownerNic, operatorId);
 
         if (result.Success)
             return Ok(result);

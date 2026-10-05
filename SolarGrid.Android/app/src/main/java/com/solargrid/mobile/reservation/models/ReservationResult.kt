@@ -21,5 +21,7 @@ data class ReservationResult(
     @SerializedName("qrCode") val qrCode: String?,
     // Only sent back by approve and QR scan
     @SerializedName("prosumerNic") val prosumerNic: String? = null,
-    @SerializedName("stationName") val stationName: String? = null
+    @SerializedName("stationName") val stationName: String? = null,
+    // Only sent back by QR verify, so the operator can match the person
+    @SerializedName("prosumerName") val prosumerName: String? = null
 )

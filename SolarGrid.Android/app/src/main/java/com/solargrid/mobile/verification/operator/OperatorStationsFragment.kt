@@ -2,8 +2,9 @@
  * File: OperatorStationsFragment.kt
  * Module: Verification and Dashboard (Aaron)
  * Description: Grid Operator Stations tab. Stations assigned to the operator with hours,
- *              capacity, rate, free slots and booking counts. View only; Backoffice edits
- *              stations on the web. Tapping a card opens the Pending bookings.
+ *              capacity, rate, free slots and booking counts. The operator can step free
+ *              battery slots up or down; Backoffice edits everything else on the web.
+ *              Tapping a card opens the Pending bookings.
  */
 package com.solargrid.mobile.verification.operator
 
@@ -15,9 +16,11 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import com.solargrid.mobile.R
 import com.solargrid.mobile.databinding.FragmentOperatorStationsBinding
 import com.solargrid.mobile.verification.operator.models.OperatorBooking
+import com.solargrid.mobile.verification.operator.models.OperatorStation
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -30,9 +33,12 @@ class OperatorStationsFragment : Fragment() {
     private var hasData = false
     private var loadJob: Job? = null
 
-    private val listAdapter = OperatorStationAdapter {
-        (activity as? OperatorMainActivity)?.openBookings(OperatorBookingsFragment.Filter.PENDING)
-    }
+    private val listAdapter = OperatorStationAdapter(
+        onStationClick = {
+            (activity as? OperatorMainActivity)?.openBookings(OperatorBookingsFragment.Filter.PENDING)
+        },
+        onSlotsChange = { station, slots -> saveSlots(station, slots) }
+    )
 
     // Inflate the layout
     override fun onCreateView(
@@ -109,6 +115,34 @@ class OperatorStationsFragment : Fragment() {
                     }
                 }
         }
+    }
+
+    // Save one step of the free-slot stepper; the card shows the number the API stored
+    private fun saveSlots(station: OperatorStation, slots: Int) {
+        val stationId = station.id ?: return
+        listAdapter.setSaving(stationId, true)
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            OperatorManager.getInstance().updateAvailableSlots(stationId, slots)
+                .onSuccess { result ->
+                    val free = result.availableSlots ?: slots
+                    val total = result.batterySlots ?: station.batterySlots ?: 0
+                    listAdapter.updateSlots(stationId, free)
+                    showSnackbar(getString(R.string.operator_slots_saved, free, total))
+                }
+                .onFailure { error ->
+                    showSnackbar(error.message ?: getString(R.string.operator_error_slots))
+                }
+            listAdapter.setSaving(stationId, false)
+        }
+    }
+
+    // Above the bottom navigation, not on top of it
+    private fun showSnackbar(message: String) {
+        val view = _binding?.root ?: return
+        Snackbar.make(view, message, Snackbar.LENGTH_SHORT)
+            .apply { activity?.findViewById<View>(R.id.bottomNav)?.let { anchorView = it } }
+            .show()
     }
 
     // Pending and approved-today counts per station id

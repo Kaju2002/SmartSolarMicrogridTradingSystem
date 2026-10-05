@@ -1,20 +1,25 @@
 /*
  * File: BookingsFragment.kt
  * Module: Reservation Management (Kajanthan)
- * Description: Bookings tab. Lists the prosumer's bookings with Upcoming / Pending / Approved /
- *              Past filters and counts. Reloads on pull-to-refresh and whenever the tab is shown,
- *              so a booking made from Stations appears straight away. Tapping a card opens its
+ * Description: Bookings tab. Lists the prosumer's bookings with a search box and Upcoming /
+ *              Pending / Approved / Past filters and counts. Search matches station name, slot
+ *              day and time, status, kWh or booking reference. Reloads on pull-to-refresh and
+ *              whenever the tab is shown, so a booking made from Stations appears straight away. Tapping a card opens its
  *              detail sheet (QR, change time, cancel). With no connection it shows the copy saved
  *              in SQLite under an offline banner.
  */
 package com.solargrid.mobile.reservation
 
 import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -43,6 +48,9 @@ class BookingsFragment : Fragment(R.layout.fragment_bookings) {
     private var bookings: List<Reservation> = emptyList()
     private var filter = Filter.UPCOMING
     private var loadJob: Job? = null
+
+    // Words typed in the search box; a booking must contain every word
+    private var searchWords: List<String> = emptyList()
 
     // Station id -> name, from the API or the saved copy
     private val stationNames = mutableMapOf<String, String>()
@@ -74,6 +82,7 @@ class BookingsFragment : Fragment(R.layout.fragment_bookings) {
         }
         setupList()
         setupFilters()
+        setupSearch()
         listenToDetailSheet()
         loadBookings(showSpinner = true)
     }
@@ -115,6 +124,22 @@ class BookingsFragment : Fragment(R.layout.fragment_bookings) {
             showBookings()
         }
         updateCounts()
+    }
+
+    // Filter as you type; the keyboard's search key just closes the keyboard.
+    // While the first load runs the spinner stays, and the result already uses the words.
+    private fun setupSearch() {
+        binding.etBookingSearch.doAfterTextChanged { text ->
+            searchWords = text?.toString().orEmpty().trim().split(WHITESPACE).filter { it.isNotEmpty() }
+            if (loadJob?.isActive != true || bookings.isNotEmpty()) showBookings()
+        }
+        binding.etBookingSearch.setOnEditorActionListener { field, actionId, _ ->
+            if (actionId != EditorInfo.IME_ACTION_SEARCH) return@setOnEditorActionListener false
+            field.clearFocus()
+            val keyboard = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            keyboard.hideSoftInputFromWindow(field.windowToken, 0)
+            true
+        }
     }
 
     // Sheet results: "cancelled" reloads the list, "change time" opens the booking screen
@@ -200,7 +225,12 @@ class BookingsFragment : Fragment(R.layout.fragment_bookings) {
         val visible = bookings.filter { matches(it, filter) }
             .let { if (filter == Filter.PAST) it.asReversed() else it }
         if (visible.isEmpty()) {
-            showMessage(getString(emptyTextFor(filter)), Action.NONE)
+            val message = if (searchWords.isEmpty()) {
+                getString(emptyTextFor(filter))
+            } else {
+                getString(R.string.bookings_search_empty, searchWords.joinToString(" "))
+            }
+            showMessage(message, Action.NONE)
             return
         }
 
@@ -219,14 +249,30 @@ class BookingsFragment : Fragment(R.layout.fragment_bookings) {
 
     private fun count(filter: Filter): Int = bookings.count { matches(it, filter) }
 
+    // In the chip's group and, when searching, containing every typed word
     private fun matches(booking: Reservation, filter: Filter): Boolean {
         val upcoming = booking.isLive() && !ReservationFormatter.isPast(booking)
-        return when (filter) {
+        val inFilter = when (filter) {
             Filter.UPCOMING -> upcoming
             Filter.PENDING -> upcoming && booking.status == Reservation.STATUS_PENDING
             Filter.APPROVED -> upcoming && booking.status == Reservation.STATUS_APPROVED
             Filter.PAST -> !upcoming
         }
+        return inFilter && matchesSearch(booking)
+    }
+
+    // Looks at the same text the card shows, plus the booking reference, ignoring case
+    private fun matchesSearch(booking: Reservation): Boolean {
+        if (searchWords.isEmpty()) return true
+        val context = requireContext()
+        val text = listOfNotNull(
+            booking.stationId?.let { stationNames[it] },
+            ReservationFormatter.timeRange(context, booking),
+            getString(ReservationFormatter.statusLabel(booking)),
+            ReservationFormatter.energy(context, booking),
+            booking.id
+        ).joinToString(" ")
+        return searchWords.all { text.contains(it, ignoreCase = true) }
     }
 
     private fun showMessage(message: String, action: Action) {
@@ -275,5 +321,6 @@ class BookingsFragment : Fragment(R.layout.fragment_bookings) {
 
     companion object {
         private const val STATE_FILTER = "bookings_filter"
+        private val WHITESPACE = Regex("\\s+")
     }
 }

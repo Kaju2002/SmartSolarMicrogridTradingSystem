@@ -3,9 +3,11 @@
     File: sheet_operator_booking.xml
     Module: Verification and Dashboard (Aaron)
     Description: Grid Operator booking detail sheet: station, status, time, prosumer NIC,
-                 kWh and cost tiles, a status note and the Approve button for Pending bookings.
+                 kWh and cost tiles, a status note, the Approve button for Pending bookings
+                 and Cancel booking while the slot is 12+ hours away.
 -->
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -123,6 +125,21 @@
             android:layout_marginTop="@dimen/space_md"
             android:text="@string/operator_approve"
             android:visibility="gone"
+            tools:visibility="visible" />
+
+        <!-- Cancel when the prosumer asks; only while the booking is 12+ hours away -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSheetCancel"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_height"
+            android:layout_marginTop="@dimen/space_sm"
+            android:text="@string/operator_cancel"
+            android:textColor="@color/error_red"
+            android:textSize="16sp"
+            android:visibility="gone"
+            app:cornerRadius="@dimen/pill_radius"
+            app:strokeColor="@color/field_border"
             tools:visibility="visible" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

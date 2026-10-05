@@ -17,6 +17,8 @@ public interface IStationService
     Task<List<SolarStationInfo>> GetAllStationsAsync();
     // Update station
     Task<StationResponseDto> UpdateStationAsync(string stationId, UpdateStationDto request);
+    // Free battery slots; operatorId limits to that operator's stations
+    Task<StationResponseDto> UpdateAvailableSlotsAsync(string stationId, int availableSlots, string? operatorId);
     // Deactivate station
     Task<StationResponseDto> DeactivateStationAsync(string stationId);
     // Nearby stations

@@ -2,8 +2,9 @@
  * File: OperatorBookingSheet.kt
  * Module: Verification and Dashboard (Aaron)
  * Description: Bottom sheet for one booking at the operator's station. Shows the prosumer NIC,
- *              time, kWh and cost, and an Approve button while the booking is Pending and its
- *              hour hasn't passed. The API checks the same rules and makes the QR code.
+ *              time, kWh and cost, an Approve button while the booking is Pending and its
+ *              hour hasn't passed, and Cancel booking while it is 12+ hours away.
+ *              The API checks the same rules and makes the QR code.
  */
 package com.solargrid.mobile.verification.operator
 
@@ -18,6 +19,7 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.solargrid.mobile.R
 import com.solargrid.mobile.databinding.ItemStationInfoBinding
@@ -33,7 +35,7 @@ class OperatorBookingSheet : BottomSheetDialogFragment() {
     private val binding get() = _binding!!
 
     private lateinit var booking: OperatorBooking
-    private var approving = false
+    private var busy = false
 
     // Inflate the layout
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -50,6 +52,7 @@ class OperatorBookingSheet : BottomSheetDialogFragment() {
             return
         }
         binding.btnSheetApprove.setOnClickListener { approve() }
+        binding.btnSheetCancel.setOnClickListener { confirmCancel() }
         showBooking()
     }
 
@@ -92,6 +95,7 @@ class OperatorBookingSheet : BottomSheetDialogFragment() {
 
         binding.tvSheetNote.setText(noteFor(reservation))
         binding.btnSheetApprove.isVisible = OperatorBookingFormatter.canApprove(booking)
+        binding.btnSheetCancel.isVisible = ReservationFormatter.canChange(reservation)
     }
 
     // One line about what the operator can do with this booking
@@ -107,8 +111,8 @@ class OperatorBookingSheet : BottomSheetDialogFragment() {
     // On success the list reloads; a rule error (e.g. slot passed) stays in the sheet
     private fun approve() {
         val id = booking.id ?: return
-        if (approving) return
-        setApproving(true)
+        if (busy) return
+        setBusy(true, approving = true)
         binding.tvSheetError.isVisible = false
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -118,19 +122,59 @@ class OperatorBookingSheet : BottomSheetDialogFragment() {
                     dismiss()
                 }
                 .onFailure { error ->
-                    setApproving(false)
-                    binding.tvSheetError.text = error.message ?: getString(R.string.operator_error_approve)
-                    binding.tvSheetError.isVisible = true
+                    setBusy(false)
+                    showError(error.message ?: getString(R.string.operator_error_approve))
                 }
         }
     }
 
-    // Lock the sheet while the call runs so it can't be approved twice
-    private fun setApproving(inProgress: Boolean) {
-        approving = inProgress
+    // Cancelling can't be undone, so ask first
+    private fun confirmCancel() {
+        if (busy) return
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.operator_cancel_title)
+            .setMessage(R.string.operator_cancel_message)
+            .setNegativeButton(R.string.operator_cancel_keep, null)
+            .setPositiveButton(R.string.operator_cancel_confirm) { _, _ -> cancelBooking() }
+            .show()
+    }
+
+    // On success the list reloads; a rule error (e.g. inside 12 hours) stays in the sheet
+    private fun cancelBooking() {
+        val id = booking.id ?: return
+        if (busy) return
+        setBusy(true, approving = false)
+        binding.tvSheetError.isVisible = false
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            OperatorManager.getInstance().cancel(id)
+                .onSuccess {
+                    parentFragmentManager.setFragmentResult(REQUEST_CANCELLED, Bundle.EMPTY)
+                    dismiss()
+                }
+                .onFailure { error ->
+                    setBusy(false)
+                    showError(error.message ?: getString(R.string.operator_error_cancel))
+                }
+        }
+    }
+
+    // API reason under the note
+    private fun showError(message: String) {
+        binding.tvSheetError.text = message
+        binding.tvSheetError.isVisible = true
+    }
+
+    // Lock the sheet while a call runs so nothing is sent twice; the busy button says why
+    private fun setBusy(inProgress: Boolean, approving: Boolean = false) {
+        busy = inProgress
         isCancelable = !inProgress
         binding.btnSheetApprove.isEnabled = !inProgress
-        binding.btnSheetApprove.setText(if (inProgress) R.string.operator_approving else R.string.operator_approve)
+        binding.btnSheetCancel.isEnabled = !inProgress
+        binding.btnSheetApprove.setText(
+            if (inProgress && approving) R.string.operator_approving else R.string.operator_approve)
+        binding.btnSheetCancel.setText(
+            if (inProgress && !approving) R.string.operator_cancelling else R.string.operator_cancel)
     }
 
     // Icon, label and value of one fact tile
@@ -143,6 +187,7 @@ class OperatorBookingSheet : BottomSheetDialogFragment() {
     companion object {
         const val TAG = "operator_booking"
         const val REQUEST_APPROVED = "operator_booking_approved"
+        const val REQUEST_CANCELLED = "operator_booking_cancelled"
         private const val ARG_BOOKING = "booking"
 
         fun newInstance(booking: OperatorBooking) = OperatorBookingSheet().apply {

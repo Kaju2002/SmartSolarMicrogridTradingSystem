@@ -1,6 +1,6 @@
 /*
  * File: VerificationController.cs
- * Description: QR scan endpoint for operators
+ * Description: QR verify and finalize endpoints for operators
  * Author: Aaron (Verification and Dashboard)
  * Date: 22/09/2026
  */
@@ -23,6 +23,20 @@ public class VerificationController : ControllerBase
     public VerificationController(IVerificationService verificationService)
     {
         _verificationService = verificationService;
+    }
+
+    // POST verify QR, read only — returns the booking for the operator to check before finishing
+    [HttpPost("verify-qr")]
+    public async Task<IActionResult> VerifyQr([FromBody] VerifyQrDto request)
+    {
+        var userId = User.GetUserId();
+        if (string.IsNullOrEmpty(userId))
+            return Unauthorized();
+
+        var operatorId = User.IsBackoffice() ? null : userId;
+        var result = await _verificationService.VerifyQrAsync(request, operatorId);
+        if (result.Success) return Ok(result);
+        return BadRequest(result);
     }
 
     // POST scan QR and finalize transfer — Backoffice (any) or Grid Operator (own stations)

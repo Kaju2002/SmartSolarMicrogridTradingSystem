@@ -54,6 +54,10 @@ class OperatorHomeFragment : Fragment() {
         binding.btnScanQr.setOnClickListener {
             startActivity(Intent(requireContext(), ScanQrActivity::class.java))
         }
+        // A booking cancelled from the sheet leaves today's list straight away
+        childFragmentManager.setFragmentResultListener(OperatorBookingSheet.REQUEST_CANCELLED, viewLifecycleOwner) { _, _ ->
+            load()
+        }
     }
 
     // First open and coming back from the scanner, so a finished scan shows straight away
