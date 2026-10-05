@@ -116,6 +116,10 @@ class OperatorBookingsFragment : Fragment() {
             showSnackbar(getString(R.string.operator_approved_done))
             load(showSpinner = false)
         }
+        childFragmentManager.setFragmentResultListener(OperatorBookingSheet.REQUEST_CANCELLED, viewLifecycleOwner) { _, _ ->
+            showSnackbar(getString(R.string.operator_cancelled_done))
+            load(showSpinner = false)
+        }
     }
 
     private fun openDetail(booking: OperatorBooking) {

@@ -19,8 +19,8 @@ public interface IReservationService
     Task<ReservationResponseDto> UpdateReservationAsync(string reservationId, UpdateReservationDto request, string? ownerNic);
     // Hourly slots for a station on one Sri Lanka date; null if station unknown
     Task<SlotAvailabilityDto?> GetAvailabilityAsync(string stationId, DateOnly date);
-    // Cancel booking; ownerNic null skips ownership check (staff)
-    Task<ReservationResponseDto> CancelReservationAsync(string reservationId, string? ownerNic);
+    // Cancel booking; ownerNic null skips ownership check (staff), operatorId limits to that operator's stations
+    Task<ReservationResponseDto> CancelReservationAsync(string reservationId, string? ownerNic, string? operatorId);
     // List all
     Task<List<EnergyReservation>> GetAllReservationsAsync();
     // List by NIC

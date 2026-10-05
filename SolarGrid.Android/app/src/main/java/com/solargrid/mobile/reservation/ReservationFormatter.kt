@@ -60,19 +60,26 @@ object ReservationFormatter {
 
     // Coloured pill; a Pending/Approved booking whose hour has passed shows as Expired
     fun bindStatus(pill: TextView, reservation: Reservation) {
-        val (label, textColor, background) = when {
-            reservation.isLive() && isPast(reservation) ->
-                Triple(R.string.booking_status_expired, R.color.station_closed, R.color.station_closed_bg)
-            reservation.status == Reservation.STATUS_PENDING ->
-                Triple(R.string.booking_status_pending, R.color.booking_pending, R.color.booking_pending_bg)
-            reservation.status == Reservation.STATUS_APPROVED ->
-                Triple(R.string.booking_status_approved, R.color.station_open, R.color.station_open_bg)
-            reservation.status == Reservation.STATUS_COMPLETED ->
-                Triple(R.string.booking_status_completed, R.color.booking_completed, R.color.booking_completed_bg)
-            else ->
-                Triple(R.string.booking_status_cancelled, R.color.station_closed, R.color.station_closed_bg)
-        }
+        val (label, textColor, background) = statusStyle(reservation)
         paintPill(pill, label, textColor, background)
+    }
+
+    // Same label as the pill, so search matches what the card shows
+    @StringRes
+    fun statusLabel(reservation: Reservation): Int = statusStyle(reservation).first
+
+    // Label, text colour and background for the status pill
+    private fun statusStyle(reservation: Reservation): Triple<Int, Int, Int> = when {
+        reservation.isLive() && isPast(reservation) ->
+            Triple(R.string.booking_status_expired, R.color.station_closed, R.color.station_closed_bg)
+        reservation.status == Reservation.STATUS_PENDING ->
+            Triple(R.string.booking_status_pending, R.color.booking_pending, R.color.booking_pending_bg)
+        reservation.status == Reservation.STATUS_APPROVED ->
+            Triple(R.string.booking_status_approved, R.color.station_open, R.color.station_open_bg)
+        reservation.status == Reservation.STATUS_COMPLETED ->
+            Triple(R.string.booking_status_completed, R.color.booking_completed, R.color.booking_completed_bg)
+        else ->
+            Triple(R.string.booking_status_cancelled, R.color.station_closed, R.color.station_closed_bg)
     }
 
     private fun paintPill(pill: TextView, @StringRes label: Int, @ColorRes text: Int, @ColorRes background: Int) {

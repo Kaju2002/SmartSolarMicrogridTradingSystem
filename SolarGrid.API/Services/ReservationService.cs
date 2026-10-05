@@ -342,14 +342,33 @@ public class ReservationService : IReservationService
         return result;
     }
 
-    // Cancel booking and free the linked slot
-    public async Task<ReservationResponseDto> CancelReservationAsync(string reservationId, string? ownerNic)
+    // True if the booking's station is assigned to this Grid Operator; operatorId null = no check
+    private async Task<bool> IsAtOperatorStationAsync(EnergyReservation reservation, string? operatorId)
     {
+        if (operatorId is null)
+            return true;
+
+        if (!ObjectId.TryParse(reservation.StationId, out _))
+            return false;
+
+        return await _stations
+            .Find(s => s.Id == reservation.StationId && s.AssignedOperatorId == operatorId)
+            .AnyAsync();
+    }
+
+    // Cancel booking and free the linked slot; same 12-hour rule for prosumers and staff
+    public async Task<ReservationResponseDto> CancelReservationAsync(
+        string reservationId, string? ownerNic, string? operatorId)
+    {
+        if (!ObjectId.TryParse(reservationId, out _))
+            return Fail("Reservation not found");
+
         var filter = Builders<EnergyReservation>.Filter.Eq(r => r.Id, reservationId);
         var existingReservation = await _reservations.Find(filter).FirstOrDefaultAsync();
 
-        // Someone else's booking looks the same as a missing one
-        if (existingReservation is null || !IsOwnedBy(existingReservation, ownerNic))
+        // Someone else's booking, or one at another operator's station, looks the same as a missing one
+        if (existingReservation is null || !IsOwnedBy(existingReservation, ownerNic) ||
+            !await IsAtOperatorStationAsync(existingReservation, operatorId))
         {
             return new ReservationResponseDto
             {
@@ -396,7 +415,9 @@ public class ReservationService : IReservationService
             Success = true,
             Message = "Reservation cancelled",
             ReservationId = existingReservation.Id,
-            Status = "Cancelled"
+            Status = "Cancelled",
+            ReservationDateTime = existingReservation.ReservationDateTime,
+            ProsumerNic = existingReservation.ProsumerNic
         };
     }
 

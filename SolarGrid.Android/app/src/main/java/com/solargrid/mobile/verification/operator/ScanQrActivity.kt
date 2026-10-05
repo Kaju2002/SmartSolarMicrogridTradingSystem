@@ -2,8 +2,9 @@
  * File: ScanQrActivity.kt
  * Module: Verification and Dashboard (Aaron)
  * Description: Grid Operator QR scanner. Reads a prosumer's booking QR with the camera
- *              (or a typed code), sends it to the API to complete the energy transfer and
- *              shows the result sheet. Asks for camera access and offers a flash toggle.
+ *              (or a typed code), asks the API to verify it and shows the booking in the
+ *              result sheet, where the operator confirms the energy transfer.
+ *              Asks for camera access and offers a flash toggle.
  */
 package com.solargrid.mobile.verification.operator
 
@@ -243,7 +244,8 @@ class ScanQrActivity : AppCompatActivity() {
         input.etManualCode.requestFocus()
     }
 
-    // Send the code to the API once; the sheet shows the completed booking or the reason
+    // Ask the API what booking the code belongs to (nothing changes yet); the sheet shows it
+    // with Confirm transfer, or the reason it can't be used
     private fun verify(code: String) {
         if (verifying) return
         verifying = true
@@ -251,12 +253,12 @@ class ScanQrActivity : AppCompatActivity() {
         binding.layoutVerifying.isVisible = true
 
         lifecycleScope.launch {
-            val result = OperatorManager.getInstance().scanQr(code)
+            val result = OperatorManager.getInstance().verifyQr(code)
             verifying = false
             binding.layoutVerifying.isVisible = false
 
             val sheet = result.fold(
-                onSuccess = { ScanResultSheet.newSuccess(it) },
+                onSuccess = { ScanResultSheet.newVerified(it, code.trim()) },
                 onFailure = { ScanResultSheet.newError(it.message ?: getString(R.string.operator_error_scan)) }
             )
             if (supportFragmentManager.isStateSaved) {

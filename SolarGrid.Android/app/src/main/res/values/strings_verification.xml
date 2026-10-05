@@ -12,6 +12,9 @@
     <string name="operator_error_stations">Couldn\'t load your stations.</string>
     <string name="operator_error_approve">Couldn\'t approve this booking.</string>
     <string name="operator_error_scan">Couldn\'t verify this QR code.</string>
+    <string name="operator_error_complete">Couldn\'t complete this transfer.</string>
+    <string name="operator_error_cancel">Couldn\'t cancel this booking.</string>
+    <string name="operator_error_slots">Couldn\'t update free slots.</string>
     <string name="operator_error_forbidden">Only Grid Operator accounts can do this.</string>
     <string name="operator_error_retry">%1$s Pull down to try again.</string>
     <string name="operator_home_scan">Scan QR</string>
@@ -35,16 +38,27 @@
     <string name="operator_note_pending">Approve this booking to create the prosumer\'s QR code.</string>
     <string name="operator_note_approved">Approved. Scan the prosumer\'s QR code at the station on the booking day.</string>
     <string name="operator_note_completed">Energy transfer completed.</string>
-    <string name="operator_note_cancelled">The prosumer cancelled this booking.</string>
+    <string name="operator_note_cancelled">This booking was cancelled.</string>
     <string name="operator_note_expired">This slot has passed, so the booking can no longer be used.</string>
     <string name="operator_approve">Approve booking</string>
     <string name="operator_approving">Approving…</string>
     <string name="operator_approved_done">Booking approved. The prosumer\'s QR code is ready.</string>
+    <string name="operator_cancel">Cancel booking</string>
+    <string name="operator_cancelling">Cancelling…</string>
+    <string name="operator_cancel_title">Cancel this booking?</string>
+    <string name="operator_cancel_message">Only cancel when the prosumer has asked you to. The slot is freed and their booking shows as cancelled.</string>
+    <string name="operator_cancel_keep">Keep booking</string>
+    <string name="operator_cancel_confirm">Cancel booking</string>
+    <string name="operator_cancelled_done">Booking cancelled. The slot is free again.</string>
 
     <!-- Grid Operator Stations tab -->
     <string name="operator_station_label_capacity">capacity</string>
     <string name="operator_station_deactivated">Deactivated</string>
     <string name="operator_station_bookings">%1$d pending · %2$d approved today</string>
+    <string name="operator_slots_label">Free battery slots</string>
+    <string name="operator_slots_less">One fewer free slot</string>
+    <string name="operator_slots_more">One more free slot</string>
+    <string name="operator_slots_saved">Free slots updated: %1$d of %2$d</string>
 
     <!-- QR scanner -->
     <string name="scan_title">Scan QR</string>
@@ -65,6 +79,12 @@
     <string name="scan_manual_empty">Enter the QR code first.</string>
 
     <!-- Scan result sheet -->
+    <string name="scan_verified_title">Check the booking</string>
+    <string name="scan_verified_message">The server found this approved booking. Make sure it matches the prosumer, then confirm the transfer.</string>
+    <string name="scan_detail_name">Prosumer</string>
+    <string name="scan_confirm">Confirm transfer</string>
+    <string name="scan_confirming">Completing…</string>
+    <string name="scan_not_now">Not now</string>
     <string name="scan_success_title">Energy transfer completed</string>
     <string name="scan_success_message">The booking is now marked as completed.</string>
     <string name="scan_error_title">Couldn\'t verify this QR</string>

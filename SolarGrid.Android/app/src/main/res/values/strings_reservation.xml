@@ -17,6 +17,8 @@
     <string name="bookings_offline">You\'re offline. Showing bookings saved %1$s · %2$s. Pull down to refresh.</string>
     <string name="bookings_find_station">Find a station</string>
     <string name="bookings_retry">Try again</string>
+    <string name="bookings_search_hint">Search station, date or status</string>
+    <string name="bookings_search_empty">No bookings match \"%1$s\" here.</string>
     <string name="booking_time_range">%1$s · %2$s – %3$s</string>
     <string name="booking_energy">%1$s kWh · Estimated LKR %2$s</string>
     <string name="booking_status_pending">Pending</string>

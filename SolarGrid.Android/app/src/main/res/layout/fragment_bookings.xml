@@ -2,8 +2,8 @@
 <!--
     File: fragment_bookings.xml
     Module: Reservation Management (Kajanthan)
-    Description: Bookings tab: title, filter chips with counts, and a pull-to-refresh list of
-                 booking cards. One message area covers loading errors and empty filters.
+    Description: Bookings tab: title, search box, filter chips with counts, and a pull-to-refresh
+                 list of booking cards. One message area covers loading errors and empty filters.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -25,11 +25,29 @@
         android:layout_marginStart="@dimen/screen_padding"
         android:text="@string/bookings_subtitle" />
 
+    <!-- Search narrows the list as you type; the chip counts follow it -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilBookingSearch"
+        style="@style/Widget.SolarGrid.TextInputLayout.Pill"
+        android:layout_marginStart="@dimen/screen_padding"
+        android:layout_marginTop="@dimen/space_md"
+        android:layout_marginEnd="@dimen/screen_padding"
+        app:endIconMode="clear_text"
+        app:startIconDrawable="@drawable/ic_search">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etBookingSearch"
+            style="@style/Widget.SolarGrid.EditText.Pill"
+            android:hint="@string/bookings_search_hint"
+            android:imeOptions="actionSearch"
+            android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
+
     <!-- Filters scroll sideways but start in line with the title -->
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/space_md"
+        android:layout_marginTop="@dimen/space_sm"
         android:clipToPadding="false"
         android:paddingStart="@dimen/screen_padding"
         android:paddingEnd="@dimen/screen_padding"

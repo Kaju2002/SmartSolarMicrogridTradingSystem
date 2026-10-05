@@ -2,8 +2,9 @@
 <!--
     File: sheet_scan_result.xml
     Module: Verification and Dashboard (Aaron)
-    Description: QR scan result bottom sheet. Success shows the completed booking
-                 (station, time, NIC, kWh, cost); failure shows the API's reason.
+    Description: QR scan bottom sheet. Verify shows the booking from the server (station, time,
+                 NIC, name, kWh, cost) with Confirm transfer; success shows the completed booking;
+                 failure shows the API's reason.
 -->
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -56,7 +57,7 @@
             android:textSize="15sp"
             tools:text="@string/scan_success_message" />
 
-        <!-- Completed booking details; success only -->
+        <!-- Booking details; verify and success only -->
         <LinearLayout
             android:id="@+id/layoutResultDetails"
             android:layout_width="match_parent"
@@ -108,15 +109,28 @@
                 android:textSize="15sp"
                 tools:text="Wed, 30 Sep · 10:00 – 11:00" />
 
+            <!-- Prosumer name shows only when verifying, so the operator can match the person -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/space_md"
+                android:baselineAligned="false"
                 android:orientation="horizontal">
 
                 <include
                     android:id="@+id/infoNic"
                     layout="@layout/item_station_info" />
+
+                <Space
+                    android:id="@+id/spaceName"
+                    android:layout_width="12dp"
+                    android:layout_height="0dp"
+                    android:visibility="gone" />
+
+                <include
+                    android:id="@+id/infoName"
+                    layout="@layout/item_station_info"
+                    android:visibility="gone" />
             </LinearLayout>
 
             <LinearLayout
@@ -140,10 +154,23 @@
             </LinearLayout>
         </LinearLayout>
 
+        <!-- Confirm transfer while verifying; Scan next / Scan again after -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnScanNext"
             style="@style/Widget.SolarGrid.Button.Primary"
             android:layout_marginTop="@dimen/space_lg"
-            tools:text="@string/scan_next" />
+            tools:text="@string/scan_confirm" />
+
+        <!-- "Not now" while verifying: closes without completing -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnScanDismiss"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xs"
+            android:text="@string/scan_not_now"
+            android:textColor="@color/text_secondary"
+            android:visibility="gone"
+            tools:visibility="visible" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

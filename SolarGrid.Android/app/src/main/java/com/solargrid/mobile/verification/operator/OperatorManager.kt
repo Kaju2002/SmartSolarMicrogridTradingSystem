@@ -2,7 +2,8 @@
  * File: OperatorManager.kt
  * Module: Verification and Dashboard (Aaron)
  * Description: Grid Operator data: bookings and stations for the signed-in operator,
- *              approve and QR scan. Rules live in the API; its messages are shown as they are.
+ *              approve, cancel, QR verify then finalize, and free battery slots.
+ *              Rules live in the API; its messages are shown as they are.
  *              Needs the API; nothing here is saved on the phone.
  */
 package com.solargrid.mobile.verification.operator
@@ -17,6 +18,8 @@ import com.solargrid.mobile.reservation.models.ReservationResult
 import com.solargrid.mobile.verification.operator.models.OperatorBooking
 import com.solargrid.mobile.verification.operator.models.OperatorStation
 import com.solargrid.mobile.verification.operator.models.ScanQrRequest
+import com.solargrid.mobile.verification.operator.models.StationSlotsResult
+import com.solargrid.mobile.verification.operator.models.UpdateSlotsRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Response
@@ -63,21 +66,43 @@ class OperatorManager private constructor() {
     suspend fun approve(reservationId: String): Result<ReservationResult> =
         action(R.string.operator_error_approve) { operatorService.approve(reservationId) }
 
-    // Complete the energy transfer for a scanned or typed QR code
-    suspend fun scanQr(qrCode: String): Result<ReservationResult> =
-        action(R.string.operator_error_scan) { operatorService.scanQr(ScanQrRequest(qrCode.trim())) }
+    // Cancel a live booking at the operator's station; the API keeps the 12-hour rule
+    suspend fun cancel(reservationId: String): Result<ReservationResult> =
+        action(R.string.operator_error_cancel) { operatorService.cancel(reservationId) }
 
-    // Approve and scan share the same success and error handling
+    // Step 1 of a scan: read the booking for a QR code without changing it
+    suspend fun verifyQr(qrCode: String): Result<ReservationResult> =
+        action(R.string.operator_error_scan) { operatorService.verifyQr(ScanQrRequest(qrCode.trim())) }
+
+    // Step 2 of a scan: complete the energy transfer once the operator has checked the booking
+    suspend fun scanQr(qrCode: String): Result<ReservationResult> =
+        action(R.string.operator_error_complete) { operatorService.scanQr(ScanQrRequest(qrCode.trim())) }
+
+    // Set how many battery slots are free at one of the operator's stations
+    suspend fun updateAvailableSlots(stationId: String, availableSlots: Int): Result<StationSlotsResult> =
+        action<StationSlotsResult>(R.string.operator_error_slots, { it.success }, { it.message }) {
+            operatorService.updateAvailableSlots(stationId, UpdateSlotsRequest(availableSlots))
+        }
+
+    // Booking actions (approve, cancel, verify, finalize) share the same handling
     private suspend fun action(
         fallbackRes: Int,
         block: suspend () -> Response<ReservationResult>
-    ): Result<ReservationResult> = withContext(Dispatchers.IO) {
+    ): Result<ReservationResult> = action<ReservationResult>(fallbackRes, { it.success }, { it.message }, block)
+
+    // Success only when the API says so; otherwise its message or the fallback text
+    private suspend fun <T> action(
+        fallbackRes: Int,
+        isSuccess: (T) -> Boolean,
+        messageOf: (T) -> String?,
+        block: suspend () -> Response<T>
+    ): Result<T> = withContext(Dispatchers.IO) {
         val response = call(block) ?: return@withContext connectionFailure()
 
         val body = response.body()
         when {
-            response.isSuccessful && body?.success == true -> Result.success(body)
-            response.isSuccessful -> apiFailure(body?.message, fallbackRes)
+            response.isSuccessful && body != null && isSuccess(body) -> Result.success(body)
+            response.isSuccessful -> apiFailure(body?.let(messageOf), fallbackRes)
             else -> httpFailure(response, fallbackRes)
         }
     }

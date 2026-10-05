@@ -3,7 +3,7 @@
     File: item_operator_station.xml
     Module: Verification and Dashboard (Aaron)
     Description: One station assigned to the Grid Operator: name, open/closed pill, hours,
-                 capacity, rate and free slots, and the booking counts at the station.
+                 capacity and rate, free slots with a − / + stepper, and the booking counts.
 -->
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -79,7 +79,7 @@
             android:layout_marginBottom="12dp"
             android:background="@color/divider_soft" />
 
-        <!-- Capacity, rate and free slots -->
+        <!-- Capacity and rate -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -132,28 +132,63 @@
                     android:textSize="@dimen/text_station_label" />
             </LinearLayout>
 
-            <LinearLayout
+        </LinearLayout>
+
+        <!-- Free battery slots with − / + so the operator keeps it in step with the station -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_info_tile"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="12dp"
+            android:paddingTop="6dp"
+            android:paddingEnd="6dp"
+            android:paddingBottom="6dp">
+
+            <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="vertical">
+                android:drawablePadding="@dimen/space_sm"
+                android:gravity="center_vertical"
+                android:text="@string/operator_slots_label"
+                android:textColor="@color/text_primary"
+                android:textSize="@dimen/text_row_subtitle"
+                app:drawableStartCompat="@drawable/ic_battery"
+                app:drawableTint="@color/text_hint" />
 
-                <TextView
-                    android:id="@+id/tvOperatorStationSlots"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/text_primary"
-                    android:textSize="@dimen/text_station_stat"
-                    android:textStyle="bold"
-                    tools:text="3 of 5" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSlotsLess"
+                style="@style/Widget.Material3.Button.IconButton.Outlined"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:contentDescription="@string/operator_slots_less"
+                app:icon="@drawable/ic_remove"
+                app:iconTint="@color/text_primary"
+                app:strokeColor="@color/field_border" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/station_label_slots"
-                    android:textColor="@color/text_hint"
-                    android:textSize="@dimen/text_station_label" />
-            </LinearLayout>
+            <TextView
+                android:id="@+id/tvOperatorStationSlots"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="64dp"
+                android:gravity="center"
+                android:textColor="@color/text_primary"
+                android:textSize="@dimen/text_row_subtitle"
+                android:textStyle="bold"
+                tools:text="3 of 5" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSlotsMore"
+                style="@style/Widget.Material3.Button.IconButton.Outlined"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:contentDescription="@string/operator_slots_more"
+                app:icon="@drawable/ic_add"
+                app:iconTint="@color/text_primary"
+                app:strokeColor="@color/field_border" />
         </LinearLayout>
 
         <!-- Hidden when the bookings couldn't be loaded -->

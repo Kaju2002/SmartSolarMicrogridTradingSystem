@@ -27,5 +27,8 @@ public class ReservationResponseDto
 
     public string? ProsumerNic { get; set; }
 
+    public string? ProsumerName { get; set; }
+    // set when an operator verifies a QR
+
     public string? StationName { get; set; }
 }
