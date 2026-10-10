@@ -4,7 +4,9 @@
     <base-config cleartextTrafficPermitted="false" />
 
     <domain-config cleartextTrafficPermitted="true">
-        <!-- Android emulator alias for the host PC (dotnet run on port 5204) -->
+        <!-- Android emulator alias for the host PC -->
         <domain includeSubdomains="false">10.0.2.2</domain>
+        <!-- Host PC on the local Wi-Fi, for a real phone -->
+        <domain includeSubdomains="false">192.168.1.250</domain>
     </domain-config>
 </network-security-config>
